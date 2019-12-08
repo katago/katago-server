@@ -1,0 +1,52 @@
+# General
+# ------------------------------------------------------------------------------
+# DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=2L3jKXkw9aQWLOm8Yky7VcJB5NKFGZgWTwzMRG545JmYgoajhL4VvdPX5FTONQrg
+DJANGO_ADMIN_URL=BV91OZLRqjkoUroXA2Dt4O8tyrt9Z24G/
+DJANGO_ALLOWED_HOSTS=.katago.tycoach.me
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: better off using DNS, however, redirect is OK too
+DJANGO_SECURE_SSL_REDIRECT=False
+
+# Email
+# ------------------------------------------------------------------------------
+MAILGUN_API_KEY=
+DJANGO_SERVER_EMAIL=
+MAILGUN_DOMAIN=
+
+# GCP
+# ------------------------------------------------------------------------------
+GOOGLE_APPLICATION_CREDENTIALS=
+DJANGO_GCP_STORAGE_BUCKET_NAME=
+
+# django-allauth
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+# django-compressor
+# ------------------------------------------------------------------------------
+COMPRESS_ENABLED=
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+WEB_CONCURRENCY=4
+
+# Sentry
+# ------------------------------------------------------------------------------
+SENTRY_DSN=
+
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=debug
+CELERY_FLOWER_PASSWORD=debug
+
