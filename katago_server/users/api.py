@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAdminUser
 
 from katago_server.users.models import User
-from katago_server.users.serializers import UserSerializer, GroupSerializer
+from katago_server.users.serializers import GroupSerializer, FullUserSerializer, LimitedUserSerializer
 
 
 class ReadOnly(BasePermission):
@@ -19,7 +19,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all().order_by("-date_joined")
     permission_classes = [IsAdminUser | ReadOnly]
-    serializer_class = UserSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return FullUserSerializer
+        return LimitedUserSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -28,5 +32,5 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Group.objects.all()
-    permission_classes = [IsAdminUser | ReadOnly]
+    permission_classes = [IsAdminUser]
     serializer_class = GroupSerializer
