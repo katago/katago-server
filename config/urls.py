@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 from rest_framework import routers
-from rest_framework.schemas import get_schema_view
+from rest_framework.authtoken.views import obtain_auth_token
 
 from katago_server.users.api import GroupViewSet, UserViewSet
 
@@ -17,7 +17,7 @@ router.register(r"groups", GroupViewSet)
 # API
 api_urlpattern = [
     path("api/", include(router.urls)),
-    path("openapi", get_schema_view(title="Katago", description=""), name="schema",),
+    path('api/token', obtain_auth_token, name='api_token_auth')
 ]
 
 urlpatterns = (
