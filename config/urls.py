@@ -8,11 +8,14 @@ from django.views import defaults as default_views
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
+from katago_server.games.api import MatchViewSet, SelfPlayViewSet
 from katago_server.users.api import GroupViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"groups", GroupViewSet)
+router.register(r"matches", MatchViewSet)
+router.register(r"self-plays", SelfPlayViewSet)
 
 # API
 api_urlpattern = [
