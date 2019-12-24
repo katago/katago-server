@@ -11,6 +11,22 @@ from rest_framework.authtoken.views import obtain_auth_token
 from katago_server.games.api import MatchViewSet, SelfPlayViewSet
 from katago_server.users.api import GroupViewSet, UserViewSet
 
+from django.contrib.auth.models import Group
+from rest_framework.authtoken.models import Token
+from allauth.account.models import EmailAddress
+from django.contrib.sites.models import Site
+from django_celery_beat.models import SolarSchedule, CrontabSchedule, ClockedSchedule, IntervalSchedule, PeriodicTask
+
+admin.site.unregister(Group)
+admin.site.unregister(Token)
+admin.site.unregister(EmailAddress)
+admin.site.unregister(Site)
+admin.site.unregister(SolarSchedule)
+admin.site.unregister(IntervalSchedule)
+admin.site.unregister(ClockedSchedule)
+admin.site.unregister(CrontabSchedule)
+admin.site.unregister(PeriodicTask)
+
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"groups", GroupViewSet)
@@ -34,7 +50,7 @@ urlpatterns = (
         ),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
-        path(f'{settings.ADMIN_URL}/doc/', include('django.contrib.admindocs.urls')),
+        path(f'{settings.ADMIN_URL}doc/', include('django.contrib.admindocs.urls')),
         # User management
         path("users/", include("katago_server.users.urls", namespace="users")),
         path("accounts/", include("allauth.urls")),
