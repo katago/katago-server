@@ -1,7 +1,10 @@
 from enum import Enum
 
 from django.contrib.postgres.fields import ArrayField, JSONField
-from django.db.models import Model, CharField, DecimalField, IntegerField, FileField, BooleanField
+from django.db.models import Model, CharField, DecimalField, IntegerField, FileField, BooleanField, DateTimeField, \
+    ForeignKey, PROTECT
+
+from katago_server.trainings.models import Gating, Network
 
 
 class KoRulesType(Enum):
@@ -37,8 +40,7 @@ class GamesResultType(Enum):
     WHITE = 'W'
     BLACK = 'B'
     JIGO = '0'
-    # https://senseis.xmp.net/?NoResult
-    MOSHOUBOU = '∅'
+    MOSHOUBOU = '∅'  # https://senseis.xmp.net/?NoResult
 
     @classmethod
     def choices(cls):
@@ -64,6 +66,8 @@ class Game(Model):
     has_resigned = BooleanField()
     score = DecimalField(max_digits=4, decimal_places=1)
 
+    created = DateTimeField(auto_now_add=True)
+
     sgf_file = FileField()
 
     class Meta:
@@ -71,18 +75,28 @@ class Game(Model):
 
 
 class Match(Game):
+    gating = ForeignKey(Gating, on_delete=PROTECT)
+
     class Meta:
         verbose_name_plural = 'Matches'
 
 
 class SelfPlay(Game):
+    network = ForeignKey(Network, on_delete=PROTECT)
+
     unpacked_training_file = FileField()
     packed_training_file = FileField()
 
+    game_extra_params = JSONField()
 
-class ForkedGame(Game):
+
+class ForkedSelfPlay(Game):
+    network = ForeignKey(Network, on_delete=PROTECT)
+
     unpacked_training_file = FileField()
     packed_training_file = FileField()
 
     parent_sgf_file = FileField()
-    forked_extra_params = JSONField()
+    forked_at_turn = IntegerField()
+
+    game_extra_params = JSONField()

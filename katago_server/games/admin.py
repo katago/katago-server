@@ -1,17 +1,17 @@
 from django.contrib import admin
-from katago_server.games.models import SelfPlay, Match, ForkedGame
+from katago_server.games.models import SelfPlay, Match, ForkedSelfPlay
 
 
 @admin.register(SelfPlay)
 class SelfPlayAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ("created",)
 
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ("created",)
 
 
-@admin.register(ForkedGame)
-class ForkedGameAdmin(admin.ModelAdmin):
-    pass
+@admin.register(ForkedSelfPlay)
+class ForkedSelfPlayAdmin(admin.ModelAdmin):
+    readonly_fields = ("created",)
