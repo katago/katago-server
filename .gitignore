@@ -1,3 +1,5 @@
+.envs/.production
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -328,6 +330,9 @@ katago_server/media/
 
 
 .ipython/
-.env
-.envs/*
-!.envs/.local/
+.env
+
+.envs/*
+
+!.envs/.local/
+
