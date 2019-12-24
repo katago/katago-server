@@ -60,7 +60,7 @@ class Game(Model):
     scoring_rule = CharField(max_length=15, choices=ScoringRulesType.choices(), null=False)
     tax_rule = CharField(max_length=15, choices=TaxRulesType.choices(), null=False)
     multi_stone_suicide_allowed = BooleanField()
-    extra_rules = JSONField()
+    extra_rules = JSONField(default=dict)
 
     result = CharField(max_length=15, choices=GamesResultType.choices(), null=False)
     has_resigned = BooleanField()
@@ -84,19 +84,12 @@ class Match(Game):
 class SelfPlay(Game):
     network = ForeignKey(Network, on_delete=PROTECT)
 
-    unpacked_training_file = FileField()
-    packed_training_file = FileField()
-
-    game_extra_params = JSONField()
-
-
-class ForkedSelfPlay(Game):
-    network = ForeignKey(Network, on_delete=PROTECT)
+    is_forked = BooleanField()
+    forked_file = FileField(null=True)
+    forked_at_turn = IntegerField(null=True)
+    forked_extra_params = JSONField(null=True)
 
     unpacked_training_file = FileField()
     packed_training_file = FileField()
 
-    parent_sgf_file = FileField()
-    forked_at_turn = IntegerField()
-
-    game_extra_params = JSONField()
+    game_extra_params = JSONField(default=dict)
