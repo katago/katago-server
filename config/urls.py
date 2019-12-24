@@ -31,6 +31,7 @@ urlpatterns = (
         ),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
+        path(f'{settings.ADMIN_URL}/doc/', include('django.contrib.admindocs.urls')),
         # User management
         path("users/", include("katago_server.users.urls", namespace="users")),
         path("accounts/", include("allauth.urls")),
