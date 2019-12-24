@@ -80,6 +80,9 @@ class SelfPlay(Game):
     packed_training_file = FileField()
 
 
-class ForkedGame(SelfPlay):
+class ForkedGame(Game):
+    unpacked_training_file = FileField()
+    packed_training_file = FileField()
+
     parent_sgf_file = FileField()
     forked_extra_params = JSONField()
