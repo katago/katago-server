@@ -8,11 +8,14 @@ from django.views import defaults as default_views
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
+from katago_server.games.api import MatchViewSet, SelfPlayViewSet
 from katago_server.users.api import GroupViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"groups", GroupViewSet)
+router.register(r"matches", MatchViewSet)
+router.register(r"self-plays", SelfPlayViewSet)
 
 # API
 api_urlpattern = [
@@ -31,6 +34,7 @@ urlpatterns = (
         ),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
+        path(f'{settings.ADMIN_URL}/doc/', include('django.contrib.admindocs.urls')),
         # User management
         path("users/", include("katago_server.users.urls", namespace="users")),
         path("accounts/", include("allauth.urls")),
