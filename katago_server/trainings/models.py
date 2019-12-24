@@ -8,10 +8,10 @@ class Network(Model):
     """
     nb_blocks = IntegerField()
     nb_channels = IntegerField()
-    model_architecture = JSONField()
+    model_architecture_details = JSONField(default=dict)
 
     created = DateTimeField(auto_now_add=True)
-    elo = IntegerField()
+    rough_elo = IntegerField(default=0)
 
     file = FileField()
 
