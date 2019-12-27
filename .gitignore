@@ -1,5 +1,9 @@
 .envs/.production
 
+.credentials/*
+!.credentials/.gitkeep
+
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
