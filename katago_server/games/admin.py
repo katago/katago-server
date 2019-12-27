@@ -1,13 +1,13 @@
 from django.contrib import admin
-from katago_server.games.models import SelfPlay, Match
+from katago_server.games.models import Game
 
 
-@admin.register(SelfPlay)
-class SelfPlayAdmin(admin.ModelAdmin):
-    readonly_fields = ("created",)
+@admin.register(Game)
+class GameAdmin(admin.ModelAdmin):
+    readonly_fields = ("created_at",)
+    list_display = ('uuid', 'result_text', 'created_at', 'submitted_by', 'white_network', 'black_network')
 
-
-@admin.register(Match)
-class MatchAdmin(admin.ModelAdmin):
-    readonly_fields = ("created",)
-
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:  # Only set added_by during the first save.
+            obj.submitted_by = request.user
+        super().save_model(request, obj, form, change)

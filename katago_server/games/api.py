@@ -3,25 +3,15 @@ from rest_framework.permissions import IsAdminUser
 
 from katago_server.contrib.permission import ReadOnly
 
-from katago_server.games.models import SelfPlay, Match
-from katago_server.games.serializers import SelfPlaySerializer, MatchSerializer
+from katago_server.games.models import Game
+from katago_server.games.serializers import GameSerializer
 
 
-class SelfPlayViewSet(viewsets.ModelViewSet):
+class GameViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows self plays to be viewed or edited.
+    API endpoint that allows games to be uploaded or seen
     """
 
-    queryset = SelfPlay.objects.all()
+    queryset = Game.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
-    serializer_class = SelfPlaySerializer
-
-
-class MatchViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-
-    queryset = Match.objects.all()
-    permission_classes = [IsAdminUser | ReadOnly]
-    serializer_class = MatchSerializer
+    serializer_class = GameSerializer

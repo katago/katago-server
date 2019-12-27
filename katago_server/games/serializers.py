@@ -1,15 +1,12 @@
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer, HiddenField, CurrentUserDefault
 
-from katago_server.games.models import Match, SelfPlay
+from katago_server.games.models import Game
 
 
-class MatchSerializer(HyperlinkedModelSerializer):
+class GameSerializer(HyperlinkedModelSerializer):
+    # https://www.django-rest-framework.org/api-guide/validators/#advanced-field-defaults
+    submitted_by = HiddenField(default=CurrentUserDefault())
+
     class Meta:
-        model = Match
-        fields = '__all__'
-
-
-class SelfPlaySerializer(HyperlinkedModelSerializer):
-    class Meta:
-        model = SelfPlay
+        model = Game
         fields = '__all__'

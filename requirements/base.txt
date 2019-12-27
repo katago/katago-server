@@ -18,6 +18,8 @@ django-allauth==0.40.0  # https://github.com/pennersr/django-allauth
 django-crispy-forms==1.8.1  # https://github.com/django-crispy-forms/django-crispy-forms
 django-compressor==2.3  # https://github.com/django-compressor/django-compressor
 django-redis==4.10.0  # https://github.com/niwinz/django-redis
+docutils==0.15.2
+uuid==1.30
 
 # Django REST Framework
 djangorestframework==3.10.3  # https://github.com/encode/django-rest-framework
