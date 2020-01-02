@@ -19,6 +19,7 @@ django-crispy-forms==1.8.1  # https://github.com/django-crispy-forms/django-cris
 django-redis==4.11.0  # https://github.com/niwinz/django-redis
 docutils==0.15.2
 uuid==1.30
+python-magic==0.4.15
 
 # Django REST Framework
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework

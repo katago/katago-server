@@ -1,6 +1,16 @@
+import os
 import uuid as uuid
 from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, DecimalField
+
+from katago_server.contrib.validators import FileValidator
+
+
+def upload_network_to(instance, filename):
+    return os.path.join("network", f"{instance.uuid}.gz")
+
+
+validate_gzip = FileValidator(max_size=1024*1024*300, content_types=("application/gzip",))
 
 
 class Network(Model):
@@ -23,7 +33,7 @@ class Network(Model):
     nb_blocks = IntegerField()
     nb_channels = IntegerField()
     model_architecture_details = JSONField(default=dict)
-    model_file = FileField()
+    model_file = FileField(upload_to=upload_network_to, validators=(validate_gzip,))
     # And an estimation of the strength
     # TODO: add GIST KNN index, so we can pick a network closed to an elo (for matches or self-play)
     elo = DecimalField(decimal_places=2, max_digits=7)
