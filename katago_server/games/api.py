@@ -1,10 +1,11 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 
 from katago_server.contrib.permission import ReadOnly
 
 from katago_server.games.models import Game
-from katago_server.games.serializers import GameSerializer
+from katago_server.games.serializers import GameCreateSerializer, GameListSerializer
 
 
 class GameViewSet(viewsets.ModelViewSet):
@@ -14,4 +15,10 @@ class GameViewSet(viewsets.ModelViewSet):
 
     queryset = Game.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
-    serializer_class = GameSerializer
+
+    # Used to get the proper serializer for the given action
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return GameCreateSerializer
+        if self.action == 'list':
+            return GameListSerializer
