@@ -16,7 +16,7 @@ RUN apk update \
   && apk add --virtual build-deps gcc python3-dev musl-dev make \
   && apk add postgresql-dev \
   # Pillow dependencies
-  && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev \
+  && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libmagic \
   # CFFI dependencies
   && apk add libffi-dev py-cffi
 

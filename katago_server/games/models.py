@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db.models import Model, CharField, DecimalField, IntegerField, FileField, BooleanField, DateTimeField, \
     ForeignKey, PROTECT, BigAutoField, UUIDField, DurationField
 
+from katago_server.contrib.validators import FileValidator
 from katago_server.trainings.models import Network
 from katago_server.users.models import User
 
@@ -26,7 +27,11 @@ def upload_sgf_to(instance, filename):
 
 
 def upload_unpacked_training_to(instance, filename):
-    return os.path.join("trainings", f"{instance.uuid}.gz")
+    return os.path.join("trainings", f"{instance.uuid}.npz")
+
+
+validate_gzip = FileValidator(max_size=1024*1024*300, content_types=("application/zip",))
+validate_sgf = FileValidator(max_size=1024*1024*10, magic_types=("Smart Game Format (Go)",))
 
 
 class Game(Model):
@@ -41,7 +46,8 @@ class Game(Model):
     submitted_by = ForeignKey(User, on_delete=PROTECT, related_name='%(class)s_games')
     duration = DurationField()
     # Describe the board/game itself
-    board_size = ArrayField(IntegerField(null=False, default=19), size=2)  # A [X, Y] array of integers
+    board_size_x = IntegerField(null=False, default=19)
+    board_size_y = IntegerField(null=False, default=19)
     handicap = IntegerField(null=False, default=0)
     komi = DecimalField(max_digits=3, decimal_places=1, null=False, default=7.0)
     rules_params = JSONField(default=dict, null=True, blank=True)  # See https://lightvector.github.io/KataGo/rules.html
@@ -61,8 +67,8 @@ class Game(Model):
     # eg: komi compensated games, uncompensated games, asymmetric playout games, seki-training games
     game_extra_params = JSONField(default=dict, null=True, blank=True)
     # The result of the game is stored as an sgf file, always ready to be viewed, and some training data
-    sgf_file = FileField(upload_to=upload_sgf_to)
-    unpacked_file = FileField(upload_to=upload_unpacked_training_to)
+    sgf_file = FileField(upload_to=upload_sgf_to, validators=(validate_sgf,))
+    unpacked_file = FileField(upload_to=upload_unpacked_training_to, validators=(validate_gzip,))
 
     @property
     def result_text(self):
