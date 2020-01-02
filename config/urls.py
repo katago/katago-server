@@ -10,7 +10,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from katago_server.games.api import GameViewSet
 from katago_server.trainings.api import NetworkViewSet
-from katago_server.users.api import GroupViewSet, UserViewSet
+from katago_server.users.api import UserViewSet
 
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
@@ -30,7 +30,6 @@ admin.site.unregister(PeriodicTask)
 
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
-router.register(r"groups", GroupViewSet)
 router.register(r"networks", NetworkViewSet)
 router.register(r"games", GameViewSet)
 
