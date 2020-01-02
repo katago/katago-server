@@ -2,7 +2,7 @@ import os
 from enum import Enum
 
 import uuid as uuid
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, CharField, DecimalField, IntegerField, FileField, BooleanField, DateTimeField, \
     ForeignKey, PROTECT, BigAutoField, UUIDField, DurationField
 
@@ -54,10 +54,10 @@ class Game(Model):
     # The results
     result = CharField(max_length=15, choices=GamesResultType.choices(), null=False)
     has_resigned = BooleanField()
-    score = DecimalField(max_digits=4, decimal_places=1)
+    score = DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
     # The networks related to this game
     white_network = ForeignKey(Network, on_delete=PROTECT, related_name='%(class)s_games_as_white')
-    black_network = ForeignKey(Network, on_delete=PROTECT, related_name='%(class)s_gates_as_black')
+    black_network = ForeignKey(Network, on_delete=PROTECT, related_name='%(class)s_games_as_black')
     # A game can be forked from an existing game or a initial situation
     is_forked = BooleanField(default=False)
     forked_initial_position_sgf_file = FileField(null=True, blank=True)
