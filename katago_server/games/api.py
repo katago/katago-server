@@ -1,6 +1,5 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
-from rest_framework.response import Response
 
 from katago_server.contrib.permission import ReadOnly
 
@@ -20,5 +19,4 @@ class GameViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return GameCreateSerializer
-        if self.action == 'list':
-            return GameListSerializer
+        return GameListSerializer

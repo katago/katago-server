@@ -73,8 +73,7 @@ class Game(Model):
     @property
     def result_text(self):
         score = "R" if self.has_resigned else self.score
-        return f"{self.result}+{score}" if self.result in [GamesResultType.BLACK, GamesResultType.WHITE] \
-            else self.result
+        return f"{self.result}+{score}" if self.result in [GamesResultType.BLACK, GamesResultType.WHITE] else self.result
 
     def __str__(self):
         return f"{self.uuid} ({self.result_text})"
