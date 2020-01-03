@@ -70,7 +70,7 @@ class PredefinedJob(Model):
     # eg: komi compensated games, uncompensated games, asymmetric playout games, seki-training games
     game_extra_params = JSONField(default=dict, null=True, blank=True)
     # The result of a "DONE" PredefinedJob is a Game
-    result = ForeignKey(Game, on_delete=PROTECT)
+    result = ForeignKey(Game, on_delete=PROTECT, null=True, blank=True)
 
     def __str__(self):
         return f"{self.uuid} ({self.kind})"
