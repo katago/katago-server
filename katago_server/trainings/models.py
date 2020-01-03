@@ -10,7 +10,7 @@ def upload_network_to(instance, filename):
     return os.path.join("network", f"{instance.uuid}.gz")
 
 
-validate_gzip = FileValidator(max_size=1024*1024*300, content_types=("application/gzip",))
+validate_zip = FileValidator(max_size=1024*1024*300, content_types=("application/zip",))
 
 
 class Network(Model):
@@ -23,9 +23,9 @@ class Network(Model):
        The bigger the stronger but also the slower.
     - 'model_architecture_details' contains the other architecture detail
     - 'model_file' contains a link to the gziped file
-    - 'elo' which gives an indication of a network strength
+    - 'ranking' which gives an indication of a network strength
 
-    The elo will be continuously updated, with bayesian elo
+    The "ranking" will be continuously updated, with bayesian-elo
     """
     uuid = UUIDField(default=uuid.uuid4)
     created_at = DateTimeField(auto_now_add=True)
@@ -33,10 +33,11 @@ class Network(Model):
     nb_blocks = IntegerField()
     nb_channels = IntegerField()
     model_architecture_details = JSONField(default=dict)
-    model_file = FileField(upload_to=upload_network_to, validators=(validate_gzip,))
+    model_file = FileField(upload_to=upload_network_to, validators=(validate_zip,))
     # And an estimation of the strength
     # TODO: add GIST KNN index, so we can pick a network closed to an elo (for matches or self-play)
-    elo = DecimalField(decimal_places=2, max_digits=7)
+    ranking_value = DecimalField(decimal_places=2, max_digits=7)
+    ranking_stdev = DecimalField(decimal_places=2, max_digits=7)
 
     def __str__(self):
-        return f"g{self.id}-{self.uuid} ({self.elo})"
+        return f"g{self.id}-{self.uuid} ({self.ranking_value}±{3*self.ranking_stdev})"

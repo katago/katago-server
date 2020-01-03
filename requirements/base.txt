@@ -25,3 +25,4 @@ python-magic==0.4.15
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
 coreapi==2.3.3  # https://github.com/core-api/python-client
 pyyaml==5.2
+django-solo==1.1.3

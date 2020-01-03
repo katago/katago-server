@@ -8,8 +8,8 @@ from django.views import defaults as default_views
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
-from katago_server.distributed_efforts.api import JobViewSet
-from katago_server.games.api import GameViewSet
+from katago_server.distributed_efforts.api import DistributedTaskViewSet
+from katago_server.games.api import TrainingEstimationViewSet, RankingEstimationViewSet
 from katago_server.trainings.api import NetworkViewSet
 from katago_server.users.api import UserViewSet
 
@@ -32,8 +32,9 @@ admin.site.unregister(PeriodicTask)
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"networks", NetworkViewSet)
-router.register(r"games", GameViewSet)
-router.register(r"jobs", JobViewSet, basename="Job")
+router.register(r"games/training", TrainingEstimationViewSet)
+router.register(r"games/rankingEstimation", RankingEstimationViewSet)
+router.register(r"tasks", DistributedTaskViewSet, basename="Task")
 
 # API
 api_urlpattern = [
