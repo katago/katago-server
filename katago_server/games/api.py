@@ -3,20 +3,37 @@ from rest_framework.permissions import IsAdminUser
 
 from katago_server.contrib.permission import ReadOnly
 
-from katago_server.games.models import Game
-from katago_server.games.serializers import GameCreateSerializer, GameListSerializer
+from katago_server.games.models import RankingEstimationGame, TrainingGame
+from katago_server.games.serializers import RankingEstimationGameCreateSerializer, RankingEstimationGameListSerializer, TrainingGameCreateSerializer, TrainingGameListSerializer
 
 
-class GameViewSet(viewsets.ModelViewSet):
+class RankingEstimationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows games to be uploaded or seen
     """
-
-    queryset = Game.objects.all()
+    queryset = RankingEstimationGame.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
 
     # Used to get the proper serializer for the given action
+    # so create still reference to an existing network
+    # but display give nested details of the network
     def get_serializer_class(self):
         if self.action == 'create':
-            return GameCreateSerializer
-        return GameListSerializer
+            return RankingEstimationGameCreateSerializer
+        return RankingEstimationGameListSerializer
+
+
+class TrainingEstimationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows games to be uploaded or seen
+    """
+    queryset = TrainingGame.objects.all()
+    permission_classes = [IsAdminUser | ReadOnly]
+
+    # Used to get the proper serializer for the given action
+    # so create still reference to an existing network
+    # but display give nested details of the network
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return TrainingGameCreateSerializer
+        return TrainingGameListSerializer
