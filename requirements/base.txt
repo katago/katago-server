@@ -20,6 +20,7 @@ django-redis==4.11.0  # https://github.com/niwinz/django-redis
 docutils==0.15.2
 uuid==1.30
 python-magic==0.4.15
+django-durationwidget==1.0.5
 
 # Django REST Framework
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework

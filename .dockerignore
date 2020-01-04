@@ -4,3 +4,4 @@
 !.pylintrc
 !.credentials
 *.pyc
+venv/*

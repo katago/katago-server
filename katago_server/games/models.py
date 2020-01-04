@@ -35,37 +35,37 @@ class AbstractGame(Model):
     class GamesResult(TextChoices):
         WHITE = 'W', _("White")
         BLACK = 'B', _("Black")
-        DRAW = '0', _("Draw")
-        MOSHOUBOU = '-', _("No Result")  # https://senseis.xmp.net/?NoResult
+        DRAW = '0', _("Draw (Jigo)")
+        MOSHOUBOU = '-', _("No Result (Moshoubou)")  # https://senseis.xmp.net/?NoResult
 
     # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
-    uuid = UUIDField(default=uuid.uuid4)
+    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4)
     # A game is submitted by an user
-    created_at = DateTimeField(auto_now_add=True)
-    submitted_by = ForeignKey(User, on_delete=PROTECT, related_name='%(class)s_games')
-    duration = DurationField()
+    created_at = DateTimeField(_("creation date"), auto_now_add=True)
+    submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name='%(class)s_games')
+    duration = DurationField(_("game duration"))
     # Describe the board/game itself
-    board_size_x = IntegerField(null=False, default=19)
-    board_size_y = IntegerField(null=False, default=19)
-    handicap = IntegerField(null=False, default=0)
-    komi = DecimalField(max_digits=3, decimal_places=1, null=False, default=7.0)
-    rules_params = JSONField(default=dict, null=True, blank=True)  # See https://lightvector.github.io/KataGo/rules.html
+    board_size_x = IntegerField(_("board absciss"), null=False, default=19)
+    board_size_y = IntegerField(_("board ordinate"), null=False, default=19)
+    handicap = IntegerField(_("nb of handicap stone"), null=False, default=0)
+    komi = DecimalField(_("komi (white)"), max_digits=3, decimal_places=1, null=False, default=7.0)
+    rules_params = JSONField(_("game rules"), help_text=_("Depending on rule set, the ko (https://senseis.xmp.net/?Ko), the scoring (https://senseis.xmp.net/?Scoring), the group tax (https://senseis.xmp.net/?GroupTax) and the suicide (https://senseis.xmp.net/?Suicide) may have subtle difference. See more info here https://lightvector.github.io/KataGo/rules.html"), default=dict, null=True, blank=True)  # See https://lightvector.github.io/KataGo/rules.html
     # Some extra information about the game like the type
     # eg: komi compensated games, uncompensated games, asymmetric playout games, seki-training games
-    game_extra_params = JSONField(default=dict, null=True, blank=True)
+    game_extra_params = JSONField(_("extra game parameters regarding game, like number of playout"), help_text=_("Some parameters (like the playout) are randomized by katago engine"), default=dict, null=True, blank=True)
     # The results
-    result = CharField(max_length=15, choices=GamesResult.choices, null=False)
-    score = DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
-    has_resigned = BooleanField(default=False)
+    result = CharField(_("game result"), max_length=15, choices=GamesResult.choices, null=False)
+    score = DecimalField(_("game score"), max_digits=4, decimal_places=1, null=True, blank=True)
+    has_resigned = BooleanField(_("game end up with resign"), default=False)
     # The networks related to this game
-    white_network = ForeignKey(Network, on_delete=PROTECT, related_name='%(class)s_games_as_white')
-    black_network = ForeignKey(Network, on_delete=PROTECT, related_name='%(class)s_games_as_black')
+    white_network = ForeignKey(Network, verbose_name=_("network white"), on_delete=PROTECT, related_name='%(class)s_games_as_white')
+    black_network = ForeignKey(Network, verbose_name=_("network black"), on_delete=PROTECT, related_name='%(class)s_games_as_black')
     # A game can be forked from an existing game or a initial situation
-    initial_position_sgf_file = FileField(null=True, blank=True)
-    initial_position_extra_params = JSONField(default=dict, null=True, blank=True)
+    initial_position_sgf_file = FileField(verbose_name=_("initial position, as sgf file"), null=True, blank=True)
+    initial_position_extra_params = JSONField(verbose_name=_("initial position extra parameters"), default=dict, null=True, blank=True)
     # The result of the game is stored as an sgf file, always ready to be viewed
-    sgf_file = FileField(upload_to=upload_sgf_to, validators=(validate_sgf,))
+    sgf_file = FileField(_("resulting sgf file"), upload_to=upload_sgf_to, validators=(validate_sgf,))
 
     @property
     def result_text(self):
@@ -77,7 +77,7 @@ class AbstractGame(Model):
 
 
 class TrainingGame(AbstractGame):
-    unpacked_file = FileField(upload_to=upload_unpacked_training_to, validators=(validate_gzip,))
+    unpacked_file = FileField(_("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,))
 
     class Meta:
         verbose_name = _("Training Game")

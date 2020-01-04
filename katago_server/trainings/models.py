@@ -2,6 +2,7 @@ import os
 import uuid as uuid
 from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, DecimalField
+from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
 
@@ -27,17 +28,29 @@ class Network(Model):
 
     The "ranking" will be continuously updated, with bayesian-elo
     """
-    uuid = UUIDField(default=uuid.uuid4)
-    created_at = DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name = _("Network")
+        verbose_name_plural = _("Networks")
+
+    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4)
+    created_at = DateTimeField(_("creation date"), auto_now_add=True)
     # Some description of the network itself
-    nb_blocks = IntegerField()
-    nb_channels = IntegerField()
-    model_architecture_details = JSONField(default=dict)
-    model_file = FileField(upload_to=upload_network_to, validators=(validate_zip,))
+    nb_blocks = IntegerField(_("number of blocks in network"))
+    nb_channels = IntegerField(_("number of channels in network"))
+    model_architecture_details = JSONField(_("network architecture schema"), default=dict)
+    model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,))
     # And an estimation of the strength
     # TODO: add GIST KNN index, so we can pick a network closed to an elo (for matches or self-play)
-    ranking_value = DecimalField(decimal_places=2, max_digits=7)
-    ranking_stdev = DecimalField(decimal_places=2, max_digits=7)
+    ranking_value = DecimalField(_("estimated rank value"), decimal_places=2, max_digits=7)
+    ranking_stdev = DecimalField(_("estimated rank uncertainty"), decimal_places=2, max_digits=7)
 
     def __str__(self):
-        return f"g{self.id}-{self.uuid} ({self.ranking_value}±{3*self.ranking_stdev})"
+        return f"net-{self.id} ({self.ranking_value}±{3*self.ranking_stdev})"
+
+    @property
+    def size(self):
+        return f"b{self.nb_blocks} c{self.nb_channels}"
+
+    @property
+    def ranking(self):
+        return f"{self.ranking_value} ±{2 * self.ranking_stdev}"

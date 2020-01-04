@@ -60,7 +60,6 @@ DJANGO_APPS = [
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.contrib.admindocs"
 ]
@@ -71,7 +70,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "django_celery_beat",
-    "solo"
+    "solo",
+    "durationwidget",
 ]
 
 LOCAL_APPS = [
