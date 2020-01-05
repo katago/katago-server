@@ -62,7 +62,7 @@ def update_bayesian_ranking():
     # (ALGORITHM): 6. the LogGammaUncertainty values can be recomputed once at the end as follows:
     for network in all_network_sorted_by_uncertainty:
         all_games_played = RankingEstimationGame.objects.filter(Q(black_network=network) | Q(white_network=network)).prefetch_related("black_network", "white_network")
-        total_deviation = 0
+        total_precision = 0
         current_log_gamma = network.log_gamma
         for game in all_games_played:
             log_gamma_difference = 0
@@ -70,7 +70,7 @@ def update_bayesian_ranking():
                 log_gamma_difference = game.white_network.log_gamma - current_log_gamma
             if network == game.white_network:
                 log_gamma_difference = game.black_network.log_gamma - current_log_gamma
-            game_deviation = 1 / pow(exp(log_gamma_difference / 2) + exp(-log_gamma_difference / 2), 2)
-            total_deviation += game_deviation
-        network.log_gamma_uncertainty = 1 / total_deviation
+            game_precision = 1 / pow(exp(log_gamma_difference / 2) + exp(-log_gamma_difference / 2), 2)
+            total_precision += game_precision
+        network.log_gamma_uncertainty = 1 / total_precision
         network.save()
