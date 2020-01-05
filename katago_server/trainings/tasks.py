@@ -29,20 +29,37 @@ def update_bayesian_ranking(self):
     all_network_sorted_by_uncertainty = Network.objects.order_by("-log_gamma_uncertainty")
     for iteration_index in range(ITERATION_NB):
         for network in all_network_sorted_by_uncertainty:
+            r = RankingEstimationGame.GamesResult
+            # Get the all_games_played list
+            all_games_played = list(RankingEstimationGame.objects.filter(Q(black_network=network) | Q(white_network=network)).prefetch_related("black_network", "white_network"))
+            previous_network = Network.objects.filter(id__lt=network.id).order_by("-id").first()
+            next_network = Network.objects.filter(id__gt=network.id).order_by("id").first()
+            # (ALGORITHM): 0. Whenever a NEW player is added to the above, it is necessary to add a Bayesian prior to obtain good results and keep the math from blowing up.
+            # A reasonable prior is to add a single "virtual draw" between the new player and the immediately previous neural net version
+            # Handle first network case
+            if previous_network is not None:
+                all_games_played.append(RankingEstimationGame(black_network=network, white_network=previous_network, result=r.DRAW))
+            if next_network is not None:
+                all_games_played.append(RankingEstimationGame(black_network=network, white_network=next_network, result=r.DRAW))
+            logger.info("---> all_games_played")
+            logger.info(all_games_played)
             # (ALGORITHM): 1. Compute actual_number_of_win = the total number of wins of Pi in games that Pi played, counting draws and no-results as half of a win.
             actual_number_of_win = 0
-            r = RankingEstimationGame.GamesResult
             # Add 1 for each win
-            match_won_filter = (Q(black_network=network) & Q(result=r.BLACK)) | (Q(white_network=network) & Q(result=r.WHITE))
-            actual_number_of_win += RankingEstimationGame.objects.filter(match_won_filter).count()
             # And 1/2 for draw or no match
-            match_with_no_victory_filter = (Q(black_network=network) | Q(white_network=network)) & (Q(result=r.DRAW) | Q(result=r.MOSHOUBOU))
-            actual_number_of_win += 1/2 * RankingEstimationGame.objects.filter(match_with_no_victory_filter).count()
+            for game in all_games_played:
+                logger.info("---> game")
+                logger.info(game)
+                if network == game.black_network:
+                    actual_number_of_win += 1 if game.result == r.BLACK else 0
+                if network == game.white_network:
+                    actual_number_of_win += 1 if game.result == r.WHITE else 0
+                if game.result == r.DRAW or game.result == r.MOSHOUBOU:
+                    actual_number_of_win += 1/2
             # (ALGORITHM): 2. For every game Gj that Pi participated in, compute probability_win(Pi,Gj) = 1 / (1 + exp(log_gamma(opponent of Pi in game Gj) - log_gamma(Pi)))
             # (ALGORITHM): 3. Compute expected_number_win(Pi) = sum_{all games Gj that Pi participated in} ProbWin(Pi,Gj)
             expected_number_win = 0
             current_log_gamma = network.log_gamma
-            all_games_played = RankingEstimationGame.objects.filter(Q(black_network=network) | Q(white_network=network)).prefetch_related("black_network", "white_network")
             for game in all_games_played:
                 probability_win = 0
                 if network == game.black_network:
@@ -51,6 +68,10 @@ def update_bayesian_ranking(self):
                     probability_win = 1 / (1 + exp(game.black_network.log_gamma - current_log_gamma))
                 expected_number_win += probability_win
             # (ALGORITHM): 4. Set log_gamma(Pi) := log_gamma(Pi) + log(actual_number_of_win(Pi) / expected_number_win(Pi))
+            logger.info("---> actual_number_of_win")
+            logger.info(actual_number_of_win)
+            logger.info("---> expected_number_win")
+            logger.info(expected_number_win)
             network.log_gamma = network.log_gamma + log(actual_number_of_win / expected_number_win)
             network.save()
         # (ALGORITHM): 5. so subtract the anchor player's log_gamma value from every player's log_gamma, including the anchor player's own log_gamma, so that the anchor player is back at log_gamma 0.
