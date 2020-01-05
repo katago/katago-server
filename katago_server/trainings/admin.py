@@ -18,7 +18,7 @@ class NetworkAdmin(admin.ModelAdmin):
             'fields': ('model_file',)
         }),
         (_("Strength"), {
-            'fields': (('ranking_value', 'ranking_stdev'),)
+            'fields': (('log_gamma', 'log_gamma_uncertainty'),)
         }),
         (_("Network architecture"), {
             'fields': (('nb_blocks', 'nb_channels'), 'model_architecture_details')
