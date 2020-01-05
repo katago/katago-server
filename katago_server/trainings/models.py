@@ -3,7 +3,7 @@ import uuid as uuid
 from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
-from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, DecimalField
+from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, DecimalField, FloatField
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
@@ -43,8 +43,8 @@ class Network(Model):
     model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,))
     # And an estimation of the strength
     # TODO: add GIST KNN index, so we can pick a network closed to an elo (for matches or self-play)
-    log_gamma = DecimalField(_("estimated rank value"), decimal_places=5, max_digits=8)
-    log_gamma_uncertainty = DecimalField(_("estimated rank uncertainty"), decimal_places=5, max_digits=8)
+    log_gamma = FloatField(_("estimated rank value"))
+    log_gamma_uncertainty = FloatField(_("estimated rank uncertainty"))
 
     def __str__(self):
         return f"net-{self.id} ({self.elo}±{self.elo_uncertainty})"
@@ -55,11 +55,11 @@ class Network(Model):
 
     @property
     def elo(self):
-        return self.log_gamma * 400 * log10(e)
+        return round(self.log_gamma * 400 * log10(e), ndigits=1)
 
     @property
     def elo_uncertainty(self):
-        return self.log_gamma_uncertainty * 400 * log10(e)
+        return round(self.log_gamma_uncertainty * 400 * log10(e), ndigits=1)
 
     @property
     def ranking(self):
