@@ -7,21 +7,25 @@ COPY . /app
 RUN npm run build
 
 # Python build stage
-FROM python:3.7-alpine
+FROM python:3.8-buster
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apk update \
+RUN apt-get update \
+  # dependencies for building Python packages
+  && apt-get install -y build-essential \
   # psycopg2 dependencies
-  && apk add --virtual build-deps gcc python3-dev musl-dev make \
-  && apk add postgresql-dev \
-  # Pillow dependencies
-  && apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libmagic \
-  # CFFI dependencies
-  && apk add libffi-dev py-cffi
+  && apt-get install -y libpq-dev \
+  # MIME magic
+  && apt-get install -y libmagic-dev \
+  # Translations dependencies
+  && apt-get install -y gettext \
+  # cleaning up unused files
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup -S django \
-    && adduser -S -G django django
+RUN addgroup --system django \
+    && adduser --system --ingroup django
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
