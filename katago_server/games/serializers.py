@@ -1,3 +1,4 @@
+import uuid as uuid
 from rest_framework.serializers import HyperlinkedModelSerializer, HiddenField, CurrentUserDefault, HyperlinkedRelatedField
 
 from katago_server.games.models import RankingEstimationGame, TrainingGame
@@ -9,6 +10,7 @@ from katago_server.users.serializers import LimitedUserSerializer
 class RankingEstimationGameCreateSerializer(HyperlinkedModelSerializer):
     # https://www.django-rest-framework.org/api-guide/validators/#advanced-field-defaults
     submitted_by = HiddenField(default=CurrentUserDefault())
+    uuid = HiddenField(default=uuid.uuid4())
 
     class Meta:
         model = RankingEstimationGame
@@ -30,6 +32,7 @@ class RankingEstimationGameListSerializer(HyperlinkedModelSerializer):
 class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
     # https://www.django-rest-framework.org/api-guide/validators/#advanced-field-defaults
     submitted_by = HiddenField(default=CurrentUserDefault())
+    uuid = HiddenField(default=uuid.uuid4())
 
     class Meta:
         model = TrainingGame

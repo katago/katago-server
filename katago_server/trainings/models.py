@@ -3,7 +3,7 @@ import uuid as uuid
 from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
-from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, DecimalField, FloatField
+from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, FloatField, ForeignKey, PROTECT
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
@@ -36,15 +36,16 @@ class Network(Model):
 
     uuid = UUIDField(_("unique identifier"), default=uuid.uuid4)
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
+    parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)
     # Some description of the network itself
     nb_blocks = IntegerField(_("number of blocks in network"))
     nb_channels = IntegerField(_("number of channels in network"))
-    model_architecture_details = JSONField(_("network architecture schema"), default=dict)
+    model_architecture_details = JSONField(_("network architecture schema"),  null=True, blank=True, default=dict)
     model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,))
     # And an estimation of the strength
-    # TODO: add GIST KNN index, so we can pick a network closed to an elo (for matches or self-play)
-    log_gamma = FloatField(_("estimated rank value"))
-    log_gamma_uncertainty = FloatField(_("estimated rank uncertainty"))
+    log_gamma = FloatField(_("log gamma"),  null=True, blank=True)
+    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), null=True, blank=True)
+    log_gamma_upper_confidence = FloatField(_("maximal ranking"), null=True, blank=True, db_index=True)
 
     def __str__(self):
         return f"net-{self.id} ({self.elo}±{self.elo_uncertainty})"
@@ -65,3 +66,12 @@ class Network(Model):
     def ranking(self):
         return f"{self.elo} ±{2 * self.elo_uncertainty}"
 
+    def save(self, *args, **kwargs):
+        if not self.pk:  # only act on creation
+            # default the parent net to actual last net
+            if not self.parent_network:
+                # Insert parent network
+                self.parent_network = Network.objects.last()
+        if self.log_gamma and self.log_gamma_uncertainty:
+            self.log_gamma_upper_confidence = self.log_gamma + 2 * self.log_gamma_uncertainty
+        return super(Network, self).save(*args, **kwargs)

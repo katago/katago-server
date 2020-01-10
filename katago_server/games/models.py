@@ -31,12 +31,13 @@ class AbstractGame(Model):
     """
     class Meta:
         abstract = True
+        ordering = 'id'
 
     class GamesResult(TextChoices):
         WHITE = 'W', _("White")
         BLACK = 'B', _("Black")
         DRAW = '0', _("Draw (Jigo)")
-        MOSHOUBOU = '-', _("No Result (Moshoubou)")  # https://senseis.xmp.net/?NoResult
+        NO_RESULT = '-', _("No Result (Moshoubou)")  # https://senseis.xmp.net/?NoResult
 
     # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
@@ -77,10 +78,10 @@ class AbstractGame(Model):
 
 
 class TrainingGame(AbstractGame):
-    unpacked_file = FileField(_("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,))
-
     class Meta:
         verbose_name = _("Training Game")
+
+    unpacked_file = FileField(_("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,))
 
 
 class RankingEstimationGame(AbstractGame):
