@@ -93,4 +93,4 @@ class DistributedTaskViewSet(viewsets.ViewSet):
     @staticmethod
     def _select_top_network():
         # TODO: maybe add a more complex strategy, where a good, but not best network has some chance to get selfplays
-        return Network.objects.order_by("-ranking_value").first()
+        return Network.objects.order_by("-log_gamma_upper_confidence").first()

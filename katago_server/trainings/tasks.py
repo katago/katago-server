@@ -1,9 +1,9 @@
 import logging
-from math import exp, log
+from math import exp, log, log10, e
 
+import numpy
 import pandas
-from celery.schedules import crontab
-from celery.signals import worker_ready
+
 from django.db.models import Q, Count
 from django_pandas.io import read_frame
 
@@ -14,21 +14,6 @@ from katago_server.trainings.models import Network
 logger = logging.getLogger(__name__)
 
 ITERATION_NB = 50
-
-
-@worker_ready.connect
-def on_worker_ready(sender=None, conf=None, **kwargs):
-    logger.info("Server started")
-    update_bayesian_ranking.delay()
-
-
-@celery_app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    # Executes every Monday morning at 7:30 a.m.
-    sender.add_periodic_task(
-        crontab(min=15),
-        update_bayesian_ranking.s(),
-    )
 
 
 def _print_full_data_frame(x):
@@ -211,12 +196,14 @@ def _bulk_update_networks(all_networks: pandas.DataFrame):
     for network_db in networks_db:
         network_db.log_gamma = all_networks.loc[network_db.id, 'log_gamma']
         network_db.log_gamma_uncertainty = all_networks.loc[network_db.id, 'log_gamma_uncertainty']
+        network_db.log_gamma_upper_confidence = all_networks.loc[network_db.id, 'log_gamma_upper_confidence']
+        network_db.log_gamma_upper_confidence = all_networks.loc[network_db.id, 'log_gamma_lower_confidence']
 
-    Network.objects.bulk_update(networks_db, ['log_gamma', 'log_gamma_uncertainty'])
+    Network.objects.bulk_update(networks_db, ['log_gamma', 'log_gamma_uncertainty', 'log_gamma_upper_confidence', 'log_gamma_lower_confidence'])
 
 
-@celery_app.task(bind=True)
-def update_bayesian_ranking(self):
+@celery_app.task()
+def update_bayesian_ranking():
     all_networks = _get_all_networks_data_frame()
     anchor_network_id = all_networks.head().index[0]
 
@@ -247,4 +234,6 @@ def update_bayesian_ranking(self):
     all_networks.loc[anchor_network_id, 'log_gamma_uncertainty'] = 0.
 
     # perform the update in DB
+    all_networks['log_gamma_upper_confidence'] = numpy.round((all_networks['log_gamma'] + 2 * all_networks['log_gamma_uncertainty']) * 400 * log10(e), decimals=2)
+    all_networks['log_gamma_lower_confidence'] = numpy.round((all_networks['log_gamma'] - 2 * all_networks['log_gamma_uncertainty']) * 400 * log10(e), decimals=2)
     _bulk_update_networks(all_networks)

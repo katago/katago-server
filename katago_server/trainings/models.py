@@ -45,10 +45,11 @@ class Network(Model):
     # And an estimation of the strength
     log_gamma = FloatField(_("log gamma"),  null=True, blank=True)
     log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), null=True, blank=True)
-    log_gamma_upper_confidence = FloatField(_("maximal ranking"), null=True, blank=True, db_index=True)
+    log_gamma_lower_confidence = FloatField(_("minimal ranking"), null=True, blank=True, db_index=True)  # used to select best sure network for training games (selfplay)
+    log_gamma_upper_confidence = FloatField(_("maximal ranking"), null=True, blank=True, db_index=True)  # used to select best unsure network for ranking games (matches)
 
     def __str__(self):
-        return f"net-{self.id} ({self.elo}±{self.elo_uncertainty})"
+        return f"net-{self.id} ({self.elo}±{ 2 * self.elo_uncertainty})"
 
     @property
     def size(self):
@@ -72,6 +73,4 @@ class Network(Model):
             if not self.parent_network:
                 # Insert parent network
                 self.parent_network = Network.objects.last()
-        if self.log_gamma and self.log_gamma_uncertainty:
-            self.log_gamma_upper_confidence = self.log_gamma + 2 * self.log_gamma_uncertainty
         return super(Network, self).save(*args, **kwargs)
