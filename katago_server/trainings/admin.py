@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from solo.admin import SingletonModelAdmin
 
-from katago_server.trainings.models import Network
+from katago_server.trainings.models import Network, RankingGameGeneratorConfiguration
 
 
 @admin.register(Network)
@@ -24,3 +25,6 @@ class NetworkAdmin(admin.ModelAdmin):
             'fields': (('nb_blocks', 'nb_channels'), 'model_architecture_details')
         }),
     )
+
+
+admin.site.register(RankingGameGeneratorConfiguration, SingletonModelAdmin)

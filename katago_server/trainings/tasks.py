@@ -9,11 +9,9 @@ from django_pandas.io import read_frame
 
 from config import celery_app
 from katago_server.games.models import RankingEstimationGame
-from katago_server.trainings.models import Network
+from katago_server.trainings.models import Network, RankingGameGeneratorConfiguration
 
 logger = logging.getLogger(__name__)
-
-ITERATION_NB = 50
 
 
 def _print_full_data_frame(x):
@@ -216,7 +214,7 @@ def update_bayesian_ranking():
     all_networks_actual_wins = _calculate_all_networks_actual_wins(tournament_result)
     tournament_nb_games = tournament_result.drop(columns=["win", "draw", "loss"])
 
-    for iteration_index in range(ITERATION_NB):
+    for iteration_index in range(RankingGameGeneratorConfiguration.get_solo().number_of_iterations):
         for network in all_networks.itertuples():
             network_id = network[0]
             network_expected_wins = _calculate_one_network_expected_wins(network, all_networks, tournament_nb_games)

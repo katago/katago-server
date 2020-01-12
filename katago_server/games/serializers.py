@@ -1,4 +1,6 @@
 import uuid as uuid
+
+from rest_framework.fields import FileField
 from rest_framework.serializers import HyperlinkedModelSerializer, HiddenField, CurrentUserDefault, HyperlinkedRelatedField
 
 from katago_server.games.models import RankingEstimationGame, TrainingGame

@@ -1,8 +1,5 @@
 from django.contrib import admin
-from django.db.models import DurationField
 from django.utils.translation import gettext_lazy as _
-
-from durationwidget.widgets import TimeDurationWidget
 
 from katago_server.games.models import TrainingGame, RankingEstimationGame
 
@@ -13,9 +10,6 @@ class TrainingGameAdmin(admin.ModelAdmin):
     list_filter = ("created_at", "handicap", "komi")
     list_display = ('uuid', 'created_at', 'komi', 'handicap', 'result_text', 'submitted_by', 'white_network', 'black_network')
     readonly_fields = ("id", "created_at", "uuid")
-    formfield_overrides = {
-        DurationField: {'widget': TimeDurationWidget()}
-    }
     ordering = ("pk",)
     fieldsets = (
         (None, {
@@ -31,7 +25,7 @@ class TrainingGameAdmin(admin.ModelAdmin):
             'fields': (('white_network', 'black_network'),)
         }),
         (_("Distributed effort"), {
-            'fields': ('submitted_by', 'duration')
+            'fields': ('submitted_by', 'playouts_per_sec')
         }),
         (_("Download"), {
             'fields': ('sgf_file',)
