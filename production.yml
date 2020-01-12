@@ -17,6 +17,8 @@ services:
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
+    volumes:
+      - ./training_data:/training_data
     command: /start
 
   postgres:
@@ -63,4 +65,4 @@ services:
       - "5555:5555"
     command: /start-flower
 
-  
+

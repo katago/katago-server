@@ -79,6 +79,7 @@ LOCAL_APPS = [
     "katago_server.games.apps.GamesConfig",
     "katago_server.trainings.apps.TrainingsConfig",
     "katago_server.distributed_efforts.apps.DistributedEffortsConfig",
+    "katago_server.fake_data.apps.FakeDataConfig",  # TODO: remove me
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

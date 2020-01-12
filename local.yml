@@ -15,6 +15,7 @@ services:
       - mailhog
     volumes:
       - .:/app
+      - ./training_data:/training_data
     env_file:
       - ./.envs/.local/.django
       - ./.envs/.local/.postgres
