@@ -5,12 +5,13 @@ from math import log10, e
 from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, IntegerField, FileField, DateTimeField, UUIDField, FloatField, ForeignKey, PROTECT
 from django.utils.translation import gettext_lazy as _
+from solo.models import SingletonModel
 
 from katago_server.contrib.validators import FileValidator
 
 
 def upload_network_to(instance, filename):
-    return os.path.join("network", f"{instance.uuid}.gz")
+    return os.path.join("networks", f"{instance.uuid}.gz")
 
 
 validate_zip = FileValidator(max_size=1024*1024*300, content_types=("application/zip",))
@@ -34,7 +35,7 @@ class Network(Model):
         verbose_name = _("Network")
         verbose_name_plural = _("Networks")
 
-    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4)
+    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4, db_index=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
     parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)
     # Some description of the network itself
@@ -43,10 +44,10 @@ class Network(Model):
     model_architecture_details = JSONField(_("network architecture schema"),  null=True, blank=True, default=dict)
     model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,))
     # And an estimation of the strength
-    log_gamma = FloatField(_("log gamma"),  null=True, blank=True)
-    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), null=True, blank=True)
-    log_gamma_lower_confidence = FloatField(_("minimal ranking"), null=True, blank=True, db_index=True)  # used to select best sure network for training games (selfplay)
-    log_gamma_upper_confidence = FloatField(_("maximal ranking"), null=True, blank=True, db_index=True)  # used to select best unsure network for ranking games (matches)
+    log_gamma = FloatField(_("log gamma"), default=0)
+    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0)
+    log_gamma_lower_confidence = FloatField(_("minimal ranking"), default=0)  # used to select best sure network for training games (selfplay)
+    log_gamma_upper_confidence = FloatField(_("maximal ranking"), default=0)  # used to select best unsure network for ranking games (matches)
 
     def __str__(self):
         return f"net-{self.id} ({self.elo}±{ 2 * self.elo_uncertainty})"
@@ -74,3 +75,13 @@ class Network(Model):
                 # Insert parent network
                 self.parent_network = Network.objects.last()
         return super(Network, self).save(*args, **kwargs)
+
+
+class RankingGameGeneratorConfiguration(SingletonModel):
+    def __str__(self):
+        return "Configuration: Parameters for updating the ranking"
+
+    class Meta:
+        verbose_name = "Configuration: Parameters for updating the ranking"
+
+    number_of_iterations = IntegerField(_("number of iterations"), help_text=_("updating log_gamma is iterative"), default=25)

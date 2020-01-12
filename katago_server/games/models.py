@@ -2,8 +2,9 @@ import os
 
 import uuid as uuid
 from django.contrib.postgres.fields import JSONField
+from django.core.files.storage import FileSystemStorage
 from django.db.models import Model, CharField, DecimalField, IntegerField, FileField, BooleanField, DateTimeField, \
-    ForeignKey, PROTECT, BigAutoField, UUIDField, DurationField, TextChoices
+    ForeignKey, PROTECT, BigAutoField, UUIDField, TextChoices, FloatField
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
@@ -15,10 +16,6 @@ __ALL__ = ["TrainingGame", "RankingEstimationGame"]
 
 def upload_sgf_to(instance, _filename):
     return os.path.join("games", f"{instance.uuid}.sgf")
-
-
-def upload_unpacked_training_to(instance, _filename):
-    return os.path.join("trainings", f"{instance.uuid}.npz")
 
 
 validate_gzip = FileValidator(max_size=1024*1024*300, content_types=("application/zip",))
@@ -41,11 +38,11 @@ class AbstractGame(Model):
 
     # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
-    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4)
+    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4, db_index=True)
     # A game is submitted by an user
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
     submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name='%(class)s_games')
-    duration = DurationField(_("game duration"))
+    playouts_per_sec = FloatField(_("playout per second"), null=True)
     # Describe the board/game itself
     board_size_x = IntegerField(_("board absciss"), null=False, default=19)
     board_size_y = IntegerField(_("board ordinate"), null=False, default=19)
@@ -56,7 +53,7 @@ class AbstractGame(Model):
     # eg: komi compensated games, uncompensated games, asymmetric playout games, seki-training games
     game_extra_params = JSONField(_("extra game parameters regarding game, like number of playout"), help_text=_("Some parameters (like the playout) are randomized by katago engine"), default=dict, null=True, blank=True)
     # The results
-    result = CharField(_("game result"), max_length=15, choices=GamesResult.choices, null=False)
+    result = CharField(_("game result"), max_length=15, choices=GamesResult.choices)
     score = DecimalField(_("game score"), max_digits=4, decimal_places=1, null=True, blank=True)
     has_resigned = BooleanField(_("game end up with resign"), default=False)
     # The networks related to this game
@@ -77,13 +74,20 @@ class AbstractGame(Model):
         return f"{self.uuid} ({self.result_text})"
 
 
-class TrainingGame(AbstractGame):
-    class Meta:
-        verbose_name = _("Training Game")
-
-    unpacked_file = FileField(_("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,))
-
-
 class RankingEstimationGame(AbstractGame):
     class Meta:
-        verbose_name = _("Ranking Estimation Game")
+        verbose_name = _("Game: Ranking Estimation")
+
+
+training_data_storage = FileSystemStorage(location='/training_data')
+
+
+def upload_unpacked_training_to(instance, _filename):
+    return f"{instance.uuid}.npz"
+
+
+class TrainingGame(AbstractGame):
+    class Meta:
+        verbose_name = _("Game: Training")
+
+    unpacked_file = FileField(_("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,), storage=training_data_storage)

@@ -3,6 +3,9 @@
 .credentials/*
 !.credentials/.gitkeep
 
+training_data/*
+!training_data/.gitkeep
+
 
 ### Python template
 # Byte-compiled / optimized / DLL files

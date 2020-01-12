@@ -2,8 +2,8 @@ import os
 
 import uuid as uuid
 from django.contrib.postgres.fields import JSONField
-from django.db.models import Model, CharField, DecimalField, IntegerField, FileField, BooleanField, DateTimeField, \
-    ForeignKey, PROTECT, BigAutoField, UUIDField, TextChoices, TextField
+from django.db.models import Model, CharField, FileField, DateTimeField, \
+    ForeignKey, PROTECT, BigAutoField, UUIDField, TextChoices, TextField, FloatField
 from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
@@ -35,7 +35,7 @@ class DistributedTask(Model):
 
     # We expect a large number of "DistributedTasks" so lets use BigInt
     id = BigAutoField(primary_key=True)
-    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4)
+    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4, db_index=True)
     status = CharField(_("task status"), max_length=15, choices=Status.choices, null=False, default=Status.UNASSIGNED)
     # a predefined task  get attributed to an user with some expiration
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
@@ -54,20 +54,38 @@ class DistributedTask(Model):
 
 
 class RankingEstimationGameDistributedTask(DistributedTask):
+    class Meta:
+        verbose_name = "Task: Ranking estimation game"
+
     # The result of a "DONE" RankingGameDistributedTask is a Game
     resulting_game = ForeignKey(RankingEstimationGame, verbose_name=_("resulting ranking game"), on_delete=PROTECT, null=True, blank=True)
 
 
 class TrainingGameDistributedTask(DistributedTask):
+    class Meta:
+        verbose_name = "Task: Training game"
+
     # The result of a "DONE" RankingGameDistributedTask is a Game
     resulting_game = ForeignKey(TrainingGame, verbose_name=_("resulting training game"), on_delete=PROTECT, null=True, blank=True)
 
 
 class DynamicDistributedTaskConfiguration(SingletonModel):
     def __str__(self):
-        return "Katago Configuration"
+        return "Configuration: Katago config"
 
     class Meta:
-        verbose_name = "Katago Configuration"
+        verbose_name = "Configuration: Katago config"
 
-    katago_config = TextField()
+    katago_config = TextField(_("katago config"), help_text=_("The configuration file for katago to be given to client for selfplay"), default="FILL ME")
+
+
+class RankingGameGeneratorConfiguration(SingletonModel):
+    def __str__(self):
+        return "Configuration: Parameters to schedule ranking matches"
+
+    class Meta:
+        verbose_name = "Configuration: Parameters to schedule ranking matches"
+
+    probability_high_elo = FloatField(_("ranking game probability of being high elo game"), help_text=_("Ranking (matches) games are high_elo game or big uncertainty game"), default=0.4)
+    ratio = FloatField(_("ranking game ration"), help_text=_("eg 0.1 means that for 10 of training games, there will be 1 match game"), default=0.1)
+

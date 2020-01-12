@@ -31,7 +31,7 @@ router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"networks", NetworkViewSet)
 router.register(r"games/training", TrainingEstimationViewSet)
-router.register(r"games/rankingEstimation", RankingEstimationViewSet)
+router.register(r"games/ranking_estimation", RankingEstimationViewSet)
 router.register(r"tasks", DistributedTaskViewSet, basename="Task")
 
 # API
