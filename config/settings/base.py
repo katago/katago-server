@@ -71,7 +71,6 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "django_celery_beat",
     "solo",
-    "durationwidget",
 ]
 
 LOCAL_APPS = [
