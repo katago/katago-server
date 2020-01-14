@@ -30,13 +30,11 @@ def _print_full_data_frame(x):
 
 def _get_all_networks_data_frame():
     all_networks_qs = Network.objects.all()
-    all_networks = read_frame(all_networks_qs, fieldnames=["id", "parent_network_id", "log_gamma", "log_gamma_uncertainty"])
+    all_networks = read_frame(all_networks_qs, fieldnames=["id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty"])
 
-    # Legacy, default network parent to previous net
-    all_networks: pandas.DataFrame = all_networks.where(pandas.notna(all_networks), all_networks.id - 1, axis=0)
     all_networks = all_networks.set_index("id")
     all_networks = all_networks.sort_index()
-    all_networks.iat[0, 0] = None
+    all_networks = all_networks.fillna(-1)
 
     return all_networks
 
@@ -88,20 +86,19 @@ def _add_bayesian_prior(all_networks: pandas.DataFrame, tournament_result: panda
     """
     virtual_draw_dict = []
     for index, network in all_networks.iterrows():
-        if network.parent_network_id is None:
-            continue
-        draw1 = {
-            "reference_network": index,
-            "opponent_network": network.parent_network_id,
-            "virtual_draw_count": 1
-        }
-        draw2 = {
-            "reference_network": network.parent_network_id,
-            "opponent_network": index,
-            "virtual_draw_count": 1
-        }
-        virtual_draw_dict.append(draw1)
-        virtual_draw_dict.append(draw2)
+        if network.parent_network__pk > 0:
+            draw1 = {
+                "reference_network": index,
+                "opponent_network": network.parent_network__pk,
+                "virtual_draw_count": 1
+            }
+            draw2 = {
+                "reference_network": network.parent_network__pk,
+                "opponent_network": index,
+                "virtual_draw_count": 1
+            }
+            virtual_draw_dict.append(draw1)
+            virtual_draw_dict.append(draw2)
     virtual_draw = pandas.DataFrame(virtual_draw_dict)
 
     tournament_result = pandas.merge(tournament_result, virtual_draw, how='outer', on=['reference_network', 'opponent_network'])
@@ -195,7 +192,7 @@ def _bulk_update_networks(all_networks: pandas.DataFrame):
         network_db.log_gamma = all_networks.loc[network_db.id, 'log_gamma']
         network_db.log_gamma_uncertainty = all_networks.loc[network_db.id, 'log_gamma_uncertainty']
         network_db.log_gamma_upper_confidence = all_networks.loc[network_db.id, 'log_gamma_upper_confidence']
-        network_db.log_gamma_upper_confidence = all_networks.loc[network_db.id, 'log_gamma_lower_confidence']
+        network_db.log_gamma_lower_confidence = all_networks.loc[network_db.id, 'log_gamma_lower_confidence']
 
     Network.objects.bulk_update(networks_db, ['log_gamma', 'log_gamma_uncertainty', 'log_gamma_upper_confidence', 'log_gamma_lower_confidence'])
 
@@ -209,7 +206,7 @@ def update_bayesian_ranking():
     tournament_result = _add_bayesian_prior(all_networks, tournament_result)
     tournament_result = _simplify_network_tournament_result(tournament_result)
 
-    all_networks = all_networks.drop(columns=["parent_network_id"]).sort_values("log_gamma_uncertainty", ascending=False)
+    all_networks = all_networks.drop(columns=["parent_network__pk"]).sort_values("log_gamma_uncertainty", ascending=False)
 
     all_networks_actual_wins = _calculate_all_networks_actual_wins(tournament_result)
     tournament_nb_games = tournament_result.drop(columns=["win", "draw", "loss"])

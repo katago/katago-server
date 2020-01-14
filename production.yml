@@ -47,6 +47,11 @@ services:
 
   redis:
     image: redis:5.0
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
 
   celeryworker:
     <<: *django

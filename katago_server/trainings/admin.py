@@ -7,9 +7,9 @@ from katago_server.trainings.models import Network, RankingGameGeneratorConfigur
 
 @admin.register(Network)
 class NetworkAdmin(admin.ModelAdmin):
-    list_display = ("id", "uuid", "created_at", "size", "log_gamma_upper_confidence", "ranking")
+    list_display = ("id", "uuid", "created_at", "size", "log_gamma_upper_confidence", "log_gamma_lower_confidence", "ranking")
     list_filter = ("created_at", "nb_blocks", "nb_channels")
-    readonly_fields = ("id", "created_at", "uuid", "log_gamma_upper_confidence")
+    readonly_fields = ("id", "created_at", "uuid", "log_gamma_upper_confidence", "log_gamma_lower_confidence")
     ordering = ("log_gamma_upper_confidence",)
     fieldsets = (
         (None, {
