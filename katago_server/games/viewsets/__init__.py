@@ -1,0 +1,2 @@
+from .ranking_estimation_game import RankingEstimationGameViewSet
+from .training_game import TrainingGameViewSet
