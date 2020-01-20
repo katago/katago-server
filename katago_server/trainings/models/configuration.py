@@ -1,4 +1,3 @@
-
 from django.db.models import IntegerField
 from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel

@@ -12,39 +12,51 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='RankingGameGeneratorConfiguration',
+            name="RankingGameGeneratorConfiguration",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number_of_iterations', models.IntegerField(default=25, help_text='updating log_gamma is iterative', verbose_name='number of iterations')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "number_of_iterations",
+                    models.IntegerField(default=25, help_text="updating log_gamma is iterative", verbose_name="number of iterations"),
+                ),
             ],
-            options={
-                'verbose_name': 'Configuration: Parameters for updating the ranking',
-            },
+            options={"verbose_name": "Configuration: Parameters for updating the ranking",},
         ),
         migrations.CreateModel(
-            name='Network',
+            name="Network",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, verbose_name='unique identifier')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='creation date')),
-                ('nb_blocks', models.IntegerField(verbose_name='number of blocks in network')),
-                ('nb_channels', models.IntegerField(verbose_name='number of channels in network')),
-                ('model_architecture_details', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, null=True, verbose_name='network architecture schema')),
-                ('model_file', models.FileField(upload_to=katago_server.trainings.models.upload_network_to, validators=[katago_server.contrib.validators.FileValidator(content_types=('application/zip',), max_size=314572800)], verbose_name='network Archive url')),
-                ('log_gamma', models.FloatField(default=0, verbose_name='log gamma')),
-                ('log_gamma_uncertainty', models.FloatField(default=0, verbose_name='log gamma uncertainty')),
-                ('log_gamma_lower_confidence', models.FloatField(default=0, verbose_name='minimal ranking')),
-                ('log_gamma_upper_confidence', models.FloatField(default=0, verbose_name='maximal ranking')),
-                ('parent_network', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='variants', to='trainings.Network')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("uuid", models.UUIDField(db_index=True, default=uuid.uuid4, verbose_name="unique identifier")),
+                ("created_at", models.DateTimeField(auto_now_add=True, verbose_name="creation date")),
+                ("nb_blocks", models.IntegerField(verbose_name="number of blocks in network")),
+                ("nb_channels", models.IntegerField(verbose_name="number of channels in network")),
+                (
+                    "model_architecture_details",
+                    django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, null=True, verbose_name="network architecture schema"),
+                ),
+                (
+                    "model_file",
+                    models.FileField(
+                        upload_to=katago_server.trainings.models.upload_network_to,
+                        validators=[katago_server.contrib.validators.FileValidator(content_types=("application/zip",), max_size=314572800)],
+                        verbose_name="network Archive url",
+                    ),
+                ),
+                ("log_gamma", models.FloatField(default=0, verbose_name="log gamma")),
+                ("log_gamma_uncertainty", models.FloatField(default=0, verbose_name="log gamma uncertainty")),
+                ("log_gamma_lower_confidence", models.FloatField(default=0, verbose_name="minimal ranking")),
+                ("log_gamma_upper_confidence", models.FloatField(default=0, verbose_name="maximal ranking")),
+                (
+                    "parent_network",
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name="variants", to="trainings.Network"
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Network',
-                'verbose_name_plural': 'Networks',
-            },
+            options={"verbose_name": "Network", "verbose_name_plural": "Networks",},
         ),
     ]

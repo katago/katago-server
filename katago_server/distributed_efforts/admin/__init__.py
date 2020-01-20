@@ -5,7 +5,10 @@ from katago_server.distributed_efforts.admin.game_distributed_task_admin import 
 
 from katago_server.distributed_efforts.models.distributed_task.training_game_distributed_task import TrainingGameDistributedTask
 from katago_server.distributed_efforts.models.distributed_task.ranking_estimation_game_distributed_task import RankingEstimationGameDistributedTask
-from katago_server.distributed_efforts.models.configuration import DynamicDistributedTaskConfiguration, RankingGameDistributedTaskGeneratorConfiguration
+from katago_server.distributed_efforts.models.configuration import (
+    DynamicDistributedTaskConfiguration,
+    RankingGameDistributedTaskGeneratorConfiguration,
+)
 
 
 # Register the model
@@ -14,5 +17,3 @@ admin.site.register(TrainingGameDistributedTask, GameDistributedTaskAdmin)
 # And the configuration
 admin.site.register(DynamicDistributedTaskConfiguration, SingletonModelAdmin)
 admin.site.register(RankingGameDistributedTaskGeneratorConfiguration, SingletonModelAdmin)
-
-

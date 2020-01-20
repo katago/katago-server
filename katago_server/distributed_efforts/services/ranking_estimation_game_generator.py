@@ -67,9 +67,9 @@ class RankingEstimationGameGeneratorService:
         log_gamma_lower_bound = ref_net_log_gamma - log_gamma_search_range
         log_gamma_upper_bound = ref_net_log_gamma + log_gamma_search_range
 
-        nearby_networks = Network.objects.exclude(pk=reference_network.pk)\
-            .filter(log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound)\
-            .all()
+        nearby_networks = (
+            Network.objects.exclude(pk=reference_network.pk).filter(log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound).all()
+        )
         if len(nearby_networks) < 5:
             nearby_networks_a = Network.objects.filter(pk__lt=reference_network.pk).all()[:20]
             nearby_networks_b = Network.objects.filter(pk__gt=reference_network.pk).all()[:20]

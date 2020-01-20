@@ -15,7 +15,7 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = TrainingGame
-        fields = '__all__'
+        fields = "__all__"
 
 
 # Use as read only serializer
@@ -26,4 +26,4 @@ class TrainingGameListSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = TrainingGame
-        fields = '__all__'
+        fields = "__all__"

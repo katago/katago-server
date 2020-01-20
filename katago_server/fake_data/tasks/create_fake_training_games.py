@@ -12,13 +12,38 @@ def create_fake_training_games():
 
     submitter = User.objects.first()
     games = [
-        TrainingGame(submitted_by=submitter, black_network=best_network, white_network=best_network, result=TrainingGame.GamesResult.DRAW, sgf_file="https://google.fr", unpacked_file="https://google.fr")
+        TrainingGame(
+            submitted_by=submitter,
+            black_network=best_network,
+            white_network=best_network,
+            result=TrainingGame.GamesResult.DRAW,
+            sgf_file="https://google.fr",
+            unpacked_file="https://google.fr",
+        )
     ]
 
     if random.random() < 0.2:
-        games.append(TrainingGame(submitted_by=submitter, black_network=best_network, white_network=best_network, result=TrainingGame.GamesResult.DRAW, sgf_file="https://google.fr", unpacked_file="https://google.fr"))
+        games.append(
+            TrainingGame(
+                submitted_by=submitter,
+                black_network=best_network,
+                white_network=best_network,
+                result=TrainingGame.GamesResult.DRAW,
+                sgf_file="https://google.fr",
+                unpacked_file="https://google.fr",
+            )
+        )
 
     if random.random() < 0.1:
-        games.append(TrainingGame(submitted_by=submitter, black_network=best_network, white_network=best_network, result=TrainingGame.GamesResult.DRAW, sgf_file="https://google.fr", unpacked_file="https://google.fr"))
+        games.append(
+            TrainingGame(
+                submitted_by=submitter,
+                black_network=best_network,
+                white_network=best_network,
+                result=TrainingGame.GamesResult.DRAW,
+                sgf_file="https://google.fr",
+                unpacked_file="https://google.fr",
+            )
+        )
 
     TrainingGame.objects.bulk_create(games)

@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 
 from katago_server.trainings.services.pandas_utils import PandasUtilsService
+
 pandas_utils = PandasUtilsService()
 
 logger = logging.getLogger(__name__)
@@ -88,22 +89,14 @@ class BayesianRankingService:
             # Everything blows up if for some reason (eg first network, or deleted network)
             # the parent_network_id does not reference an actual network, so let's check that
             if parent_network_id in network_ids:
-                draw1 = {
-                    "reference_network": network_id,
-                    "opponent_network": parent_network_id,
-                    "total_bayesian_virtual_draws": 1
-                }
-                draw2 = {
-                    "reference_network": parent_network_id,
-                    "opponent_network": network_id,
-                    "total_bayesian_virtual_draws": 1
-                }
+                draw1 = {"reference_network": network_id, "opponent_network": parent_network_id, "total_bayesian_virtual_draws": 1}
+                draw2 = {"reference_network": parent_network_id, "opponent_network": network_id, "total_bayesian_virtual_draws": 1}
                 virtual_draws_src.append(draw1)
                 virtual_draws_src.append(draw2)
 
         virtual_draw = pd.DataFrame(virtual_draws_src)
 
-        tournament_results = pd.merge(self._detailed_tournament_results, virtual_draw, how='outer', on=['reference_network', 'opponent_network'])
+        tournament_results = pd.merge(self._detailed_tournament_results, virtual_draw, how="outer", on=["reference_network", "opponent_network"])
         # panda_utils.print_data_frame(tournament_results)
         tournament_results.fillna(0, inplace=True)
         self._detailed_tournament_results = tournament_results
@@ -115,27 +108,27 @@ class BayesianRankingService:
         """
         tournament_results = pd.DataFrame()
 
-        tournament_results['reference_network'] = self._detailed_tournament_results['reference_network']
-        tournament_results['opponent_network'] = self._detailed_tournament_results['opponent_network']
+        tournament_results["reference_network"] = self._detailed_tournament_results["reference_network"]
+        tournament_results["opponent_network"] = self._detailed_tournament_results["opponent_network"]
 
         # First compute the total number of games, without forgetting bayesian prior draws
-        tournament_results['nb_games'] = 0
-        tournament_results['nb_games'] += self._detailed_tournament_results['total_games_white']
-        tournament_results['nb_games'] += self._detailed_tournament_results['total_games_black']
-        tournament_results['nb_games'] += self._detailed_tournament_results['total_bayesian_virtual_draws']
+        tournament_results["nb_games"] = 0
+        tournament_results["nb_games"] += self._detailed_tournament_results["total_games_white"]
+        tournament_results["nb_games"] += self._detailed_tournament_results["total_games_black"]
+        tournament_results["nb_games"] += self._detailed_tournament_results["total_bayesian_virtual_draws"]
 
         # Then the wins
-        tournament_results['nb_wins'] = 0
-        tournament_results['nb_wins'] += self._detailed_tournament_results['total_wins_white']
-        tournament_results['nb_wins'] += self._detailed_tournament_results['total_wins_black']
+        tournament_results["nb_wins"] = 0
+        tournament_results["nb_wins"] += self._detailed_tournament_results["total_wins_white"]
+        tournament_results["nb_wins"] += self._detailed_tournament_results["total_wins_black"]
 
         # Then the draws (or no result), without forgetting bayesian prior draws
-        tournament_results['nb_draws'] = 0
-        tournament_results['nb_draws'] += self._detailed_tournament_results['total_draw_or_no_result']
-        tournament_results['nb_draws'] += self._detailed_tournament_results['total_bayesian_virtual_draws']
+        tournament_results["nb_draws"] = 0
+        tournament_results["nb_draws"] += self._detailed_tournament_results["total_draw_or_no_result"]
+        tournament_results["nb_draws"] += self._detailed_tournament_results["total_bayesian_virtual_draws"]
 
         # Finally, deduce the loss
-        tournament_results['nb_loss'] = tournament_results['nb_games'] - tournament_results['nb_wins'] - tournament_results['nb_draws']
+        tournament_results["nb_loss"] = tournament_results["nb_games"] - tournament_results["nb_wins"] - tournament_results["nb_draws"]
 
         # And save it for later usage
         self._simplified_tournament_results = tournament_results
@@ -151,8 +144,8 @@ class BayesianRankingService:
 
         networks_actual_score = pd.DataFrame(index=aggregated_tournament_results.index)
         networks_actual_score["actual_score"] = 0
-        networks_actual_score["actual_score"] += aggregated_tournament_results['nb_wins']
-        networks_actual_score["actual_score"] += 1 / 2 * aggregated_tournament_results['nb_draws']
+        networks_actual_score["actual_score"] += aggregated_tournament_results["nb_wins"]
+        networks_actual_score["actual_score"] += 1 / 2 * aggregated_tournament_results["nb_draws"]
 
         # panda_utils.print_data_frame(networks_actual_score)
 
@@ -173,7 +166,7 @@ class BayesianRankingService:
         log_gamma_diff = log(actual_score / expected_score)
         logger.debug("---> log_gamma_diff")
         logger.debug(log_gamma_diff)
-        self._network_rankings.loc[network_id, 'log_gamma'] += log_gamma_diff
+        self._network_rankings.loc[network_id, "log_gamma"] += log_gamma_diff
 
     def _calculate_specific_network_expected_score(self, network_id, network_log_gamma):
         """
@@ -193,27 +186,23 @@ class BayesianRankingService:
         for game in games_played.itertuples():
             opponent_network = game.opponent_network
             # pandas_utils.print_data_frame(self._network_rankings)
-            opponent_network_log_gamma = self._network_rankings.loc[opponent_network, 'log_gamma']
+            opponent_network_log_gamma = self._network_rankings.loc[opponent_network, "log_gamma"]
             # logger.debug("opp")
             # logger.debug(opponent_network_log_gamma)
             # logger.debug("ref")
             # logger.debug(network_log_gamma)
             log_gamma_diff = opponent_network_log_gamma - network_log_gamma
             win_probability = 1 / (1 + exp(log_gamma_diff))
-            win_probability_dict = {
-                "reference_network": network_id,
-                "opponent_network": opponent_network,
-                "win_probability": win_probability
-            }
+            win_probability_dict = {"reference_network": network_id, "opponent_network": opponent_network, "win_probability": win_probability}
             games_played_win_probability_src.append(win_probability_dict)
         games_played_win_probability = pd.DataFrame(games_played_win_probability_src)
 
-        games_played_data = pd.merge(games_played, games_played_win_probability, how='outer', on=['reference_network', 'opponent_network'])
+        games_played_data = pd.merge(games_played, games_played_win_probability, how="outer", on=["reference_network", "opponent_network"])
 
         games_played_expected_score = pd.DataFrame()
-        games_played_expected_score['expected_score'] = games_played_data['nb_games'] * games_played_data['win_probability']
+        games_played_expected_score["expected_score"] = games_played_data["nb_games"] * games_played_data["win_probability"]
 
-        return games_played_expected_score['expected_score'].sum()
+        return games_played_expected_score["expected_score"].sum()
 
     def _reset_anchor_log_gamma(self):
         """
@@ -221,11 +210,11 @@ class BayesianRankingService:
         So subtract the anchor player's log_gamma value from every player's log_gamma, including the anchor player's own log_gamma,
         so that the anchor player is back at log_gamma 0.
         """
-        self._network_rankings -= self._network_rankings.loc[self._network_anchor_id, 'log_gamma']
+        self._network_rankings -= self._network_rankings.loc[self._network_anchor_id, "log_gamma"]
 
     def _update_specific_network_log_gamma_uncertainty(self, network_id, network_log_gamma):
         precision = self._calculate_specific_network_precision(network_id, network_log_gamma)
-        self._network_rankings.loc[network_id, 'log_gamma_uncertainty'] = 1 / precision
+        self._network_rankings.loc[network_id, "log_gamma_uncertainty"] = 1 / precision
 
     def _calculate_specific_network_precision(self, network_id, network_log_gamma):
         """
@@ -240,23 +229,19 @@ class BayesianRankingService:
         games_played_precision_src = []
         for game in games_played.itertuples():
             opponent_network = game.opponent_network
-            opponent_network_log_gamma = self._network_rankings.loc[opponent_network, 'log_gamma']
+            opponent_network_log_gamma = self._network_rankings.loc[opponent_network, "log_gamma"]
             log_gamma_diff = opponent_network_log_gamma - network_log_gamma
-            precision = 1 / pow(exp(log_gamma_diff / 2) + exp(- log_gamma_diff / 2), 2)
-            precision_dict = {
-                "reference_network": network_id,
-                "opponent_network": opponent_network,
-                "precision": precision
-            }
+            precision = 1 / pow(exp(log_gamma_diff / 2) + exp(-log_gamma_diff / 2), 2)
+            precision_dict = {"reference_network": network_id, "opponent_network": opponent_network, "precision": precision}
             games_played_precision_src.append(precision_dict)
         games_played_precision = pd.DataFrame(games_played_precision_src)
 
-        games_played_data = pd.merge(games_played, games_played_precision, how='outer', on=['reference_network', 'opponent_network'])
+        games_played_data = pd.merge(games_played, games_played_precision, how="outer", on=["reference_network", "opponent_network"])
 
         games_played_cumulative_precision = pd.DataFrame()
-        games_played_cumulative_precision['cumulative_precision'] = games_played_data['nb_games'] * games_played_data['precision']
+        games_played_cumulative_precision["cumulative_precision"] = games_played_data["nb_games"] * games_played_data["precision"]
 
-        return games_played_cumulative_precision['cumulative_precision'].sum()
+        return games_played_cumulative_precision["cumulative_precision"].sum()
 
     def _reset_anchor_log_gamma_uncertainty(self):
-        self._network_rankings.loc[self._network_anchor_id, 'log_gamma_uncertainty'] = 0
+        self._network_rankings.loc[self._network_anchor_id, "log_gamma_uncertainty"] = 0

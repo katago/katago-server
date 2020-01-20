@@ -6,22 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('distributed_efforts', '0001_initial'),
+        ("distributed_efforts", "0001_initial"),
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='RankingGameGeneratorConfiguration',
-            new_name='RankingGameDistributedTaskGeneratorConfiguration',
+        migrations.RenameModel(old_name="RankingGameGeneratorConfiguration", new_name="RankingGameDistributedTaskGeneratorConfiguration",),
+        migrations.AddField(
+            model_name="dynamicdistributedtaskconfiguration",
+            name="probability_predefined_ranking_game",
+            field=models.FloatField(
+                default=0.5,
+                help_text="If random() < probability, it will play ranking game (if any), else will play either predefined game, or dynamic one",
+                verbose_name="probability of playing ranking game",
+            ),
         ),
         migrations.AddField(
-            model_name='dynamicdistributedtaskconfiguration',
-            name='probability_predefined_ranking_game',
-            field=models.FloatField(default=0.5, help_text='If random() < probability, it will play ranking game (if any), else will play either predefined game, or dynamic one', verbose_name='probability of playing ranking game'),
-        ),
-        migrations.AddField(
-            model_name='dynamicdistributedtaskconfiguration',
-            name='probability_predefined_training_game',
-            field=models.FloatField(default=0.8, help_text='If random() < probability, it will play predefined game (if any), else will play dynamic one', verbose_name='probability of playing predefined game'),
+            model_name="dynamicdistributedtaskconfiguration",
+            name="probability_predefined_training_game",
+            field=models.FloatField(
+                default=0.8,
+                help_text="If random() < probability, it will play predefined game (if any), else will play dynamic one",
+                verbose_name="probability of playing predefined game",
+            ),
         ),
     ]

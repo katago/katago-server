@@ -7,9 +7,7 @@ User = get_user_model()
 
 class UserCreationForm(forms.UserCreationForm):
 
-    error_message = forms.UserCreationForm.error_messages.update(
-        {"duplicate_username": _("This username has already been taken.")}
-    )
+    error_message = forms.UserCreationForm.error_messages.update({"duplicate_username": _("This username has already been taken.")})
 
     class Meta(forms.UserCreationForm.Meta):
         model = User

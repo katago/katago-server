@@ -14,71 +14,198 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('trainings', '0001_initial'),
+        ("trainings", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('games', '0001_initial'),
+        ("games", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DynamicDistributedTaskConfiguration',
+            name="DynamicDistributedTaskConfiguration",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('katago_config', models.TextField(default='FILL ME', help_text='The configuration file for katago to be given to client for selfplay', verbose_name='katago config')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "katago_config",
+                    models.TextField(
+                        default="FILL ME",
+                        help_text="The configuration file for katago to be given to client for selfplay",
+                        verbose_name="katago config",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Configuration: Katago config',
-            },
+            options={"verbose_name": "Configuration: Katago config",},
         ),
         migrations.CreateModel(
-            name='RankingGameGeneratorConfiguration',
+            name="RankingGameGeneratorConfiguration",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('probability_high_elo', models.FloatField(default=0.4, help_text='Ranking (matches) games are high_elo game or big uncertainty game', verbose_name='ranking game probability of being high elo game')),
-                ('ratio', models.FloatField(default=0.1, help_text='eg 0.1 means that for 10 of training games, there will be 1 match game', verbose_name='ranking game ration')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "probability_high_elo",
+                    models.FloatField(
+                        default=0.4,
+                        help_text="Ranking (matches) games are high_elo game or big uncertainty game",
+                        verbose_name="ranking game probability of being high elo game",
+                    ),
+                ),
+                (
+                    "ratio",
+                    models.FloatField(
+                        default=0.1,
+                        help_text="eg 0.1 means that for 10 of training games, there will be 1 match game",
+                        verbose_name="ranking game ration",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Configuration: Parameters to schedule ranking matches',
-            },
+            options={"verbose_name": "Configuration: Parameters to schedule ranking matches",},
         ),
         migrations.CreateModel(
-            name='TrainingGameDistributedTask',
+            name="TrainingGameDistributedTask",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, verbose_name='unique identifier')),
-                ('status', models.CharField(choices=[('UNASSIGNED', 'Unassigned'), ('ONGOING', 'Ongoing'), ('DONE', 'Done'), ('CANCELED', 'Canceled')], default='UNASSIGNED', max_length=15, verbose_name='task status')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='creation date')),
-                ('assigned_at', models.DateTimeField(auto_now=True, null=True, verbose_name='assignation date')),
-                ('expire_at', models.DateTimeField(blank=True, null=True, verbose_name='expiration date')),
-                ('initial_position_sgf_file', models.FileField(blank=True, null=True, upload_to=katago_server.distributed_efforts.models.upload_initial_to, validators=[katago_server.contrib.validators.FileValidator(magic_types=('Smart Game Format (Go)',), max_size=10485760)], verbose_name='initial position, as sgf file')),
-                ('initial_position_extra_params', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, null=True, verbose_name='initial position extra parameters')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='traininggamedistributedtask_games', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
-                ('black_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='traininggamedistributedtask_predefined_jobs_as_black', to='trainings.Network', verbose_name='network black')),
-                ('resulting_game', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='games.TrainingGame', verbose_name='resulting training game')),
-                ('white_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='traininggamedistributedtask_predefined_jobs_as_white', to='trainings.Network', verbose_name='network white')),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("uuid", models.UUIDField(db_index=True, default=uuid.uuid4, verbose_name="unique identifier")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("UNASSIGNED", "Unassigned"), ("ONGOING", "Ongoing"), ("DONE", "Done"), ("CANCELED", "Canceled")],
+                        default="UNASSIGNED",
+                        max_length=15,
+                        verbose_name="task status",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, verbose_name="creation date")),
+                ("assigned_at", models.DateTimeField(auto_now=True, null=True, verbose_name="assignation date")),
+                ("expire_at", models.DateTimeField(blank=True, null=True, verbose_name="expiration date")),
+                (
+                    "initial_position_sgf_file",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        upload_to=katago_server.distributed_efforts.models.upload_initial_to,
+                        validators=[katago_server.contrib.validators.FileValidator(magic_types=("Smart Game Format (Go)",), max_size=10485760)],
+                        verbose_name="initial position, as sgf file",
+                    ),
+                ),
+                (
+                    "initial_position_extra_params",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, default=dict, null=True, verbose_name="initial position extra parameters"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="traininggamedistributedtask_games",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
+                (
+                    "black_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="traininggamedistributedtask_predefined_jobs_as_black",
+                        to="trainings.Network",
+                        verbose_name="network black",
+                    ),
+                ),
+                (
+                    "resulting_game",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="games.TrainingGame",
+                        verbose_name="resulting training game",
+                    ),
+                ),
+                (
+                    "white_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="traininggamedistributedtask_predefined_jobs_as_white",
+                        to="trainings.Network",
+                        verbose_name="network white",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Task: Training game',
-            },
+            options={"verbose_name": "Task: Training game",},
         ),
         migrations.CreateModel(
-            name='RankingEstimationGameDistributedTask',
+            name="RankingEstimationGameDistributedTask",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, verbose_name='unique identifier')),
-                ('status', models.CharField(choices=[('UNASSIGNED', 'Unassigned'), ('ONGOING', 'Ongoing'), ('DONE', 'Done'), ('CANCELED', 'Canceled')], default='UNASSIGNED', max_length=15, verbose_name='task status')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='creation date')),
-                ('assigned_at', models.DateTimeField(auto_now=True, null=True, verbose_name='assignation date')),
-                ('expire_at', models.DateTimeField(blank=True, null=True, verbose_name='expiration date')),
-                ('initial_position_sgf_file', models.FileField(blank=True, null=True, upload_to=katago_server.distributed_efforts.models.upload_initial_to, validators=[katago_server.contrib.validators.FileValidator(magic_types=('Smart Game Format (Go)',), max_size=10485760)], verbose_name='initial position, as sgf file')),
-                ('initial_position_extra_params', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, null=True, verbose_name='initial position extra parameters')),
-                ('assigned_to', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='rankingestimationgamedistributedtask_games', to=settings.AUTH_USER_MODEL, verbose_name='assigned to')),
-                ('black_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='rankingestimationgamedistributedtask_predefined_jobs_as_black', to='trainings.Network', verbose_name='network black')),
-                ('resulting_game', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='games.RankingEstimationGame', verbose_name='resulting ranking game')),
-                ('white_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='rankingestimationgamedistributedtask_predefined_jobs_as_white', to='trainings.Network', verbose_name='network white')),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("uuid", models.UUIDField(db_index=True, default=uuid.uuid4, verbose_name="unique identifier")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("UNASSIGNED", "Unassigned"), ("ONGOING", "Ongoing"), ("DONE", "Done"), ("CANCELED", "Canceled")],
+                        default="UNASSIGNED",
+                        max_length=15,
+                        verbose_name="task status",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, verbose_name="creation date")),
+                ("assigned_at", models.DateTimeField(auto_now=True, null=True, verbose_name="assignation date")),
+                ("expire_at", models.DateTimeField(blank=True, null=True, verbose_name="expiration date")),
+                (
+                    "initial_position_sgf_file",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        upload_to=katago_server.distributed_efforts.models.upload_initial_to,
+                        validators=[katago_server.contrib.validators.FileValidator(magic_types=("Smart Game Format (Go)",), max_size=10485760)],
+                        verbose_name="initial position, as sgf file",
+                    ),
+                ),
+                (
+                    "initial_position_extra_params",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, default=dict, null=True, verbose_name="initial position extra parameters"
+                    ),
+                ),
+                (
+                    "assigned_to",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="rankingestimationgamedistributedtask_games",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="assigned to",
+                    ),
+                ),
+                (
+                    "black_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="rankingestimationgamedistributedtask_predefined_jobs_as_black",
+                        to="trainings.Network",
+                        verbose_name="network black",
+                    ),
+                ),
+                (
+                    "resulting_game",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="games.RankingEstimationGame",
+                        verbose_name="resulting ranking game",
+                    ),
+                ),
+                (
+                    "white_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="rankingestimationgamedistributedtask_predefined_jobs_as_white",
+                        to="trainings.Network",
+                        verbose_name="network white",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Task: Ranking estimation game',
-            },
+            options={"verbose_name": "Task: Ranking estimation game",},
         ),
     ]

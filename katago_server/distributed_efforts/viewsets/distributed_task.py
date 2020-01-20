@@ -4,12 +4,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from katago_server.distributed_efforts.models import RankingEstimationGameDistributedTask, \
-    TrainingGameDistributedTask, \
-    DynamicDistributedTaskConfiguration
-from katago_server.distributed_efforts.serializers import RankingEstimationGameDistributedTaskSerializer, \
-    TrainingGameDistributedTaskSerializer, \
-    DynamicDistributedTaskKatagoConfigurationSerializer
+from katago_server.distributed_efforts.models import (
+    RankingEstimationGameDistributedTask,
+    TrainingGameDistributedTask,
+    DynamicDistributedTaskConfiguration,
+)
+from katago_server.distributed_efforts.serializers import (
+    RankingEstimationGameDistributedTaskSerializer,
+    TrainingGameDistributedTaskSerializer,
+    DynamicDistributedTaskKatagoConfigurationSerializer,
+)
 
 import logging
 
@@ -23,7 +27,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, _request):
-        kind = self.request.query_params.get('kind', None)
+        kind = self.request.query_params.get("kind", None)
 
         if kind == "training":
             training_queryset = TrainingGameDistributedTask.objects.all()
@@ -40,7 +44,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         ranking_serializer = RankingEstimationGameDistributedTaskSerializer(ranking_queryset, many=True)
         return Response({"ranking": ranking_serializer.data, "training": training_serializer.data})
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     def get_job(self, request):
         task_configuration = DynamicDistributedTaskConfiguration.get_solo()
 
@@ -54,31 +58,18 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             if should_play_predefined_ranking:
                 ranking_distributed_task.assign_to(request.user)
                 distributed_task_content = RankingEstimationGameDistributedTaskSerializer(ranking_distributed_task)
-                response_body = {
-                    "type": "static",
-                    "kind": "ranking",
-                    "content": distributed_task_content.data
-                }
+                response_body = {"type": "static", "kind": "ranking", "content": distributed_task_content.data}
                 return Response(response_body)
 
             if should_play_predefined_training:
                 training_distributed_task.assign_to(request.user)
                 distributed_task_content = TrainingGameDistributedTaskSerializer(training_distributed_task)
-                response_body = {
-                    "type": "static",
-                    "kind": "training",
-                    "content": distributed_task_content.data
-                }
+                response_body = {"type": "static", "kind": "training", "content": distributed_task_content.data}
                 return Response(response_body)
 
-        serializer_context = {'request': request}  # Used by NetworkSerializer hyperlinked field to build and url ref
+        serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
         best_network = Network.objects.select_best_without_uncertainty()
         network_content = LimitedNetworkSerializer(best_network, context=serializer_context)
-        response_body = {
-            "type": "dynamic",
-            "kind": "training",
-            "config": config_content.data.get("katago_config"),
-            "network": network_content.data
-        }
+        response_body = {"type": "dynamic", "kind": "training", "config": config_content.data.get("katago_config"), "network": network_content.data}
         return Response(response_body)

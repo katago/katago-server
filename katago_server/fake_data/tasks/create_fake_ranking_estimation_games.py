@@ -8,7 +8,9 @@ from katago_server.users.models import User
 
 @celery_app.task()
 def create_fake_ranking_estimation_games():
-    ranking_estimation_games_tasks = RankingEstimationGameDistributedTask.objects.filter(status=RankingEstimationGameDistributedTask.Status.UNASSIGNED).all()
+    ranking_estimation_games_tasks = RankingEstimationGameDistributedTask.objects.filter(
+        status=RankingEstimationGameDistributedTask.Status.UNASSIGNED
+    ).all()
 
     submitter = User.objects.first()
 
@@ -43,36 +45,82 @@ def create_fake_ranking_estimation_games():
 
         if black_network.pk < white_network.pk:
             if random.random() < PROB_WIN:
-                games.append(RankingEstimationGame(submitted_by=submitter, white_network=white_network, black_network=black_network, result=RankingEstimationGame.GamesResult.WHITE, has_resigned=True))
+                games.append(
+                    RankingEstimationGame(
+                        submitted_by=submitter,
+                        white_network=white_network,
+                        black_network=black_network,
+                        result=RankingEstimationGame.GamesResult.WHITE,
+                        has_resigned=True,
+                    )
+                )
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
             if random.random() < PROB_LOOSE:
-                games.append(RankingEstimationGame(submitted_by=submitter, white_network=white_network, black_network=black_network, result=RankingEstimationGame.GamesResult.BLACK, has_resigned=True))
+                games.append(
+                    RankingEstimationGame(
+                        submitted_by=submitter,
+                        white_network=white_network,
+                        black_network=black_network,
+                        result=RankingEstimationGame.GamesResult.BLACK,
+                        has_resigned=True,
+                    )
+                )
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
             if random.random() < PROB_DRAW:
-                games.append(RankingEstimationGame(submitted_by=submitter, white_network=white_network, black_network=black_network, result=RankingEstimationGame.GamesResult.DRAW))
+                games.append(
+                    RankingEstimationGame(
+                        submitted_by=submitter,
+                        white_network=white_network,
+                        black_network=black_network,
+                        result=RankingEstimationGame.GamesResult.DRAW,
+                    )
+                )
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
         if white_network.pk < black_network.pk:
             if random.random() < PROB_WIN:
-                games.append(RankingEstimationGame(submitted_by=submitter, white_network=white_network, black_network=black_network, result=RankingEstimationGame.GamesResult.BLACK, has_resigned=True))
+                games.append(
+                    RankingEstimationGame(
+                        submitted_by=submitter,
+                        white_network=white_network,
+                        black_network=black_network,
+                        result=RankingEstimationGame.GamesResult.BLACK,
+                        has_resigned=True,
+                    )
+                )
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
             if random.random() < PROB_LOOSE:
-                games.append(RankingEstimationGame(submitted_by=submitter, white_network=white_network, black_network=black_network, result=RankingEstimationGame.GamesResult.WHITE, has_resigned=True))
+                games.append(
+                    RankingEstimationGame(
+                        submitted_by=submitter,
+                        white_network=white_network,
+                        black_network=black_network,
+                        result=RankingEstimationGame.GamesResult.WHITE,
+                        has_resigned=True,
+                    )
+                )
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
             if random.random() < PROB_DRAW:
-                games.append(RankingEstimationGame(submitted_by=submitter, white_network=white_network, black_network=black_network, result=RankingEstimationGame.GamesResult.DRAW))
+                games.append(
+                    RankingEstimationGame(
+                        submitted_by=submitter,
+                        white_network=white_network,
+                        black_network=black_network,
+                        result=RankingEstimationGame.GamesResult.DRAW,
+                    )
+                )
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
 
     RankingEstimationGame.objects.bulk_create(games)
-    RankingEstimationGameDistributedTask.objects.bulk_update(tasks, ['status'])
+    RankingEstimationGameDistributedTask.objects.bulk_update(tasks, ["status"])

@@ -33,6 +33,7 @@ class Network(Model):
 
     The "ranking" will be continuously updated, with bayesian-elo
     """
+
     objects = NetworkQuerySet.as_manager()
     pd = NetworkPdManager()
 
@@ -51,8 +52,12 @@ class Network(Model):
     # And an estimation of the strength
     log_gamma = FloatField(_("log gamma"), default=0)
     log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0)
-    log_gamma_lower_confidence = FloatField(_("minimal ranking"), default=0, db_index=True)  # used to select best sure network for training games (selfplay)
-    log_gamma_upper_confidence = FloatField(_("maximal ranking"), default=0, db_index=True)  # used to select best unsure network for ranking games (matches)
+    log_gamma_lower_confidence = FloatField(
+        _("minimal ranking"), default=0, db_index=True
+    )  # used to select best sure network for training games (selfplay)
+    log_gamma_upper_confidence = FloatField(
+        _("maximal ranking"), default=0, db_index=True
+    )  # used to select best unsure network for ranking games (matches)
 
     def __str__(self):
         return f"net-{self.id} ({self.elo}±{2 * self.elo_uncertainty})"

@@ -35,23 +35,16 @@ router.register(r"games/ranking_estimation", RankingEstimationGameViewSet)
 router.register(r"tasks", DistributedTaskViewSet, basename="Task")
 
 # API
-api_urlpattern = [
-    path("api/", include(router.urls)),
-    path('api/token', obtain_auth_token, name='api_token_auth')
-]
+api_urlpattern = [path("api/", include(router.urls)), path("api/token", obtain_auth_token, name="api_token_auth")]
 
 urlpatterns = (
     api_urlpattern
     + [
         path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-        path(
-            "about/",
-            TemplateView.as_view(template_name="pages/about.html"),
-            name="about",
-        ),
+        path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about",),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
-        path(f'{settings.ADMIN_URL}doc/', include('django.contrib.admindocs.urls')),
+        path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
         # User management
         path("users/", include("katago_server.users.urls", namespace="users")),
         path("accounts/", include("allauth.urls")),
@@ -64,21 +57,9 @@ if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
     urlpatterns += [
-        path(
-            "400/",
-            default_views.bad_request,
-            kwargs={"exception": Exception("Bad Request!")},
-        ),
-        path(
-            "403/",
-            default_views.permission_denied,
-            kwargs={"exception": Exception("Permission Denied")},
-        ),
-        path(
-            "404/",
-            default_views.page_not_found,
-            kwargs={"exception": Exception("Page not Found")},
-        ),
+        path("400/", default_views.bad_request, kwargs={"exception": Exception("Bad Request!")},),
+        path("403/", default_views.permission_denied, kwargs={"exception": Exception("Permission Denied")},),
+        path("404/", default_views.page_not_found, kwargs={"exception": Exception("Page not Found")},),
         path("500/", default_views.server_error),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:

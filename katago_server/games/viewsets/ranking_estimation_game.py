@@ -11,6 +11,7 @@ class RankingEstimationGameViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows games to be uploaded or seen
     """
+
     queryset = RankingEstimationGame.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
 
@@ -18,6 +19,6 @@ class RankingEstimationGameViewSet(viewsets.ModelViewSet):
     # so create still reference to an existing network
     # but display give nested details of the network
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return RankingEstimationGameCreateSerializer
         return RankingEstimationGameListSerializer

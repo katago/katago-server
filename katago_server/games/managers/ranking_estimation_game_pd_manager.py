@@ -14,19 +14,26 @@ class RankingEstimationGamePdManager(Manager):
         tournament_results = pd.merge(
             tournament_results,
             read_frame(self.get_queryset().get_total_games_count_as_black()),
-            how='outer', on=['reference_network', 'opponent_network'])
+            how="outer",
+            on=["reference_network", "opponent_network"],
+        )
         tournament_results = pd.merge(
             tournament_results,
             read_frame(self.get_queryset().get_total_wins_count_as_white()),
-            how='outer', on=['reference_network', 'opponent_network'])
+            how="outer",
+            on=["reference_network", "opponent_network"],
+        )
         tournament_results = pd.merge(
             tournament_results,
             read_frame(self.get_queryset().get_total_wins_count_as_black()),
-            how='outer', on=['reference_network', 'opponent_network'])
+            how="outer",
+            on=["reference_network", "opponent_network"],
+        )
         tournament_results = pd.merge(
             tournament_results,
             read_frame(self.get_queryset().get_total_draw_or_no_result()),
-            how='outer', on=['reference_network', 'opponent_network'])
+            how="outer",
+            on=["reference_network", "opponent_network"],
+        )
         tournament_results.fillna(0, inplace=True)
         return tournament_results
-

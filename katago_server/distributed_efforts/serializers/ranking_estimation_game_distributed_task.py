@@ -6,4 +6,4 @@ from katago_server.distributed_efforts.models import RankingEstimationGameDistri
 class RankingEstimationGameDistributedTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = RankingEstimationGameDistributedTask
-        fields = '__all__'
+        fields = "__all__"

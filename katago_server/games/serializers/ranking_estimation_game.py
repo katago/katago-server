@@ -15,7 +15,7 @@ class RankingEstimationGameCreateSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = RankingEstimationGame
-        fields = '__all__'
+        fields = "__all__"
 
 
 # Use as read only serializer
@@ -26,4 +26,4 @@ class RankingEstimationGameListSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = RankingEstimationGame
-        fields = '__all__'
+        fields = "__all__"

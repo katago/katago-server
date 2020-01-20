@@ -2,6 +2,7 @@ from config import celery_app
 
 from katago_server.trainings.models import Network
 
+
 @celery_app.task()
 def create_fake_additional_network():
     last_network = Network.objects.last()
