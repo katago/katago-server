@@ -6,7 +6,7 @@ from katago_server.users.models import User
 
 @celery_app.task()
 def create_fake_initial():
-    if not Network.objects.count() >= 5:
+    if Network.objects.count() < 5:
         Network.objects.bulk_create(
             [
                 Network(nb_blocks=6, nb_channels=125, parent_network=None, model_file="http://google.fr"),
@@ -18,7 +18,7 @@ def create_fake_initial():
             ]
         )
 
-    if not RankingEstimationGame.objects.count() >= 40:
+    if RankingEstimationGame.objects.count() < 40:
         submitter = User.objects.first()
 
         RankingEstimationGame.objects.bulk_create(

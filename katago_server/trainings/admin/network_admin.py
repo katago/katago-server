@@ -13,3 +13,4 @@ class NetworkAdmin(admin.ModelAdmin):
         (_("Strength"), {"fields": (("log_gamma", "log_gamma_uncertainty"), "log_gamma_upper_confidence")}),
         (_("Network architecture"), {"fields": (("nb_blocks", "nb_channels"), "model_architecture_details")}),
     )
+
