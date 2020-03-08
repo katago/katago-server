@@ -1,4 +1,4 @@
-from random import random
+import random
 
 from django.db.models import TextField, FloatField
 from django.utils.translation import gettext_lazy as _
