@@ -1,14 +1,14 @@
 import os
 import uuid as uuid
 
+from django.apps import apps
 from django.contrib.postgres.fields import JSONField
 from django.db import transaction
-from django.db.models import Model, CharField, FileField, DateTimeField, ForeignKey, BigAutoField, UUIDField, TextChoices, PROTECT
+from django.db.models import Model, QuerySet, CharField, FileField, DateTimeField, ForeignKey, BigAutoField, UUIDField, TextChoices, PROTECT
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
-from katago_server.distributed_efforts.managers.distributed_task_queryset import DistributedTaskQuerySet
 from katago_server.trainings.models import Network
 from katago_server.users.models import User
 
@@ -20,6 +20,11 @@ def upload_initial_to(instance, _filename):
 
 
 validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
+
+
+class DistributedTaskQuerySet(QuerySet):
+    def get_one_unassigned_with_lock(self):
+        self.select_for_update(skip_locked=True).filter(status=AbstractDistributedTask.Status.UNASSIGNED).first()
 
 
 class AbstractDistributedTask(Model):
