@@ -6,4 +6,4 @@ from katago_server.distributed_efforts.models import DynamicDistributedTaskConfi
 class DynamicDistributedTaskKatagoConfigurationSerializer(serializers.ModelSerializer):
     class Meta:
         model = DynamicDistributedTaskConfiguration
-        fields = "katago_config"
+        fields = ("katago_config",)
