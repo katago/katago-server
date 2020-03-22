@@ -10,6 +10,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from katago_server.distributed_efforts.viewsets import DistributedTaskViewSet
 from katago_server.games.viewsets import TrainingGameViewSet, RankingEstimationGameViewSet
+from katago_server.runs.viewsets import RunViewSet
 from katago_server.trainings.viewsets import NetworkViewSet
 from katago_server.users.viewsets import UserViewSet
 
@@ -32,6 +33,7 @@ router.register(r"users", UserViewSet)
 router.register(r"networks", NetworkViewSet)
 router.register(r"games/training", TrainingGameViewSet)
 router.register(r"games/ranking_estimation", RankingEstimationGameViewSet)
+router.register(r"runs", RunViewSet)
 router.register(r"tasks", DistributedTaskViewSet, basename="Task")
 
 # API
