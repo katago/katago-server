@@ -9,7 +9,7 @@ from katago_server.trainings.serializers import NetworkSerializer
 
 class NetworkViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows self plays to be viewed or edited.
+    API endpoint that allows networks to be viewed or edited.
     """
 
     queryset = Network.objects.all()
