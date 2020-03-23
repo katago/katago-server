@@ -8,6 +8,6 @@ from katago_server.runs.models import Run
 class RunSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Run
-        fields = ("url", "id", "created_at", "name")
+        fields = ("url", "id", "created_at", "name", "data_board_len", "inputs_version", "max_search_threads_allowed")
 
 
