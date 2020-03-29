@@ -90,6 +90,8 @@ class AbstractGame(Model):
     initial_position_extra_params = JSONField(verbose_name=_("initial position extra parameters"), default=dict, null=True, blank=True)
     # The result of the game is stored as an sgf file, always ready to be viewed
     sgf_file = FileField(_("resulting sgf file"), upload_to=upload_sgf_to, validators=(validate_sgf,))
+    # KataGo engine's Hash128 for the whole game.
+    game_hash = CharField(_("game_hash from katago"), max_length=128, default="")
 
     @property
     def result_text(self):
