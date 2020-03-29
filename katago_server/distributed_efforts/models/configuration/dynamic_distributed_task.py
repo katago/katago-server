@@ -26,7 +26,7 @@ class DynamicDistributedTaskConfiguration(SingletonModel):
     probability_predefined_training_game = FloatField(
         _("probability of playing predefined game"),
         help_text=_("If random() < probability, it will play predefined game (if any), else will play dynamic one"),
-        default=0.8,
+        default=0.25,
     )
 
     def should_play_predefined_ranking_game(self):

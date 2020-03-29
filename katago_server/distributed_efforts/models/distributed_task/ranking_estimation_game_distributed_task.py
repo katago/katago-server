@@ -25,7 +25,7 @@ class RankingEstimationGameDistributedTask(AbstractDistributedTask):
         :param opponent_network: Second network
         :return:
         """
-        if random.random() < 0.5:  # TODO: should that 0.5 be configurable ?
+        if random.random() < 0.5:
             return cls(white_network=reference_network, black_network=opponent_network)
         else:
             return cls(white_network=opponent_network, black_network=reference_network)
