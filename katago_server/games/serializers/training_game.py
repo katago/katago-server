@@ -15,6 +15,7 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = TrainingGame
+        # QUESTION (lightvector): Does this automatically generate some sort of default API where to create a game you can do so by supplying the value of all fields?
         fields = "__all__"
 
 
