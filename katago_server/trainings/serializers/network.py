@@ -8,7 +8,7 @@ from katago_server.trainings.models import Network
 class NetworkSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Network
-        fields = ("url", "uuid", "nb_blocks", "nb_channels", "model_architecture_details", "model_file", "parent_network")
+        fields = ("url", "uuid", "model_size", "nb_parameters", "model_architecture_details", "model_file", "parent_network")
 
     uuid = HiddenField(default=uuid.uuid4())
 
