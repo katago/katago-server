@@ -15,9 +15,6 @@ class DynamicDistributedTaskConfiguration(SingletonModel):
     katago_config = TextField(
         _("katago config"), help_text=_("The configuration file for katago to be given to client for selfplay"), default="FILL ME"
     )
-    # QUESTION (lightvector): I assume "probability_predefined_training_game" is supposed to be the games that start from specified SGF positions?
-    # If this is correct, why is there the word "predefined" in "probability_predefined_ranking_game"? Shouldn't it just be "probability_ranking_game"?
-    # Also, how does this interact with "ratio" in ranking_game_distributed_task_generator.py?
     probability_predefined_ranking_game = FloatField(
         _("probability of playing ranking game"),
         help_text=_("If random() < probability, it will play ranking game (if any), else will play either predefined game, or dynamic one"),

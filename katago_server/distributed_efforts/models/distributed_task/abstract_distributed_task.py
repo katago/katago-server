@@ -12,10 +12,7 @@ from katago_server.contrib.validators import FileValidator
 from katago_server.trainings.models import Network
 from katago_server.users.models import User
 
-# QUESTION (lightvector): What does this mean? Does this mean if the game doesn't complete within an hour, it is assumed to be forgotten?
-# It should probably be more like 6 hours or 12 hours, just to be friendy to users with slow machines.
-DEFAULT_EXPIRATION_DELTA = timezone.timedelta(hours=1)
-
+DEFAULT_EXPIRATION_DELTA = timezone.timedelta(hours=8)
 
 def upload_initial_to(instance, _filename):
     return os.path.join("initial_position", f"{instance.uuid}.sgf")
