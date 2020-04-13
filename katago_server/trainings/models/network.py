@@ -58,8 +58,7 @@ class Network(Model):
         verbose_name = _("Network")
         verbose_name_plural = _("Networks")
 
-    # TODO use API-supplied name from the training machine upload
-    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4, db_index=True)
+    name = CharField(_("model name"), max_length=128, default="", db_index=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
     parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)
     # Some description of the network itself
