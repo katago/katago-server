@@ -1,9 +1,7 @@
 import os
 import uuid as uuid
 
-from django.apps import apps
 from django.contrib.postgres.fields import JSONField
-from django.db import transaction
 from django.db.models import Model, QuerySet, CharField, FileField, DateTimeField, ForeignKey, BigAutoField, UUIDField, TextChoices, PROTECT
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _

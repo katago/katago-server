@@ -1,19 +1,18 @@
 import os
-import uuid as uuid
-import re
 from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, ForeignKey, PROTECT
 from django.utils.translation import gettext_lazy as _
-from solo.models import SingletonModel
 
 from katago_server.contrib.validators import FileValidator
 from katago_server.trainings.managers.network_pd_manager import NetworkPdManager
 from katago_server.trainings.managers.network_queryset import NetworkQuerySet
 
+
 def upload_network_to(instance, _filename):
     return os.path.join("networks", f"{instance.uuid}.gz")
+
 
 # TODO use this
 def parse_katago_training_model_name(name):
@@ -23,11 +22,10 @@ def parse_katago_training_model_name(name):
     if len(pieces) != 4 or pieces[1][0] != 'b' or 'c' not in pieces[1] or pieces[2][0] != 's' or pieces[3][0] != 'd':
         return {}
     try:
-        parsed = {}
-        parsed["run_name"] = pieces[0]
-        parsed["network_size"] = pieces[1]
-        parsed["nb_trained_samples"] = int(pieces[2][1:])
-        parsed["nb_data_samples"] = int(pieces[3][1:])
+        parsed = {"run_name": pieces[0],
+                  "network_size": pieces[1],
+                  "nb_trained_samples": int(pieces[2][1:]),
+                  "nb_data_samples": int(pieces[3][1:])}
         return parsed
     except ValueError:
         return {}
