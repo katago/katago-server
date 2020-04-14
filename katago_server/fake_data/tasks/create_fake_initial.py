@@ -9,12 +9,12 @@ def create_fake_initial():
     if Network.objects.count() < 5:
         Network.objects.bulk_create(
             [
-                Network(nb_blocks=6, nb_channels=125, parent_network=None, model_file="http://google.fr"),
-                Network(nb_blocks=6, nb_channels=125, parent_network_id=1, model_file="http://google.fr"),
-                Network(nb_blocks=6, nb_channels=125, parent_network_id=2, model_file="http://google.fr"),
-                Network(nb_blocks=6, nb_channels=125, parent_network_id=3, model_file="http://google.fr"),
-                Network(nb_blocks=6, nb_channels=125, parent_network_id=4, model_file="http://google.fr"),
-                Network(nb_blocks=6, nb_channels=125, parent_network_id=5, model_file="http://google.fr"),
+                Network(parent_network=None, model_file="http://google.fr"),
+                Network(parent_network_id=1, model_file="http://google.fr"),
+                Network(parent_network_id=2, model_file="http://google.fr"),
+                Network(parent_network_id=3, model_file="http://google.fr"),
+                Network(parent_network_id=4, model_file="http://google.fr"),
+                Network(parent_network_id=5, model_file="http://google.fr"),
             ]
         )
 
