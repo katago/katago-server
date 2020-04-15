@@ -2,10 +2,12 @@ import os
 from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
-from django.db.models import Model, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, ForeignKey, PROTECT
+from django.db.models import Model, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, \
+    ForeignKey, PROTECT, BigAutoField
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
+from katago_server.runs.models import Run
 from katago_server.trainings.managers.network_pd_manager import NetworkPdManager
 from katago_server.trainings.managers.network_queryset import NetworkQuerySet
 
@@ -56,7 +58,11 @@ class Network(Model):
         verbose_name = _("Network")
         verbose_name_plural = _("Networks")
 
+    # We expect a large number of games so lets use BigInt
+    id = BigAutoField(primary_key=True)
     name = CharField(_("model name"), max_length=128, default="", db_index=True)
+    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
+    # Date
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
     parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)
     # Some description of the network itself

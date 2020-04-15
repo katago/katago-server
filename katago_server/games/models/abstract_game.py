@@ -20,6 +20,7 @@ from django.db.models import (
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
+from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 from katago_server.users.models import User
 
@@ -50,10 +51,10 @@ class AbstractGame(Model):
 
     # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
-    uuid = UUIDField(_("unique identifier"), default=uuid.uuid4, db_index=True)
+    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
     # A game is submitted by an user
-    created_at = DateTimeField(_("creation date"), auto_now_add=True)
-    submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games")
+    created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
+    submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
     playouts_per_sec = FloatField(_("playout per second"), null=True)
     # Describe the board/game itself
     board_size_x = IntegerField(_("board absciss"), null=False, default=19)
@@ -79,12 +80,12 @@ class AbstractGame(Model):
         blank=True,
     )
     # The results
-    result = CharField(_("game result"), max_length=15, choices=GamesResult.choices)
+    result = CharField(_("game result"), max_length=15, choices=GamesResult.choices, db_index=True)
     score = DecimalField(_("game score"), max_digits=4, decimal_places=1, null=True, blank=True)
-    has_resigned = BooleanField(_("game end up with resign"), default=False)
+    has_resigned = BooleanField(_("game end up with resign"), default=False, db_index=True)
     # The networks related to this game
-    white_network = ForeignKey(Network, verbose_name=_("network white"), on_delete=PROTECT, related_name="%(class)s_games_as_white")
-    black_network = ForeignKey(Network, verbose_name=_("network black"), on_delete=PROTECT, related_name="%(class)s_games_as_black")
+    white_network = ForeignKey(Network, verbose_name=_("network white"), on_delete=PROTECT, related_name="%(class)s_games_as_white", db_index=True)
+    black_network = ForeignKey(Network, verbose_name=_("network black"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True)
     # A game can be forked from an existing game or a initial situation
     initial_position_sgf_file = FileField(verbose_name=_("initial position, as sgf file"), null=True, blank=True)
     initial_position_extra_params = JSONField(verbose_name=_("initial position extra parameters"), default=dict, null=True, blank=True)
