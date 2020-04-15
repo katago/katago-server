@@ -343,3 +343,6 @@ katago_server/media/
 
 !.envs/.local/
 
+/node_modules/
+/venv/
+celerybeat.pid
