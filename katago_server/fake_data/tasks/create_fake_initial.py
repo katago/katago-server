@@ -7,7 +7,7 @@ from katago_server.users.models import User
 
 @celery_app.task()
 def create_fake_initial():
-    run, created = Run.objects.get_or_create(name="test-run")
+    run, created = Run.objects.get_or_create(name="g170")
 
     if Network.objects.count() < 5:
         Network.objects.bulk_create(
