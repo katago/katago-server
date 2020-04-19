@@ -10,6 +10,9 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from .base import *  # noqa
 from .base import env
 
+# noinspection PyUnresolvedReferences
+import ddtrace.profile.auto
+
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
@@ -138,6 +141,11 @@ LOGGING = {
         "django.security.DisallowedHost": {"level": "ERROR", "handlers": ["console"], "propagate": False,},
     },
 }
+
+# APM
+# ------------------------------------------------------------------------------
+INSTALLED_APPS += ['ddtrace.contrib.django']
+
 
 # Sentry
 # ------------------------------------------------------------------------------

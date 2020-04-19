@@ -6,6 +6,15 @@ volumes:
   production_traefik: {}
 
 services:
+  datadog:
+    image: datadog/agent:latest
+    container_name: datadog-agent
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /proc/:/host/proc/:ro
+    - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+    env_file:
+      - ./.envs/.production/.datadog
   django: &django
     build:
       context: .

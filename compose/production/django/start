@@ -6,4 +6,4 @@ set -o nounset
 
 
 python /app/manage.py collectstatic --noinput
-/usr/local/bin/gunicorn config.asgi:application --bind 0.0.0.0:5000 --chdir=/app --timeout 300 -w 16 -k uvicorn.workers.UvicornWorker
+ddtrace-run /usr/local/bin/gunicorn config.asgi:application --bind 0.0.0.0:5000 --chdir=/app --timeout 300 -w 16 -k uvicorn.workers.UvicornWorker
