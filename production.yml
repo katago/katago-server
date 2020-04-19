@@ -69,7 +69,7 @@ services:
     labels:
       com.datadoghq.ad.check_names: '["redisdb"]'
       com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"host": "%%host%%","port":"6379","password":"%%env_REDIS_PASSWORD%%"}]'
+      com.datadoghq.ad.instances: '[{"host": "%%host%%","port":"6379"}]'
 
   celeryworker:
     <<: *django
