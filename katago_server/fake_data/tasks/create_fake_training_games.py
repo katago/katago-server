@@ -23,8 +23,8 @@ def create_fake_training_games():
             black_network=best_network,
             white_network=best_network,
             result=TrainingGame.GamesResult.DRAW,
-            sgf_file="https://google.fr",
-            unpacked_file="https://google.fr",
+            sgf_file="https://storage.googleapis.com/katago-server-public/media/games/f1ec4e05-21f3-414e-9287-bad32fb43ec7.sgf",
+            unpacked_file="https://storage.googleapis.com/katago-server-public/media/games/f1ec4e05-21f3-414e-9287-bad32fb43ec7.npz",
             run=current_run
         )
     ]
@@ -36,8 +36,8 @@ def create_fake_training_games():
                 black_network=best_network,
                 white_network=best_network,
                 result=TrainingGame.GamesResult.DRAW,
-                sgf_file="https://google.fr",
-                unpacked_file="https://google.fr",
+                sgf_file="https://storage.googleapis.com/katago-server-public/media/games/f1ec4e05-21f3-414e-9287-bad32fb43ec7.sgf",
+                unpacked_file="https://storage.googleapis.com/katago-server-public/media/games/f1ec4e05-21f3-414e-9287-bad32fb43ec7.npz",
                 run=current_run
             )
         )
@@ -49,8 +49,8 @@ def create_fake_training_games():
                 black_network=best_network,
                 white_network=best_network,
                 result=TrainingGame.GamesResult.DRAW,
-                sgf_file="https://google.fr",
-                unpacked_file="https://google.fr",
+                sgf_file="https://storage.googleapis.com/katago-server-public/media/games/f1ec4e05-21f3-414e-9287-bad32fb43ec7.sgf",
+                unpacked_file="https://storage.googleapis.com/katago-server-public/media/games/f1ec4e05-21f3-414e-9287-bad32fb43ec7.npz",
                 run=current_run
             )
         )

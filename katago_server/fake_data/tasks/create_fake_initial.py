@@ -12,12 +12,12 @@ def create_fake_initial():
     if Network.objects.count() < 5:
         Network.objects.bulk_create(
             [
-                Network(parent_network=None, model_file="http://google.fr", run=run),
-                Network(parent_network_id=1, model_file="http://google.fr", run=run),
-                Network(parent_network_id=2, model_file="http://google.fr", run=run),
-                Network(parent_network_id=3, model_file="http://google.fr", run=run),
-                Network(parent_network_id=4, model_file="http://google.fr", run=run),
-                Network(parent_network_id=5, model_file="http://google.fr", run=run),
+                Network(parent_network=None, model_file="https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170-b6c96-s175395328-d26788732.bin.gz", run=run),
+                Network(parent_network_id=1, model_file="https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170-b6c96-s175395328-d26788732.bin.gz", run=run),
+                Network(parent_network_id=2, model_file="https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170-b6c96-s175395328-d26788732.bin.gz", run=run),
+                Network(parent_network_id=3, model_file="https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170-b6c96-s175395328-d26788732.bin.gz", run=run),
+                Network(parent_network_id=4, model_file="https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170-b6c96-s175395328-d26788732.bin.gz", run=run),
+                Network(parent_network_id=5, model_file="https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170-b6c96-s175395328-d26788732.bin.gz", run=run),
             ]
         )
 
