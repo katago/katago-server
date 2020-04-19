@@ -8,13 +8,15 @@ from katago_server.distributed_efforts.models import RankingGameDistributedTaskG
 from katago_server.games.models import TrainingGame
 from datetime import timedelta
 
+from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 
 
 class RankingEstimationGameGeneratorService:
     TASK_NAME = "katago_server.distributed_efforts.tasks.schedule_ranking_estimation_game.schedule_ranking_estimation_game"
 
-    def __init__(self):
+    def __init__(self, run: Run):
+        self.current_run = run
         self.config = RankingGameDistributedTaskGeneratorConfiguration.get_solo()
 
     def how_many_games_to_generate(self):
@@ -28,7 +30,7 @@ class RankingEstimationGameGeneratorService:
         """
         periodic_task = PeriodicTask.objects.filter(task=self.TASK_NAME).get()
         interval_timedelta = timedelta(**{periodic_task.interval.period: periodic_task.interval.every})
-        number_of_training_in_interval = TrainingGame.objects.filter(created_at__gte=timezone.now() - interval_timedelta).count()
+        number_of_training_in_interval = TrainingGame.objects.filter(run=self.current_run, created_at__gte=timezone.now() - interval_timedelta).count()
         return round(number_of_training_in_interval * self.config.ratio)
 
     def generate_high_elo_game(self):
@@ -37,9 +39,9 @@ class RankingEstimationGameGeneratorService:
 
         :return:
         """
-        reference_network = Network.objects.select_one_of_the_best_with_uncertainty()
+        reference_network = Network.objects.select_one_of_the_best_with_uncertainty(self.current_run)
         opponent_network = self._choose_opponent(reference_network)
-        return RankingEstimationGameDistributedTask.create_with_random_color(reference_network, opponent_network)
+        return RankingEstimationGameDistributedTask.create_with_random_color(self.current_run, reference_network, opponent_network)
 
     def generate_high_uncertainty_game(self):
         """
@@ -47,12 +49,11 @@ class RankingEstimationGameGeneratorService:
 
         :return:
         """
-        reference_network = Network.objects.select_one_of_the_more_uncertain()
+        reference_network = Network.objects.select_one_of_the_more_uncertain(self.current_run)
         opponent_network = self._choose_opponent(reference_network)
-        return RankingEstimationGameDistributedTask.create_with_random_color(reference_network, opponent_network)
+        return RankingEstimationGameDistributedTask.create_with_random_color(self.current_run, reference_network, opponent_network)
 
-    @staticmethod
-    def _choose_opponent(reference_network):
+    def _choose_opponent(self, reference_network):
         """
         Given a reference network, first preselect all networks in a fixed elo range.
         Then, for each network, calculate the win probability using log_gamma.
@@ -68,11 +69,11 @@ class RankingEstimationGameGeneratorService:
         log_gamma_upper_bound = ref_net_log_gamma + log_gamma_search_range
 
         nearby_networks = (
-            Network.objects.exclude(pk=reference_network.pk).filter(log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound).all()
+            Network.objects.exclude(pk=reference_network.pk).filter(run=self.current_run, log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound).all()
         )
         if len(nearby_networks) < 5:
-            nearby_networks_a = Network.objects.filter(pk__lt=reference_network.pk).all()[:20]
-            nearby_networks_b = Network.objects.filter(pk__gt=reference_network.pk).all()[:20]
+            nearby_networks_a = Network.objects.filter(run=self.current_run, pk__lt=reference_network.pk).all()[:20]
+            nearby_networks_b = Network.objects.filter(run=self.current_run, pk__gt=reference_network.pk).all()[:20]
             return np.random.choice(nearby_networks_a + nearby_networks_b)
 
         win_probability = np.asarray([1 / (1 + exp(opp_net.log_gamma - ref_net_log_gamma)) for opp_net in nearby_networks])

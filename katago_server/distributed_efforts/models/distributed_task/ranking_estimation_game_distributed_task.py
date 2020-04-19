@@ -16,7 +16,7 @@ class RankingEstimationGameDistributedTask(AbstractDistributedTask):
     resulting_game = ForeignKey(RankingEstimationGame, verbose_name=_("resulting ranking game"), on_delete=PROTECT, null=True, blank=True)
 
     @classmethod
-    def create_with_random_color(cls, reference_network, opponent_network):
+    def create_with_random_color(cls, run, reference_network, opponent_network):
         """
         Given two network, create a ranking game task.
         Half of the time, first network will play white, half black.
@@ -26,6 +26,6 @@ class RankingEstimationGameDistributedTask(AbstractDistributedTask):
         :return:
         """
         if random.random() < 0.5:
-            return cls(white_network=reference_network, black_network=opponent_network)
+            return cls(run=run, white_network=reference_network, black_network=opponent_network)
         else:
-            return cls(white_network=opponent_network, black_network=reference_network)
+            return cls(run=run, white_network=opponent_network, black_network=reference_network)

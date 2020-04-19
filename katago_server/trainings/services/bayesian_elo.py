@@ -32,8 +32,8 @@ class BayesianRankingService:
         pandas_utils.print_data_frame(self._detailed_tournament_results)
 
         self._simplify_tournament_into_win_loss_draw()
-        logger.info("---> simplified_tournament_results (after bayesian)")
-        pandas_utils.print_data_frame(self._detailed_tournament_results, level=logging.INFO)
+        logger.debug("---> simplified_tournament_results (after bayesian)")
+        pandas_utils.print_data_frame(self._detailed_tournament_results)
 
         self._sort_inplace_network_rankings_by_uncertainty()
         logger.debug("---> network_rankings (after sort)")

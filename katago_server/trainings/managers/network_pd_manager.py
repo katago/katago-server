@@ -11,8 +11,8 @@ class NetworkPdManager(Manager):
     def get_queryset(self):
         return NetworkPdQuerySet(self.model, using=self._db)
 
-    def get_rankings_dataframe(self):
-        ranking_qs = self.values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty").all()
+    def get_rankings_dataframe(self, run):
+        ranking_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty").all()
         ranking = read_frame(ranking_qs)
         ranking = ranking.set_index("id")
         ranking = ranking.sort_index()

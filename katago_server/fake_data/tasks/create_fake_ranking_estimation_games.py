@@ -3,6 +3,7 @@ import random
 from config import celery_app
 from katago_server.distributed_efforts.models import RankingEstimationGameDistributedTask
 from katago_server.games.models import RankingEstimationGame
+from katago_server.runs.models import Run
 from katago_server.users.models import User
 
 
@@ -12,6 +13,7 @@ def create_fake_ranking_estimation_games():
         status=RankingEstimationGameDistributedTask.Status.UNASSIGNED
     ).all()
 
+    current_run = Run.objects.last()
     submitter = User.objects.first()
 
     games = []
@@ -52,8 +54,10 @@ def create_fake_ranking_estimation_games():
                         black_network=black_network,
                         result=RankingEstimationGame.GamesResult.WHITE,
                         has_resigned=True,
+                        run=current_run
                     )
                 )
+                task.run = current_run
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
@@ -65,8 +69,10 @@ def create_fake_ranking_estimation_games():
                         black_network=black_network,
                         result=RankingEstimationGame.GamesResult.BLACK,
                         has_resigned=True,
+                        run=current_run
                     )
                 )
+                task.run = current_run
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
@@ -77,11 +83,14 @@ def create_fake_ranking_estimation_games():
                         white_network=white_network,
                         black_network=black_network,
                         result=RankingEstimationGame.GamesResult.DRAW,
+                        run=current_run
                     )
                 )
+                task.run = current_run
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
+
         if white_network.pk < black_network.pk:
             if random.random() < PROB_WIN:
                 games.append(
@@ -91,8 +100,10 @@ def create_fake_ranking_estimation_games():
                         black_network=black_network,
                         result=RankingEstimationGame.GamesResult.BLACK,
                         has_resigned=True,
+                        run=current_run
                     )
                 )
+                task.run = current_run
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
@@ -104,8 +115,10 @@ def create_fake_ranking_estimation_games():
                         black_network=black_network,
                         result=RankingEstimationGame.GamesResult.WHITE,
                         has_resigned=True,
+                        run=current_run
                     )
                 )
+                task.run = current_run
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue
@@ -116,8 +129,10 @@ def create_fake_ranking_estimation_games():
                         white_network=white_network,
                         black_network=black_network,
                         result=RankingEstimationGame.GamesResult.DRAW,
+                        run=current_run
                     )
                 )
+                task.run = current_run
                 task.status = RankingEstimationGameDistributedTask.Status.DONE
                 tasks.append(task)
                 continue

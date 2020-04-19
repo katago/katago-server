@@ -4,15 +4,17 @@ import logging
 from config import celery_app
 from katago_server.distributed_efforts.models import RankingEstimationGameDistributedTask, RankingGameDistributedTaskGeneratorConfiguration
 from katago_server.distributed_efforts.services.ranking_estimation_game_generator import RankingEstimationGameGeneratorService
+from katago_server.runs.models import Run
 
 logger = logging.getLogger(__name__)
 
 
 @celery_app.task()
 def schedule_ranking_estimation_game():
+    current_run = Run.objects.select_current()
     config = RankingGameDistributedTaskGeneratorConfiguration.get_solo()
 
-    ranking_game_generator = RankingEstimationGameGeneratorService()
+    ranking_game_generator = RankingEstimationGameGeneratorService(current_run)
     num_games = ranking_game_generator.how_many_games_to_generate()
     logger.info(f"generating {num_games} matches")
 
