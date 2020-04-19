@@ -15,6 +15,7 @@ services:
     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
     env_file:
       - ./.envs/.production/.datadog
+
   django: &django
     build:
       context: .
@@ -40,6 +41,10 @@ services:
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
+    labels:
+      com.datadoghq.ad.check_names: '["postgres"]'
+      com.datadoghq.ad.init_configs: '[{}]'
+      com.datadoghq.ad.instances: '{"host":"%%host%%", "port":5432,"username":"%%env_POSTGRES_USER%%","password":"%%env_POSTGRES_PASSWORD%%"}'
 
   traefik:
     build:
@@ -61,6 +66,10 @@ services:
       nofile:
         soft: 26677
         hard: 46677
+    labels:
+      com.datadoghq.ad.check_names: '["redisdb"]'
+      com.datadoghq.ad.init_configs: '[{}]'
+      com.datadoghq.ad.instances: '[{"host": "%%host%%","port":"6379","password":"%%env_REDIS_PASSWORD%%"}]'
 
   celeryworker:
     <<: *django
