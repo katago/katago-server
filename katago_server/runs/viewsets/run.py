@@ -15,3 +15,5 @@ class RunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = RunSerializer
+    filterset_fields = ['status']
+
