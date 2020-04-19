@@ -273,7 +273,7 @@ ACCOUNT_ADAPTER = "katago_server.users.adapters.AccountAdapter"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.BasicAuthentication", "rest_framework.authentication.SessionAuthentication",],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 100,
+    "PAGE_SIZE": 20,
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",
     "ALLOWED_VERSIONS": ["1.2"],
     "DEFAULT_VERSION": "1.2",

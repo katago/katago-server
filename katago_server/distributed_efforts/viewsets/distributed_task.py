@@ -17,6 +17,7 @@ from katago_server.distributed_efforts.serializers import (
 
 import logging
 
+from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 from katago_server.trainings.serializers import LimitedNetworkSerializer
 
@@ -26,26 +27,9 @@ logger = logging.getLogger(__name__)
 class DistributedTaskViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
-    def list(self, _request):
-        kind = self.request.query_params.get("kind", None)
-
-        if kind == "training":
-            training_queryset = TrainingGameDistributedTask.objects.all()
-            training_serializer = TrainingGameDistributedTaskSerializer(training_queryset, many=True)
-            return Response(training_serializer.data)
-        if kind == "ranking":
-            ranking_queryset = RankingEstimationGameDistributedTask.objects.all()
-            ranking_serializer = RankingEstimationGameDistributedTaskSerializer(ranking_queryset, many=True)
-            return Response(ranking_serializer.data)
-
-        training_queryset = TrainingGameDistributedTask.objects.all()
-        training_serializer = TrainingGameDistributedTaskSerializer(training_queryset, many=True)
-        ranking_queryset = RankingEstimationGameDistributedTask.objects.all()
-        ranking_serializer = RankingEstimationGameDistributedTaskSerializer(ranking_queryset, many=True)
-        return Response({"ranking": ranking_serializer.data, "training": training_serializer.data})
-
-    @action(detail=False, methods=["post"])
-    def get_job(self, request):
+    # noinspection PyMethodMayBeStatic
+    def create(self, request):
+        current_run = Run.objects.select_current()
         task_configuration = DynamicDistributedTaskConfiguration.get_solo()
 
         with transaction.atomic():
@@ -69,7 +53,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
-        best_network = Network.objects.select_best_without_uncertainty()
+        best_network = Network.objects.select_best_without_uncertainty(current_run)
         network_content = LimitedNetworkSerializer(best_network, context=serializer_context)
         response_body = {"type": "dynamic", "kind": "training", "config": config_content.data.get("katago_config"), "network": network_content.data}
         return Response(response_body)

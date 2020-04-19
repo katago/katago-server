@@ -9,11 +9,13 @@ from django.views import defaults as default_views
 from rest_framework import routers, permissions
 from rest_framework.authtoken.views import obtain_auth_token
 
-from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from katago_server.distributed_efforts.viewsets import DistributedTaskViewSet
+from katago_server.distributed_efforts.viewsets.ranking_estimation_game_distributed_task import \
+    RankingEstimationGameDistributedTaskViewSet
+from katago_server.distributed_efforts.viewsets.training_game_distributed_task import TrainingGameDistributedTaskViewSet
 from katago_server.games.viewsets import TrainingGameViewSet, RankingEstimationGameViewSet
 from katago_server.runs.viewsets import RunViewSet
 from katago_server.trainings.viewsets import NetworkViewSet
@@ -40,6 +42,9 @@ router.register(r"games/training", TrainingGameViewSet)
 router.register(r"games/ranking_estimation", RankingEstimationGameViewSet)
 router.register(r"runs", RunViewSet)
 router.register(r"tasks", DistributedTaskViewSet, basename="Task")
+router.register(r"tasks/training", TrainingGameDistributedTaskViewSet)
+router.register(r"tasks/ranking_estimation", RankingEstimationGameDistributedTaskViewSet)
+
 
 # API
 api_urlpattern = [path("api/", include(router.urls)), path("api/token", obtain_auth_token, name="api_token_auth")]
