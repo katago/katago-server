@@ -37,10 +37,12 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: katago_server_production_postgres
     volumes:
+      - ./compose/production/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
+    command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
     labels:
       com.datadoghq.ad.check_names: '["postgres"]'
       com.datadoghq.ad.init_configs: '[{}]'
