@@ -13,7 +13,6 @@ from django.db.models import (
     ForeignKey,
     PROTECT,
     BigAutoField,
-    UUIDField,
     TextChoices,
     FloatField,
 )
@@ -100,4 +99,4 @@ class AbstractGame(Model):
         return f"{self.result}+{score}" if self.result in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE] else self.result
 
     def __str__(self):
-        return f"{self.uuid} ({self.result_text})"
+        return f"{self.id} ({self.result_text})"
