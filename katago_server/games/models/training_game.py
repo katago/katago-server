@@ -16,6 +16,7 @@ def upload_unpacked_training_to(instance, _filename):
 class TrainingGame(AbstractGame):
     class Meta:
         verbose_name = _("Game: Training")
+        ordering = ['-created_at']
 
     unpacked_file = FileField(
         _("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,), storage=training_data_storage

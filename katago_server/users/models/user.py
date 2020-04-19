@@ -7,7 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class User(AbstractUser):
-    id= UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    class Meta:
+        verbose_name = _("User")
+        ordering = ['-date_joined']
+
+    id = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = CharField(_("Name of User"), blank=True, max_length=255)
 
     def get_absolute_url(self):

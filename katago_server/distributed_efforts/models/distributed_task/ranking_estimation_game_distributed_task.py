@@ -11,6 +11,7 @@ from .abstract_distributed_task import AbstractDistributedTask
 class RankingEstimationGameDistributedTask(AbstractDistributedTask):
     class Meta:
         verbose_name = "Task: Ranking estimation game"
+        ordering = ['-created_at']
 
     # The result of a "DONE" RankingGameDistributedTask is a Game
     resulting_game = ForeignKey(RankingEstimationGame, verbose_name=_("resulting ranking game"), on_delete=PROTECT, null=True, blank=True)

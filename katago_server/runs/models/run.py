@@ -8,6 +8,10 @@ class RunQuerySet(QuerySet):
 
 
 class Run(Model):
+    class Meta:
+        verbose_name = _("Run")
+        ordering = ['-created_at']
+
     objects = RunQuerySet.as_manager()
 
     class RunStatus(TextChoices):

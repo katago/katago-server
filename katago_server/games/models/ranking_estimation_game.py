@@ -11,3 +11,4 @@ class RankingEstimationGame(AbstractGame):
 
     class Meta:
         verbose_name = _("Game: Ranking Estimation")
+        ordering = ['-created_at']

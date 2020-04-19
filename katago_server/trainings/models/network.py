@@ -57,6 +57,7 @@ class Network(Model):
     class Meta:
         verbose_name = _("Network")
         verbose_name_plural = _("Networks")
+        ordering = ['-created_at']
 
     # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
