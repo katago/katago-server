@@ -11,7 +11,7 @@ from .base import *  # noqa
 from .base import env
 
 # noinspection PyUnresolvedReferences
-import ddtrace.profile.auto
+#import ddtrace.profile.auto
 
 # GENERAL
 # ------------------------------------------------------------------------------
