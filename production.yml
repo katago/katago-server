@@ -69,6 +69,8 @@ services:
       nofile:
         soft: 26677
         hard: 46677
+    sysctls:
+      net.core.somaxconn: '511'
     labels:
       com.datadoghq.ad.check_names: '["redisdb"]'
       com.datadoghq.ad.init_configs: '[{}]'

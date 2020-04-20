@@ -135,11 +135,11 @@ LOGGING = {
     "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
-        "django.db.backends": {"level": "INFO", "handlers": ["console"], "propagate": False},
-        'ddtrace': {'level': 'INFO', 'handlers': ['console']},
+        "django.db.backends": {"level": "ERROR", "handlers": ["console"], "propagate": False},
+        'ddtrace': {'level': 'WARNING', 'handlers': ['console']},
         # Errors logged by the SDK itself
         "sentry_sdk": {"level": "ERROR", "handlers": ["console"], "propagate": False},
-        "django.security.DisallowedHost": {"level": "INFO", "handlers": ["console"], "propagate": False},
+        "django.security.DisallowedHost": {"level": "ERROR", "handlers": ["console"], "propagate": False},
     },
 }
 
