@@ -21,7 +21,7 @@ RUN apt-get update \
   # Translations dependencies
   && apt-get install -y gettext \
   # Let DBshell works 
-  && apt-get install postgres \
+  && apt-get install postgresql \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
