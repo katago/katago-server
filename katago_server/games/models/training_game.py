@@ -19,5 +19,5 @@ class TrainingGame(AbstractGame):
         ordering = ['-created_at']
 
     unpacked_file = FileField(
-        _("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,), storage=training_data_storage
+        _("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,), storage=training_data_storage, max_length=200
     )

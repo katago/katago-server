@@ -70,7 +70,7 @@ class Network(Model):
     network_size = CharField(_("string describing blocks and channels in network"), max_length=32, default="")
     nb_parameters = IntegerField(_("number of parameters in network"), default=0)
     model_architecture_details = JSONField(_("network architecture schema"), null=True, blank=True, default=dict)
-    model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,))
+    model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,), max_length=200)
     # And an estimation of the strength
     log_gamma = FloatField(_("log gamma"), default=0)
     log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0)
