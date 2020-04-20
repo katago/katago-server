@@ -1,4 +1,4 @@
-FROM node:10-stretch-slim as client-builder
+FROM node:13-buster-slim as client-builder
 
 WORKDIR /app
 COPY ./package.json /app
@@ -20,6 +20,8 @@ RUN apt-get update \
   && apt-get install -y libmagic-dev \
   # Translations dependencies
   && apt-get install -y gettext \
+  # Let DBshell works 
+  && apt-get install postgres \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
