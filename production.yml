@@ -15,6 +15,7 @@ services:
     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
     env_file:
       - ./.envs/.production/.datadog
+      - ./.envs/.production/.postgres
 
   django: &django
     build:
