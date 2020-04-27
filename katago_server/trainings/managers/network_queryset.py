@@ -1,8 +1,12 @@
+import logging
+
 import numpy as np
 import scipy.stats
 from django.db.models import QuerySet
 
 from katago_server.runs.models import Run
+
+logger = logging.getLogger(__name__)
 
 
 def random_weighted_choice(networks):
@@ -13,7 +17,7 @@ def random_weighted_choice(networks):
 
 class NetworkQuerySet(QuerySet):
     def select_best_without_uncertainty(self, run: Run):
-        self.filter(run=run).order_by("-log_gamma_lower_confidence").first()
+        return self.filter(run=run).order_by("-log_gamma_lower_confidence").first()
 
     def select_one_of_the_best_with_uncertainty(self, run: Run):
         best_networks = self.filter(run=run).order_by("-log_gamma_upper_confidence")[:10]

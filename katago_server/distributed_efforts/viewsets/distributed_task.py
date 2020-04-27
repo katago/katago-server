@@ -33,11 +33,9 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         task_configuration = DynamicDistributedTaskConfiguration.get_solo()
 
         with transaction.atomic():
-            ranking_distributed_task = RankingEstimationGameDistributedTask.objects.get_one_unassigned_with_lock()
-            training_distributed_task = TrainingGameDistributedTask.objects.get_one_unassigned_with_lock()
-
+            ranking_distributed_task = RankingEstimationGameDistributedTask.objects.get_one_unassigned_with_lock(current_run)
+            logger.info(f"ranking_distributed_task: {ranking_distributed_task}")
             should_play_predefined_ranking = task_configuration.should_play_predefined_ranking_game() and ranking_distributed_task is not None
-            should_play_predefined_training = task_configuration.should_play_predefined_training_game() and training_distributed_task is not None
 
             if should_play_predefined_ranking:
                 ranking_distributed_task.assign_to(request.user)
@@ -45,15 +43,21 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 response_body = {"type": "static", "kind": "ranking", "content": distributed_task_content.data}
                 return Response(response_body)
 
-            if should_play_predefined_training:
-                training_distributed_task.assign_to(request.user)
-                distributed_task_content = TrainingGameDistributedTaskSerializer(training_distributed_task)
-                response_body = {"type": "static", "kind": "training", "content": distributed_task_content.data}
-                return Response(response_body)
+            # training_distributed_task = TrainingGameDistributedTask.objects.get_one_unassigned_with_lock()
+            # logger.info('training_distributed_task', training_distributed_task)
+            # should_play_predefined_training = task_configuration.should_play_predefined_training_game() and training_distributed_task is not None
+            #
+            # if should_play_predefined_training:
+            #     training_distributed_task.assign_to(request.user)
+            #     distributed_task_content = TrainingGameDistributedTaskSerializer(training_distributed_task)
+            #     response_body = {"type": "static", "kind": "training", "content": distributed_task_content.data}
+            #     return Response(response_body)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
+        logger.info(f"config_content: {config_content}")
         best_network = Network.objects.select_best_without_uncertainty(current_run)
+        logger.info(f"best_network: {best_network}")
         network_content = LimitedNetworkSerializer(best_network, context=serializer_context)
         response_body = {"type": "dynamic", "kind": "training", "config": config_content.data.get("katago_config"), "network": network_content.data}
         return Response(response_body)

@@ -22,8 +22,8 @@ validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game
 
 
 class DistributedTaskQuerySet(QuerySet):
-    def get_one_unassigned_with_lock(self):
-        self.select_for_update(skip_locked=True).filter(status=AbstractDistributedTask.Status.UNASSIGNED).first()
+    def get_one_unassigned_with_lock(self, run):
+        return self.select_for_update(skip_locked=True).filter(run=run, status=AbstractDistributedTask.Status.UNASSIGNED).first()
 
 
 class AbstractDistributedTask(Model):
@@ -46,7 +46,7 @@ class AbstractDistributedTask(Model):
     id = BigAutoField(primary_key=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_predefined_jobs", db_index=True)
     # Status
-    status = CharField(_("task status"), max_length=15, choices=Status.choices, null=False, default=Status.UNASSIGNED,db_index=True)
+    status = CharField(_("task status"), max_length=15, choices=Status.choices, null=False, default=Status.UNASSIGNED, db_index=True)
     # a predefined task  get attributed to an user with some expiration
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     assigned_to = ForeignKey(User, verbose_name=_("assigned to"), on_delete=PROTECT, related_name="%(class)s_games", blank=True, null=True, db_index=True)
