@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 class GameAdmin(admin.ModelAdmin):
     list_filter = ("run", "created_at", "handicap", "komi")
     list_display = ("id", "run", "created_at", "komi", "handicap", "result_text", "submitted_by", "white_network", "black_network")
-    readonly_fields = ("id", "created_at", "game_hash")
+    readonly_fields = ("id", "created_at")
     ordering = ("pk",)
     fieldsets = (
         (None, {"fields": (("id", "created_at", "game_hash", "run"),)}),
