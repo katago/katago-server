@@ -1,1 +1,1 @@
-from .network import NetworkSerializer, LimitedNetworkSerializer
+from .network import NetworkSerializer, NetworkSerializerForTasks
