@@ -12,8 +12,12 @@ class DynamicDistributedTaskConfiguration(SingletonModel):
     class Meta:
         verbose_name = "Configuration: Katago config"
 
-    katago_config = TextField(
-        _("katago config"), help_text=_("The configuration file for katago to be given to client for selfplay"), default="FILL ME"
+    selfplay_katago_config = TextField(
+        _("selfplay katago config"), help_text=_("The configuration file for katago to be given to client for selfplay games"), default="FILL ME"
+    )
+    # TODO can we change "ranking" to "rating" everywhere else too at some point, to be more precise and to be consistent with client?
+    rating_katago_config = TextField(
+        _("rating katago config"), help_text=_("The configuration file for katago to be given to client for rating games"), default="FILL ME"
     )
     probability_predefined_ranking_game = FloatField(
         _("probability of playing ranking game"),

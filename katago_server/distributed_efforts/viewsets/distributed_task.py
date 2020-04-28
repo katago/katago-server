@@ -39,8 +39,14 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
             if should_play_predefined_ranking:
                 ranking_distributed_task.assign_to(request.user)
+                config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
                 distributed_task_content = RankingEstimationGameDistributedTaskSerializer(ranking_distributed_task)
-                response_body = {"type": "static", "kind": "ranking", "content": distributed_task_content.data}
+                response_body = {
+                    "type": "static",
+                    "kind": "ranking",
+                    "config": config_content.data.get("rating_katago_config"),
+                    "content": distributed_task_content.data
+                }
                 return Response(response_body)
 
             # training_distributed_task = TrainingGameDistributedTask.objects.get_one_unassigned_with_lock()
@@ -59,5 +65,10 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         best_network = Network.objects.select_best_without_uncertainty(current_run)
         logger.info(f"best_network: {best_network}")
         network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
-        response_body = {"type": "dynamic", "kind": "training", "config": config_content.data.get("katago_config"), "network": network_content.data}
+        response_body = {
+            "type": "dynamic",
+            "kind": "training",
+            "config": config_content.data.get("selfplay_katago_config"),
+            "network": network_content.data
+        }
         return Response(response_body)
