@@ -9,7 +9,7 @@ class NetworkAdmin(admin.ModelAdmin):
     ordering = ("log_gamma_upper_confidence",)
     fieldsets = (
         (None, {"fields": (("id", "name", "created_at", "run"), "parent_network")}),
-        (_("Download"), {"fields": ("model_file",)}),
+        (_("Download"), {"fields": ("model_file","model_file_bytes","model_file_sha256")}),
         (_("Strength"), {"fields": (("log_gamma", "log_gamma_uncertainty"), "log_gamma_upper_confidence")}),
         (_("Network architecture"), {"fields": (("network_size", "nb_parameters"), "model_architecture_details")}),
     )
