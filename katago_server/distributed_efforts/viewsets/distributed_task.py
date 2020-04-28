@@ -68,7 +68,10 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         response_body = {
             "type": "dynamic",
             "kind": "training",
+            # TODO would this be the right way to include the current run's name?
+            # "run": current_run.name,
             "config": config_content.data.get("selfplay_katago_config"),
             "network": network_content.data
+            # TODO: Why do we have a "content": distributed_task_content.data above but not here?
         }
         return Response(response_body)
