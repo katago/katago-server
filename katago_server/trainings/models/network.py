@@ -2,7 +2,7 @@ import os
 from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
-from django.db.models import Model, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, \
+from django.db.models import Model, BigIntegerField, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, \
     ForeignKey, PROTECT, BigAutoField
 from django.utils.translation import gettext_lazy as _
 
@@ -71,6 +71,8 @@ class Network(Model):
     nb_parameters = IntegerField(_("number of parameters in network"), default=0)
     model_architecture_details = JSONField(_("network architecture schema"), null=True, blank=True, default=dict)
     model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,), max_length=200)
+    model_file_bytes = BigIntegerField(_("number of bytes in network file"), default=0)
+    model_file_sha256 = CharField(_("sha256 hash of network file"), max_length=64, default="")
     # And an estimation of the strength
     log_gamma = FloatField(_("log gamma"), default=0)
     log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0)
