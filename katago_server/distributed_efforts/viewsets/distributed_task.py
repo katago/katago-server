@@ -19,7 +19,7 @@ import logging
 
 from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
-from katago_server.trainings.serializers import LimitedNetworkSerializer
+from katago_server.trainings.serializers import NetworkSerializerForTasks
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +58,6 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         logger.info(f"config_content: {config_content}")
         best_network = Network.objects.select_best_without_uncertainty(current_run)
         logger.info(f"best_network: {best_network}")
-        network_content = LimitedNetworkSerializer(best_network, context=serializer_context)
+        network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
         response_body = {"type": "dynamic", "kind": "training", "config": config_content.data.get("katago_config"), "network": network_content.data}
         return Response(response_body)
