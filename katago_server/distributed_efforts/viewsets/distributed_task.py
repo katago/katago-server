@@ -44,12 +44,13 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 response_body = {
                     "type": "static",
                     "kind": "ranking",
+                    "run": current_run.name,
                     "config": config_content.data.get("rating_katago_config"),
                     "content": distributed_task_content.data
                 }
                 return Response(response_body)
 
-            # training_distributed_task = TrainingGameDistributedTask.objects.get_one_unassigned_with_lock()
+            # training_distributed_task = TrainingGameDistributedTask.objects.get_one_unassigned_with_lock(current_run)
             # logger.info('training_distributed_task', training_distributed_task)
             # should_play_predefined_training = task_configuration.should_play_predefined_training_game() and training_distributed_task is not None
             #
@@ -68,10 +69,8 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         response_body = {
             "type": "dynamic",
             "kind": "training",
-            # TODO would this be the right way to include the current run's name?
-            # "run": current_run.name,
+            "run": current_run.name,
             "config": config_content.data.get("selfplay_katago_config"),
             "network": network_content.data
-            # TODO: Why do we have a "content": distributed_task_content.data above but not here?
         }
         return Response(response_body)
