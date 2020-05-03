@@ -15,7 +15,7 @@ DEFAULT_EXPIRATION_DELTA = timezone.timedelta(hours=8)
 
 
 def upload_initial_to(instance, _filename):
-    return os.path.join("initial_position", f"{instance.uuid}.sgf")
+    return os.path.join("initial_position", f"{instance.game_hash}.sgf")
 
 
 validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))

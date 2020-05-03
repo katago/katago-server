@@ -5,12 +5,12 @@ from django.utils.translation import gettext_lazy as _
 from katago_server.contrib.validators import FileValidator
 from katago_server.games.models.abstract_game import AbstractGame
 
-training_data_storage = FileSystemStorage(location="/training_data")
+training_data_storage = FileSystemStorage(location="/data/games/training")
 validate_gzip = FileValidator(max_size=1024 * 1024 * 300, content_types=("application/zip",))
 
 
 def upload_unpacked_training_to(instance, _filename):
-    return f"{instance.uuid}.npz"
+    return f"{instance.game_hash}.npz"
 
 
 class TrainingGame(AbstractGame):

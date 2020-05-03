@@ -73,20 +73,23 @@ GS_DEFAULT_ACL = "publicRead"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA
 # ------------------------------------------------------------------------------
-from storages.backends.gcloud import GoogleCloudStorage  # noqa E402
 
+# TODO: reactivate when we move to cloud
+# from storages.backends.gcloud import GoogleCloudStorage  # noqa E402
+#
+#
+# class StaticRootGoogleCloudStorage(GoogleCloudStorage):
+#     location = "static"
+#     default_acl = "publicRead"
+#
+#
+# class MediaRootGoogleCloudStorage(GoogleCloudStorage):
+#     location = "media"
+#     file_overwrite = False
+#
+#
+# DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootGoogleCloudStorage"
 
-class StaticRootGoogleCloudStorage(GoogleCloudStorage):
-    location = "static"
-    default_acl = "publicRead"
-
-
-class MediaRootGoogleCloudStorage(GoogleCloudStorage):
-    location = "media"
-    file_overwrite = False
-
-
-DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootGoogleCloudStorage"
 MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 
 # TEMPLATES
