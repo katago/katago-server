@@ -1,4 +1,6 @@
 import os
+
+from django.core.files.storage import FileSystemStorage
 from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
@@ -12,8 +14,11 @@ from katago_server.trainings.managers.network_pd_manager import NetworkPdManager
 from katago_server.trainings.managers.network_queryset import NetworkQuerySet
 
 
+network_data_storage = FileSystemStorage(location="/data/network")
+
+
 def upload_network_to(instance, _filename):
-    return os.path.join("networks", f"{instance.uuid}.gz")
+    return os.path.join("networks", f"{instance.name}.gz")
 
 
 # TODO use this
@@ -70,7 +75,7 @@ class Network(Model):
     network_size = CharField(_("string describing blocks and channels in network"), max_length=32, default="")
     nb_parameters = IntegerField(_("number of parameters in network"), default=0)
     model_architecture_details = JSONField(_("network architecture schema"), null=True, blank=True, default=dict)
-    model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,), max_length=200)
+    model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,), storage=network_data_storage, max_length=200)
     model_file_bytes = BigIntegerField(_("number of bytes in network file"), default=0)
     model_file_sha256 = CharField(_("sha256 hash of network file"), max_length=64, default="")
     # And an estimation of the strength

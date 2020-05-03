@@ -2,6 +2,7 @@ import os
 
 import uuid as uuid
 from django.contrib.postgres.fields import JSONField
+from django.core.files.storage import FileSystemStorage
 from django.db.models import (
     Model,
     CharField,
@@ -25,9 +26,11 @@ from katago_server.users.models import User
 
 __ALL__ = ["TrainingGame", "RankingEstimationGame"]
 
+sgf_data_storage = FileSystemStorage(location="/data/games/sgf")
+
 
 def upload_sgf_to(instance, _filename):
-    return os.path.join("games", f"{instance.uuid}.sgf")
+    return os.path.join("games", f"{instance.game_hash}.sgf")
 
 
 validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
@@ -54,7 +57,6 @@ class AbstractGame(Model):
     # A game is submitted by an user
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
-    playouts_per_sec = FloatField(_("playout per second"), null=True)
     # Describe the board/game itself
     board_size_x = IntegerField(_("board absciss"), null=False, default=19)
     board_size_y = IntegerField(_("board ordinate"), null=False, default=19)
@@ -89,7 +91,7 @@ class AbstractGame(Model):
     initial_position_sgf_file = FileField(verbose_name=_("initial position, as sgf file"), null=True, blank=True)
     initial_position_extra_params = JSONField(verbose_name=_("initial position extra parameters"), default=dict, null=True, blank=True)
     # The result of the game is stored as an sgf file, always ready to be viewed
-    sgf_file = FileField(_("resulting sgf file"), upload_to=upload_sgf_to, validators=(validate_sgf,),  max_length=200)
+    sgf_file = FileField(_("resulting sgf file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200)
     # KataGo engine's Hash128 for the whole game.
     game_hash = CharField(_("game_hash from katago"), max_length=48, default="")
 

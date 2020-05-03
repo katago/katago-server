@@ -11,7 +11,6 @@ from katago_server.users.serializers import LimitedUserSerializer
 class RankingEstimationGameCreateSerializer(HyperlinkedModelSerializer):
     # https://www.django-rest-framework.org/api-guide/validators/#advanced-field-defaults
     submitted_by = HiddenField(default=CurrentUserDefault())
-    uuid = HiddenField(default=uuid.uuid4())
 
     class Meta:
         model = RankingEstimationGame
