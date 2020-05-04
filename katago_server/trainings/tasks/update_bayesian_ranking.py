@@ -1,6 +1,6 @@
 from config import celery_app
 
-from katago_server.games.models import RankingEstimationGame
+from katago_server.games.models import RatingGame
 from katago_server.runs.models import Run
 from katago_server.trainings.models import Network, NetworkBayesianRankingConfiguration
 from katago_server.trainings.services.bayesian_elo import BayesianRankingService
@@ -12,7 +12,7 @@ def update_bayesian_ranking():
 
     network_rankings = Network.pd.get_rankings_dataframe(current_run)
     anchor_network = Network.objects.filter(run=current_run).order_by("pk").first()
-    detailed_tournament_result = RankingEstimationGame.pd.get_detailed_tournament_results_dataframe(current_run)
+    detailed_tournament_result = RatingGame.pd.get_detailed_tournament_results_dataframe(current_run)
 
     assert_no_match_with_same_network = detailed_tournament_result["reference_network"] != detailed_tournament_result["opponent_network"]
     detailed_tournament_result = detailed_tournament_result[assert_no_match_with_same_network]

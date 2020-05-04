@@ -36,7 +36,7 @@ class Network(Model):
     name = CharField(_("neural network name"), max_length=128, default="", validators=[alphanumericdashes], db_index=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
-    parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)
+    parent_network = ForeignKey("self", verbose_name=_("Parent network for BayesElo prior"), null=True, blank=True, related_name="variants", on_delete=PROTECT)
     network_size = CharField(_("network size"), max_length=32, default="", help_text=_("String describing blocks and channels in network."))
     is_random = BooleanField(_("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"))
     model_file = FileField(
@@ -75,7 +75,7 @@ class Network(Model):
         return round(self.log_gamma_uncertainty * 400 * log10(e), ndigits=1)
 
     @property
-    def ranking(self):
+    def rating(self):
         return f"{self.elo} ±{2 * self.elo_uncertainty}"
 
     def save(self, *args, **kwargs):

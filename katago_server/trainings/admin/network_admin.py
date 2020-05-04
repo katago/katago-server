@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class NetworkAdmin(admin.ModelAdmin):
-    list_display = ("id", "run", "name", "created_at", "size", "log_gamma_upper_confidence", "log_gamma_lower_confidence", "ranking")
+    list_display = ("id", "run", "name", "created_at", "size", "log_gamma_upper_confidence", "log_gamma_lower_confidence", "rating")
     list_filter = ("run", "created_at", "network_size")
     readonly_fields = ("id", "created_at", "name", "log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence")
     ordering = ("log_gamma_upper_confidence",)

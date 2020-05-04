@@ -24,7 +24,7 @@ from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 from katago_server.users.models import User
 
-__ALL__ = ["TrainingGame", "RankingEstimationGame"]
+__ALL__ = ["TrainingGame", "RatingGame"]
 
 sgf_data_storage = FileSystemStorage(location="/data/games/sgf")
 
@@ -51,54 +51,43 @@ class AbstractGame(Model):
         DRAW = "0", _("Draw (Jigo)")
         NO_RESULT = "-", _("No Result (Moshoubou)")  # https://senseis.xmp.net/?NoResult
 
-    # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
-    # A game is submitted by an user
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
-    # Describe the board/game itself
-    board_size_x = IntegerField(_("board absciss"), null=False, default=19)
-    board_size_y = IntegerField(_("board ordinate"), null=False, default=19)
-    handicap = IntegerField(_("nb of handicap stone"), null=False, default=0)
-    komi = DecimalField(_("komi (white)"), max_digits=3, decimal_places=1, null=False, default=7.0)
-    rules_params = JSONField(
-        _("game rules"),
-        help_text=_(
-            "Depending on rule set, the ko (https://senseis.xmp.net/?Ko), the scoring (https://senseis.xmp.net/?Scoring), the group tax (https://senseis.xmp.net/?GroupTax) and the suicide (https://senseis.xmp.net/?Suicide) may have subtle difference. See more info here https://lightvector.github.io/KataGo/rules.html"
-        ),
-        default=dict,
-        null=True,
-        blank=True,
-    )  # See https://lightvector.github.io/KataGo/rules.html
-    # Some extra information about the game like the type
-    # eg: komi compensated games, uncompensated games, asymmetric playout games, seki-training games
-    game_extra_params = JSONField(
-        _("extra game parameters regarding game, like number of playout"),
-        help_text=_("Some parameters (like the playout) are randomized by katago engine"),
+    board_size_x = IntegerField(_("board size x"), null=False, default=19, help_text=_("Width of board"))
+    board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"))
+    handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"))
+    komi = DecimalField(_("komi"), max_digits=3, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"))
+    rules = JSONField(
+        _("rules"),
+        help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"),
         default=dict,
         null=True,
         blank=True,
     )
-    # The results
-    result = CharField(_("game result"), max_length=15, choices=GamesResult.choices, db_index=True)
-    score = DecimalField(_("game score"), max_digits=4, decimal_places=1, null=True, blank=True)
-    has_resigned = BooleanField(_("game end up with resign"), default=False, db_index=True)
-    # The networks related to this game
-    white_network = ForeignKey(Network, verbose_name=_("network white"), on_delete=PROTECT, related_name="%(class)s_games_as_white", db_index=True)
-    black_network = ForeignKey(Network, verbose_name=_("network black"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True)
-    # A game can be forked from an existing game or a initial situation
-    initial_position_sgf_file = FileField(verbose_name=_("initial position, as sgf file"), null=True, blank=True)
-    initial_position_extra_params = JSONField(verbose_name=_("initial position extra parameters"), default=dict, null=True, blank=True)
-    # The result of the game is stored as an sgf file, always ready to be viewed
-    sgf_file = FileField(_("resulting sgf file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200)
-    # KataGo engine's Hash128 for the whole game.
-    game_hash = CharField(_("game_hash from katago"), max_length=48, default="")
+    extra_metadata = JSONField(
+        _("extra metadata"),
+        help_text=_("Additional miscellaneous metadata about this game"),
+        default=dict,
+        null=True,
+        blank=True,
+    )
+
+    winner = CharField(_("winner"), max_length=1, choices=GamesResult.choices, db_index=True)
+    score = DecimalField(_("score"), max_digits=4, decimal_places=1, null=True, blank=True, help_text=_("Final white points minus black points"))
+    resigned = BooleanField(_("resigned"), default=False, db_index=True, help_text=_("Did this game end in resignation?"))
+
+    white_network = ForeignKey(Network, verbose_name=_("white player network"), on_delete=PROTECT, related_name="%(class)s_games_as_white", db_index=True)
+    black_network = ForeignKey(Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True)
+
+    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200)
+    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"))
 
     @property
     def result_text(self):
         score = "R" if self.has_resigned else self.score
-        return f"{self.result}+{score}" if self.result in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE] else self.result
+        return f"{self.winner}+{score}" if self.winner in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE] else self.winner
 
     def __str__(self):
         return f"{self.id} ({self.result_text})"

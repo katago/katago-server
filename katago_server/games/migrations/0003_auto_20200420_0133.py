@@ -27,6 +27,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='traininggame',
             name='unpacked_file',
-            field=models.FileField(max_length=200, storage=django.core.files.storage.FileSystemStorage(location='/training_data'), upload_to=katago_server.games.models.training_game.upload_unpacked_training_to, validators=[katago_server.contrib.validators.FileValidator(content_types=('application/zip',), max_size=314572800)], verbose_name='training data (npz)'),
+            field=models.FileField(max_length=200, storage=django.core.files.storage.FileSystemStorage(location='/training_data'), upload_to=katago_server.games.models.training_game.upload_training_data_to, validators=[katago_server.contrib.validators.FileValidator(content_types=('application/zip',), max_size=314572800)], verbose_name='training data (npz)'),
         ),
     ]
