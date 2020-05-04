@@ -14,7 +14,7 @@ from drf_yasg import openapi
 
 from katago_server.distributed_efforts.viewsets import DistributedTaskViewSet
 from katago_server.games.viewsets import TrainingGameViewSet, RankingEstimationGameViewSet
-from katago_server.runs.viewsets import RunViewSet
+from katago_server.runs.viewsets import RunViewSet, RunClientViewSet
 from katago_server.trainings.viewsets import NetworkViewSet
 from katago_server.users.viewsets import UserViewSet
 
@@ -38,6 +38,7 @@ router.register(r"networks", NetworkViewSet)
 router.register(r"games/training", TrainingGameViewSet)
 router.register(r"games/ranking_estimation", RankingEstimationGameViewSet)
 router.register(r"runs", RunViewSet)
+router.register(r"runs/client", RunClientViewSet)
 router.register(r"tasks", DistributedTaskViewSet, basename="Task")
 
 

@@ -22,4 +22,14 @@ class RunSerializer(HyperlinkedModelSerializer):
             "rating_client_config",
         )
 
+class RunClientSerializer(HyperlinkedModelSerializer):
+    class Meta:
+        model = Run
+        fields = (
+            "name",
+            "data_board_len",
+            "inputs_version",
+            "max_search_threads_allowed",
+        )
+
 
