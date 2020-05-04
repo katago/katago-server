@@ -1,57 +1,52 @@
+import numpy as np
+import random
 from math import log10, e, exp
 
-import numpy as np
-from django.utils import timezone
-from django_celery_beat.models import PeriodicTask
-
-from katago_server.distributed_efforts.models import RankingGameDistributedTaskGeneratorConfiguration, RankingEstimationGameDistributedTask
 from katago_server.games.models import TrainingGame
-from datetime import timedelta
-
 from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 
-
-class RankingEstimationGameGeneratorService:
-    TASK_NAME = "katago_server.distributed_efforts.tasks.schedule_ranking_estimation_game.schedule_ranking_estimation_game"
+class RatingNetworkPairerService:
 
     def __init__(self, run: Run):
         self.current_run = run
-        self.config = RankingGameDistributedTaskGeneratorConfiguration.get_solo()
 
-    def how_many_games_to_generate(self):
+    def generate_task(self):
         """
-        This check how often the scheduling of match is executed: let's call this "delta_t"
-        Based on this delta, and how much training game have been generated, it schedules "X" games so a given ratio is respected.
-        (eg we want 1/10 of games to be ranking estimation)
-        The ratio is configurable in db
+        Generate a pairing of networks to play a rating game for a client task.
 
-        :return: a number of game to generate
+        :return: Tuple of (white_network,black_network)
         """
-        periodic_task = PeriodicTask.objects.filter(task=self.TASK_NAME).get()
-        interval_timedelta = timedelta(**{periodic_task.interval.period: periodic_task.interval.every})
-        number_of_training_in_interval = TrainingGame.objects.filter(run=self.current_run, created_at__gte=timezone.now() - interval_timedelta).count()
-        return round(number_of_training_in_interval * self.config.ratio)
+        if random.random() < self.current_run.rating_game_high_elo_probability:
+            return self.generate_high_elo_game()
+        else:
+            return self.generate_high_uncertainty_game()
 
     def generate_high_elo_game(self):
         """
         In order to decrease the uncertainty of top network, we can chose to invest more on network having a chance to be the best ones.
 
-        :return:
+        :return: Tuple of (white_network,black_network)
         """
         reference_network = Network.objects.select_one_of_the_best_with_uncertainty(self.current_run)
         opponent_network = self._choose_opponent(reference_network)
-        return RankingEstimationGameDistributedTask.create_with_random_color(self.current_run, reference_network, opponent_network)
+        if random.random() < 0.5:
+            return (reference_network, opponent_network)
+        else:
+            return (opponent_network,reference_network)
 
     def generate_high_uncertainty_game(self):
         """
         In order to decrease the uncertainty of all network, we can look the one with biggest uncertainty.
 
-        :return:
+        :return: Tuple of (white_network,black_network)
         """
         reference_network = Network.objects.select_one_of_the_more_uncertain(self.current_run)
         opponent_network = self._choose_opponent(reference_network)
-        return RankingEstimationGameDistributedTask.create_with_random_color(self.current_run, reference_network, opponent_network)
+        if random.random() < 0.5:
+            return (reference_network, opponent_network)
+        else:
+            return (opponent_network,reference_network)
 
     def _choose_opponent(self, reference_network):
         """

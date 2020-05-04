@@ -4,17 +4,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from katago_server.distributed_efforts.models import (
-    RankingEstimationGameDistributedTask,
-    TrainingGameDistributedTask,
-    DynamicDistributedTaskConfiguration,
-)
-from katago_server.distributed_efforts.serializers import (
-    RankingEstimationGameDistributedTaskSerializer,
-    TrainingGameDistributedTaskSerializer,
-    DynamicDistributedTaskKatagoConfigurationSerializer,
-)
-
 import logging
 
 from katago_server.runs.models import Run
@@ -30,25 +19,25 @@ class DistributedTaskViewSet(viewsets.ViewSet):
     # noinspection PyMethodMayBeStatic
     def create(self, request):
         current_run = Run.objects.select_current()
-        task_configuration = DynamicDistributedTaskConfiguration.get_solo()
+        # task_configuration = DynamicDistributedTaskConfiguration.get_solo()
 
-        with transaction.atomic():
-            ranking_distributed_task = RankingEstimationGameDistributedTask.objects.get_one_unassigned_with_lock(current_run)
-            logger.info(f"ranking_distributed_task: {ranking_distributed_task}")
-            should_play_predefined_ranking = task_configuration.should_play_predefined_ranking_game() and ranking_distributed_task is not None
+        # with transaction.atomic():
+        #     ranking_distributed_task = RankingEstimationGameDistributedTask.objects.get_one_unassigned_with_lock(current_run)
+        #     logger.info(f"ranking_distributed_task: {ranking_distributed_task}")
+        #     should_play_predefined_ranking = task_configuration.should_play_predefined_ranking_game() and ranking_distributed_task is not None
 
-            if should_play_predefined_ranking:
-                ranking_distributed_task.assign_to(request.user)
-                config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
-                distributed_task_content = RankingEstimationGameDistributedTaskSerializer(ranking_distributed_task)
-                response_body = {
-                    "type": "static",
-                    "kind": "ranking",
-                    "run": current_run.name,
-                    "config": config_content.data.get("rating_katago_config"),
-                    "content": distributed_task_content.data
-                }
-                return Response(response_body)
+        #     if should_play_predefined_ranking:
+        #         ranking_distributed_task.assign_to(request.user)
+        #         config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
+        #         distributed_task_content = RankingEstimationGameDistributedTaskSerializer(ranking_distributed_task)
+        #         response_body = {
+        #             "type": "static",
+        #             "kind": "ranking",
+        #             "run": current_run.name,
+        #             "config": config_content.data.get("rating_katago_config"),
+        #             "content": distributed_task_content.data
+        #         }
+        #         return Response(response_body)
 
             # training_distributed_task = TrainingGameDistributedTask.objects.get_one_unassigned_with_lock(current_run)
             # logger.info('training_distributed_task', training_distributed_task)
@@ -61,8 +50,6 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             #     return Response(response_body)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
-        config_content = DynamicDistributedTaskKatagoConfigurationSerializer(task_configuration)
-        logger.info(f"config_content: {config_content}")
         best_network = Network.objects.select_best_without_uncertainty(current_run)
         logger.info(f"best_network: {best_network}")
         network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
@@ -70,7 +57,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             "type": "dynamic",
             "kind": "training",
             "run": current_run.name,
-            "config": config_content.data.get("selfplay_katago_config"),
+            "config": current_run.selfplay_client_config,
             "network": network_content.data
         }
         return Response(response_body)
