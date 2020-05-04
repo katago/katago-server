@@ -11,7 +11,7 @@ class RatingNetworkPairerService:
     def __init__(self, run: Run):
         self.current_run = run
 
-    def generate_task(self):
+    def generate_pairing(self):
         """
         Generate a pairing of networks to play a rating game for a client task.
 

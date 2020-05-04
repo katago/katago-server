@@ -12,4 +12,4 @@ class NetworkSerializer(HyperlinkedModelSerializer):
 class NetworkSerializerForTasks(HyperlinkedModelSerializer):
     class Meta:
         model = Network
-        fields = ["run", "name", "is_random", "model_file", "model_file_bytes", "model_file_sha256", "created_at"]
+        fields = ["run", "url", "name", "is_random", "model_file", "model_file_bytes", "model_file_sha256", "created_at"]
