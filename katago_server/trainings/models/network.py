@@ -14,34 +14,13 @@ from katago_server.runs.models import Run
 from katago_server.trainings.managers.network_pd_manager import NetworkPdManager
 from katago_server.trainings.managers.network_queryset import NetworkQuerySet
 
-
 network_data_storage = FileSystemStorage(location="/data/network")
-
 
 def upload_network_to(instance, _filename):
     return os.path.join("networks", f"{instance.name}.bin.gz")
 
-
-# TODO use this
-def parse_katago_training_model_name(name):
-    """Attempt to parse information out of KataGo's default model naming convention.
-    Will return an empty dictionary if the model does not fit KataGo's normal naming convention."""
-    pieces = name.split('-')
-    if len(pieces) != 4 or pieces[1][0] != 'b' or 'c' not in pieces[1] or pieces[2][0] != 's' or pieces[3][0] != 'd':
-        return {}
-    try:
-        parsed = {"run_name": pieces[0],
-                  "network_size": pieces[1],
-                  "nb_trained_samples": int(pieces[2][1:]),
-                  "nb_data_samples": int(pieces[3][1:])}
-        return parsed
-    except ValueError:
-        return {}
-
-
 validate_zip = FileValidator(max_size=1024 * 1024 * 1024, content_types=("application/zip",))
 alphanumericdashes = RegexValidator(r'^[-0-9a-zA-Z]*$', 'Only alphanumeric or dash characters are allowed.')
-
 
 class Network(Model):
     objects = NetworkQuerySet.as_manager()
