@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, BigIntegerField, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, \
     ForeignKey, PROTECT, BigAutoField, BooleanField
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import RegexValidator
 
 from katago_server.contrib.validators import FileValidator
 from katago_server.runs.models import Run
@@ -39,6 +40,7 @@ def parse_katago_training_model_name(name):
 
 
 validate_zip = FileValidator(max_size=1024 * 1024 * 1024, content_types=("application/zip",))
+alphanumericdashes = RegexValidator(r'^[-0-9a-zA-Z]*$', 'Only alphanumeric or dash characters are allowed.')
 
 
 class Network(Model):
@@ -51,7 +53,8 @@ class Network(Model):
         ordering = ['-created_at']
 
     id = BigAutoField(primary_key=True)
-    name = CharField(_("neural network name"), max_length=128, default="", db_index=True)
+    # TODO enforce that name is UNIQUE
+    name = CharField(_("neural network name"), max_length=128, default="", validators=[alphanumericdashes], db_index=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
     parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)

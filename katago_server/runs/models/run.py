@@ -22,6 +22,7 @@ class Run(Model):
     id = AutoField(primary_key=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     status = CharField(_("run status"), max_length=15, choices=RunStatus.choices, db_index=True, default=RunStatus.INACTIVE)
+    # TODO enforce that name is UNIQUE
     name = CharField(
         _("name"),
         max_length=64,
