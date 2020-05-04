@@ -11,20 +11,20 @@ class NetworkPdManager(Manager):
     def get_queryset(self):
         return NetworkPdQuerySet(self.model, using=self._db)
 
-    def get_rankings_dataframe(self, run):
-        ranking_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty").all()
-        ranking = read_frame(ranking_qs)
-        ranking = ranking.set_index("id")
-        ranking = ranking.sort_index()
+    def get_ratings_dataframe(self, run):
+        rating_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty").all()
+        rating = read_frame(rating_qs)
+        rating = rating.set_index("id")
+        rating = rating.sort_index()
 
-        ranking["parent_network__pk"] = ranking["parent_network__pk"].fillna(-1)
-        ranking["log_gamma"] = ranking["log_gamma"].fillna(0)
-        ranking["log_gamma_uncertainty"] = ranking["log_gamma_uncertainty"].fillna(0)
-        ranking["log_gamma_uncertainty"] = ranking["log_gamma_uncertainty"].replace([np.inf, -np.inf], 0)
+        rating["parent_network__pk"] = rating["parent_network__pk"].fillna(-1)
+        rating["log_gamma"] = rating["log_gamma"].fillna(0)
+        rating["log_gamma_uncertainty"] = rating["log_gamma_uncertainty"].fillna(0)
+        rating["log_gamma_uncertainty"] = rating["log_gamma_uncertainty"].replace([np.inf, -np.inf], 0)
 
-        return ranking
+        return rating
 
-    def bulk_update_rankings_from_dataframe(self, dataframe):
+    def bulk_update_ratings_from_dataframe(self, dataframe):
         networks_db = self.all()
 
         dataframe["log_gamma_upper_confidence"] = np.round(

@@ -1,1 +1,1 @@
-from .update_bayesian_ranking import update_bayesian_ranking
+from .update_bayesian_rating import update_bayesian_rating

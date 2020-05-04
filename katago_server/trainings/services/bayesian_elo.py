@@ -10,24 +10,24 @@ pandas_utils = PandasUtilsService()
 logger = logging.getLogger(__name__)
 
 
-class BayesianRankingService:
+class BayesianRatingService:
     _simplified_tournament_results = None
     _networks_actual_score = None
 
-    def __init__(self, network_rankings: pd.DataFrame, network_anchor_id, detailed_tournament_results: pd.DataFrame):
-        self._network_rankings = network_rankings
+    def __init__(self, network_ratings: pd.DataFrame, network_anchor_id, detailed_tournament_results: pd.DataFrame):
+        self._network_ratings = network_ratings
         self._network_anchor_id = network_anchor_id
         self._detailed_tournament_results = detailed_tournament_results
 
-    def update_rankings_iteratively(self, number_of_iterations):
+    def update_ratings_iteratively(self, number_of_iterations):
         logger.debug("---> network_anchor_id (start)")
         logger.debug(self._network_anchor_id)
-        logger.debug("---> network_rankings (start)")
-        pandas_utils.print_data_frame(self._network_rankings)
+        logger.debug("---> network_ratings (start)")
+        pandas_utils.print_data_frame(self._network_ratings)
         logger.debug("---> detailed_tournament_results (start)")
         pandas_utils.print_data_frame(self._detailed_tournament_results)
 
-        self._update_network_ranking_with_bayesian_prior()
+        self._update_network_rating_with_bayesian_prior()
         logger.debug("---> detailed_tournament_results (after bayesian)")
         pandas_utils.print_data_frame(self._detailed_tournament_results)
 
@@ -35,28 +35,28 @@ class BayesianRankingService:
         logger.debug("---> simplified_tournament_results (after bayesian)")
         pandas_utils.print_data_frame(self._detailed_tournament_results)
 
-        self._sort_inplace_network_rankings_by_uncertainty()
-        logger.debug("---> network_rankings (after sort)")
-        pandas_utils.print_data_frame(self._network_rankings)
+        self._sort_inplace_network_ratings_by_uncertainty()
+        logger.debug("---> network_ratings (after sort)")
+        pandas_utils.print_data_frame(self._network_ratings)
 
         self._calculate_networks_actual_score()
         logger.info("---> networks_actual_score")
         pandas_utils.print_data_frame(self._networks_actual_score, level=logging.INFO)
 
         for iteration_index in range(number_of_iterations):
-            for network in self._network_rankings.itertuples():
+            for network in self._network_ratings.itertuples():
                 network_id = network[0]
                 network_log_gamma = network.log_gamma
                 self._update_specific_network_log_gamma(network_id, network_log_gamma)
             self._reset_anchor_log_gamma()
 
-        for network in self._network_rankings.itertuples():
+        for network in self._network_ratings.itertuples():
             network_id = network[0]
             network_log_gamma = network.log_gamma
             self._update_specific_network_log_gamma_uncertainty(network_id, network_log_gamma)
         self._reset_anchor_log_gamma_uncertainty()
 
-        return self._network_rankings
+        return self._network_ratings
 
     def _get_games_played_by_specific_network(self, network_id):
         """
@@ -73,16 +73,16 @@ class BayesianRankingService:
         games_played_by_specific_network_filter = tournament_results_only_total["reference_network"] == network_id
         return tournament_results_only_total[games_played_by_specific_network_filter]
 
-    def _update_network_ranking_with_bayesian_prior(self):
+    def _update_network_rating_with_bayesian_prior(self):
         """
          Whenever a NEW player is added to the above, it is necessary to add a Bayesian prior to obtain good results
          and keep the math from blowing up.
          A reasonable prior is to add a single "virtual draw" between the new player and the immediately previous neural net version.
         """
         virtual_draws_src = []
-        network_ids = list(self._network_rankings.index)
+        network_ids = list(self._network_ratings.index)
 
-        for network in self._network_rankings.itertuples():
+        for network in self._network_ratings.itertuples():
             network_id = network[0]
             parent_network_id = network.parent_network__pk
 
@@ -133,8 +133,8 @@ class BayesianRankingService:
         # And save it for later usage
         self._simplified_tournament_results = tournament_results
 
-    def _sort_inplace_network_rankings_by_uncertainty(self):
-        self._network_rankings.sort_values("log_gamma_uncertainty", ascending=False, inplace=True)
+    def _sort_inplace_network_ratings_by_uncertainty(self):
+        self._network_ratings.sort_values("log_gamma_uncertainty", ascending=False, inplace=True)
 
     def _calculate_networks_actual_score(self):
         """
@@ -166,7 +166,7 @@ class BayesianRankingService:
         log_gamma_diff = log(actual_score / expected_score)
         logger.debug("---> log_gamma_diff")
         logger.debug(log_gamma_diff)
-        self._network_rankings.loc[network_id, "log_gamma"] += log_gamma_diff
+        self._network_ratings.loc[network_id, "log_gamma"] += log_gamma_diff
 
     def _calculate_specific_network_expected_score(self, network_id, network_log_gamma):
         """
@@ -185,8 +185,8 @@ class BayesianRankingService:
         games_played_win_probability_src = []
         for game in games_played.itertuples():
             opponent_network = game.opponent_network
-            # pandas_utils.print_data_frame(self._network_rankings)
-            opponent_network_log_gamma = self._network_rankings.loc[opponent_network, "log_gamma"]
+            # pandas_utils.print_data_frame(self._network_ratings)
+            opponent_network_log_gamma = self._network_ratings.loc[opponent_network, "log_gamma"]
             # logger.debug("opp")
             # logger.debug(opponent_network_log_gamma)
             # logger.debug("ref")
@@ -210,11 +210,11 @@ class BayesianRankingService:
         So subtract the anchor player's log_gamma value from every player's log_gamma, including the anchor player's own log_gamma,
         so that the anchor player is back at log_gamma 0.
         """
-        self._network_rankings -= self._network_rankings.loc[self._network_anchor_id, "log_gamma"]
+        self._network_ratings -= self._network_ratings.loc[self._network_anchor_id, "log_gamma"]
 
     def _update_specific_network_log_gamma_uncertainty(self, network_id, network_log_gamma):
         precision = self._calculate_specific_network_precision(network_id, network_log_gamma)
-        self._network_rankings.loc[network_id, "log_gamma_uncertainty"] = 1 / precision
+        self._network_ratings.loc[network_id, "log_gamma_uncertainty"] = 1 / precision
 
     def _calculate_specific_network_precision(self, network_id, network_log_gamma):
         """
@@ -229,7 +229,7 @@ class BayesianRankingService:
         games_played_precision_src = []
         for game in games_played.itertuples():
             opponent_network = game.opponent_network
-            opponent_network_log_gamma = self._network_rankings.loc[opponent_network, "log_gamma"]
+            opponent_network_log_gamma = self._network_ratings.loc[opponent_network, "log_gamma"]
             log_gamma_diff = opponent_network_log_gamma - network_log_gamma
             precision = 1 / pow(exp(log_gamma_diff / 2) + exp(-log_gamma_diff / 2), 2)
             precision_dict = {"reference_network": network_id, "opponent_network": opponent_network, "precision": precision}
@@ -244,4 +244,4 @@ class BayesianRankingService:
         return games_played_cumulative_precision["cumulative_precision"].sum()
 
     def _reset_anchor_log_gamma_uncertainty(self):
-        self._network_rankings.loc[self._network_anchor_id, "log_gamma_uncertainty"] = 0
+        self._network_ratings.loc[self._network_anchor_id, "log_gamma_uncertainty"] = 0
