@@ -3,8 +3,6 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
-from katago_server.distributed_efforts.models import RankingEstimationGameDistributedTask, \
-    DynamicDistributedTaskConfiguration
 from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 
@@ -51,20 +49,20 @@ class TestAPI:
         assert response.data['type'] == 'dynamic'
         assert response.data['network'] == {'url': f"http://testserver/api/networks/{self.n1.id}/", 'name': '123456', 'model_file': 'http://testserver/media/123456.gz'}
 
-    def test_get_job_authenticated_when_matches_task_in_run(self):
-        # Given
-        client = APIClient()
-        client.login(username='test', password='test')
-        matches_task = RankingEstimationGameDistributedTask.objects.create(run=self.r1, status=RankingEstimationGameDistributedTask.Status.UNASSIGNED, white_network=self.n1, black_network=self.n1)
-        self.t1.probability_predefined_ranking_game = 1
-        self.t1.save()
-        # When
-        response = client.post('/api/tasks/', {})
-        # Then
-        assert response.status_code == 200
-        assert response.data['kind'] == 'ranking'
-        assert response.data['type'] == 'static'
-        assert response.data['content'] == {'url': f"http://testserver/api/networks/{self.n1.id}/", 'name': '123456', 'model_file': 'http://testserver/media/123456.gz'}
-        # Finally
-        matches_task.delete()
+    # def test_get_job_authenticated_when_matches_task_in_run(self):
+    #     # Given
+    #     client = APIClient()
+    #     client.login(username='test', password='test')
+    #     matches_task = RankingEstimationGameDistributedTask.objects.create(run=self.r1, status=RankingEstimationGameDistributedTask.Status.UNASSIGNED, white_network=self.n1, black_network=self.n1)
+    #     self.t1.probability_predefined_ranking_game = 1
+    #     self.t1.save()
+    #     # When
+    #     response = client.post('/api/tasks/', {})
+    #     # Then
+    #     assert response.status_code == 200
+    #     assert response.data['kind'] == 'ranking'
+    #     assert response.data['type'] == 'static'
+    #     assert response.data['content'] == {'url': f"http://testserver/api/networks/{self.n1.id}/", 'name': '123456', 'model_file': 'http://testserver/media/123456.gz'}
+    #     # Finally
+    #     matches_task.delete()
 
