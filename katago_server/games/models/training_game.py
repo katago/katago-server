@@ -8,9 +8,9 @@ from katago_server.games.models.abstract_game import AbstractGame
 training_data_storage = FileSystemStorage(location="/data/games/training")
 validate_gzip = FileValidator(max_size=1024 * 1024 * 300, content_types=("application/zip",))
 
-
-def upload_unpacked_training_to(instance, _filename):
-    return f"{instance.game_hash}.npz"
+#TODO subfolders by network
+def upload_training_data_to(instance, _filename):
+    return f"{instance.kg_game_uid}.npz"
 
 
 class TrainingGame(AbstractGame):
@@ -18,6 +18,6 @@ class TrainingGame(AbstractGame):
         verbose_name = _("Game: Training")
         ordering = ['-created_at']
 
-    unpacked_file = FileField(
-        _("training data (npz)"), upload_to=upload_unpacked_training_to, validators=(validate_gzip,), storage=training_data_storage, max_length=200
+    training_data_file = FileField(
+        _("training data (npz)"), upload_to=upload_training_data_to, validators=(validate_gzip,), storage=training_data_storage, max_length=200
     )

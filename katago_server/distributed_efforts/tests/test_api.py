@@ -53,7 +53,7 @@ class TestAPI:
     #     # Given
     #     client = APIClient()
     #     client.login(username='test', password='test')
-    #     matches_task = RankingEstimationGameDistributedTask.objects.create(run=self.r1, status=RankingEstimationGameDistributedTask.Status.UNASSIGNED, white_network=self.n1, black_network=self.n1)
+    #     matches_task = RatingGameDistributedTask.objects.create(run=self.r1, status=RatingGameDistributedTask.Status.UNASSIGNED, white_network=self.n1, black_network=self.n1)
     #     self.t1.probability_predefined_ranking_game = 1
     #     self.t1.save()
     #     # When

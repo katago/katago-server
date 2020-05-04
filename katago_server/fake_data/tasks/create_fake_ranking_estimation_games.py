@@ -1,15 +1,15 @@
 import random
 
 from config import celery_app
-from katago_server.games.models import RankingEstimationGame
+from katago_server.games.models import RatingGame
 from katago_server.runs.models import Run
 from katago_server.users.models import User
 
 
 # @celery_app.task()
 # def create_fake_ranking_estimation_games():
-#     ranking_estimation_games_tasks = RankingEstimationGameDistributedTask.objects.filter(
-#         status=RankingEstimationGameDistributedTask.Status.UNASSIGNED
+#     ranking_estimation_games_tasks = RatingGameDistributedTask.objects.filter(
+#         status=RatingGameDistributedTask.Status.UNASSIGNED
 #     ).all()
 
 #     current_run = Run.objects.last()
@@ -47,94 +47,94 @@ from katago_server.users.models import User
 #         if black_network.pk < white_network.pk:
 #             if random.random() < PROB_WIN:
 #                 games.append(
-#                     RankingEstimationGame(
+#                     RatingGame(
 #                         submitted_by=submitter,
 #                         white_network=white_network,
 #                         black_network=black_network,
-#                         result=RankingEstimationGame.GamesResult.WHITE,
+#                         result=RatingGame.GamesResult.WHITE,
 #                         has_resigned=True,
 #                         run=current_run
 #                     )
 #                 )
 #                 task.run = current_run
-#                 task.status = RankingEstimationGameDistributedTask.Status.DONE
+#                 task.status = RatingGameDistributedTask.Status.DONE
 #                 tasks.append(task)
 #                 continue
 #             if random.random() < PROB_LOOSE:
 #                 games.append(
-#                     RankingEstimationGame(
+#                     RatingGame(
 #                         submitted_by=submitter,
 #                         white_network=white_network,
 #                         black_network=black_network,
-#                         result=RankingEstimationGame.GamesResult.BLACK,
+#                         result=RatingGame.GamesResult.BLACK,
 #                         has_resigned=True,
 #                         run=current_run
 #                     )
 #                 )
 #                 task.run = current_run
-#                 task.status = RankingEstimationGameDistributedTask.Status.DONE
+#                 task.status = RatingGameDistributedTask.Status.DONE
 #                 tasks.append(task)
 #                 continue
 #             if random.random() < PROB_DRAW:
 #                 games.append(
-#                     RankingEstimationGame(
+#                     RatingGame(
 #                         submitted_by=submitter,
 #                         white_network=white_network,
 #                         black_network=black_network,
-#                         result=RankingEstimationGame.GamesResult.DRAW,
+#                         result=RatingGame.GamesResult.DRAW,
 #                         run=current_run
 #                     )
 #                 )
 #                 task.run = current_run
-#                 task.status = RankingEstimationGameDistributedTask.Status.DONE
+#                 task.status = RatingGameDistributedTask.Status.DONE
 #                 tasks.append(task)
 #                 continue
 
 #         if white_network.pk < black_network.pk:
 #             if random.random() < PROB_WIN:
 #                 games.append(
-#                     RankingEstimationGame(
+#                     RatingGame(
 #                         submitted_by=submitter,
 #                         white_network=white_network,
 #                         black_network=black_network,
-#                         result=RankingEstimationGame.GamesResult.BLACK,
+#                         result=RatingGame.GamesResult.BLACK,
 #                         has_resigned=True,
 #                         run=current_run
 #                     )
 #                 )
 #                 task.run = current_run
-#                 task.status = RankingEstimationGameDistributedTask.Status.DONE
+#                 task.status = RatingGameDistributedTask.Status.DONE
 #                 tasks.append(task)
 #                 continue
 #             if random.random() < PROB_LOOSE:
 #                 games.append(
-#                     RankingEstimationGame(
+#                     RatingGame(
 #                         submitted_by=submitter,
 #                         white_network=white_network,
 #                         black_network=black_network,
-#                         result=RankingEstimationGame.GamesResult.WHITE,
+#                         result=RatingGame.GamesResult.WHITE,
 #                         has_resigned=True,
 #                         run=current_run
 #                     )
 #                 )
 #                 task.run = current_run
-#                 task.status = RankingEstimationGameDistributedTask.Status.DONE
+#                 task.status = RatingGameDistributedTask.Status.DONE
 #                 tasks.append(task)
 #                 continue
 #             if random.random() < PROB_DRAW:
 #                 games.append(
-#                     RankingEstimationGame(
+#                     RatingGame(
 #                         submitted_by=submitter,
 #                         white_network=white_network,
 #                         black_network=black_network,
-#                         result=RankingEstimationGame.GamesResult.DRAW,
+#                         result=RatingGame.GamesResult.DRAW,
 #                         run=current_run
 #                     )
 #                 )
 #                 task.run = current_run
-#                 task.status = RankingEstimationGameDistributedTask.Status.DONE
+#                 task.status = RatingGameDistributedTask.Status.DONE
 #                 tasks.append(task)
 #                 continue
 
-#     RankingEstimationGame.objects.bulk_create(games)
-#     RankingEstimationGameDistributedTask.objects.bulk_update(tasks, ["status"])
+#     RatingGame.objects.bulk_create(games)
+#     RatingGameDistributedTask.objects.bulk_update(tasks, ["status"])
