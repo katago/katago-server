@@ -5,7 +5,7 @@ from math import log10, e
 
 from django.contrib.postgres.fields import JSONField
 from django.db.models import Model, BigIntegerField, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, \
-    ForeignKey, PROTECT, BigAutoField
+    ForeignKey, PROTECT, BigAutoField, BooleanField
 from django.utils.translation import gettext_lazy as _
 
 from katago_server.contrib.validators import FileValidator
@@ -18,7 +18,7 @@ network_data_storage = FileSystemStorage(location="/data/network")
 
 
 def upload_network_to(instance, _filename):
-    return os.path.join("networks", f"{instance.name}.gz")
+    return os.path.join("networks", f"{instance.name}.bin.gz")
 
 
 # TODO use this
@@ -38,24 +38,10 @@ def parse_katago_training_model_name(name):
         return {}
 
 
-validate_zip = FileValidator(max_size=1024 * 1024 * 300, content_types=("application/zip",))
+validate_zip = FileValidator(max_size=1024 * 1024 * 1024, content_types=("application/zip",))
 
 
 class Network(Model):
-    """
-    This class create a table to hold the different networks trained.
-
-    In addition to the existing 'id' that django adds to every models:
-    - 'uuid': represent a random name append to a model
-    - 'network_size': the number of feature of the model (the size).
-       The bigger the stronger but also the slower.
-    - 'model_architecture_details' contains the other architecture detail
-    - 'model_file' contains a link to the gziped file
-    - 'ranking' which gives an indication of a network strength
-
-    The "ranking" will be continuously updated, with bayesian-elo
-    """
-
     objects = NetworkQuerySet.as_manager()
     pd = NetworkPdManager()
 
@@ -64,29 +50,32 @@ class Network(Model):
         verbose_name_plural = _("Networks")
         ordering = ['-created_at']
 
-    # We expect a large number of games so lets use BigInt
     id = BigAutoField(primary_key=True)
-    name = CharField(_("model name"), max_length=128, default="", db_index=True)
+    name = CharField(_("neural network name"), max_length=128, default="", db_index=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
-    # Date
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
     parent_network = ForeignKey("self", null=True, blank=True, related_name="variants", on_delete=PROTECT)
-    # Some description of the network itself
-    network_size = CharField(_("string describing blocks and channels in network"), max_length=32, default="")
-    nb_parameters = IntegerField(_("number of parameters in network"), default=0)
-    model_architecture_details = JSONField(_("network architecture schema"), null=True, blank=True, default=dict)
-    model_file = FileField(_("network Archive url"), upload_to=upload_network_to, validators=(validate_zip,), storage=network_data_storage, max_length=200)
-    model_file_bytes = BigIntegerField(_("number of bytes in network file"), default=0)
-    model_file_sha256 = CharField(_("sha256 hash of network file"), max_length=64, default="")
-    # And an estimation of the strength
-    log_gamma = FloatField(_("log gamma"), default=0)
-    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0)
+    network_size = CharField(_("network size"), max_length=32, default="", help_text=_("String describing blocks and channels in network."))
+    is_random = BooleanField(_("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"))
+    model_file = FileField(
+        _("model file url"),
+        upload_to=upload_network_to,
+        validators=(validate_zip,),
+        storage=network_data_storage,
+        max_length=200,
+        default="",
+        help_text=_("Url to download network model file.")
+    )
+    model_file_bytes = BigIntegerField(_("model file bytes"), default=0,  help_text=_("Number of bytes in network model file."))
+    model_file_sha256 = CharField(_("model file SHA256"), max_length=64, default="", help_text=_("SHA256 hash of network model file for integrity verification."))
+    log_gamma = FloatField(_("log gamma"), default=0, help_text=_("Estimated BayesElo strength of network."))
+    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0, help_text=_("Estimated stdev of BayesElo strength of network."))
     log_gamma_lower_confidence = FloatField(
-        _("minimal ranking"), default=0, db_index=True
-    )  # used to select best sure network for training games (selfplay)
+        _("log gamma lower confidence"), default=0, db_index=True, help_text=_("Lower confidence bound on BayesElo strength of network.")
+    )
     log_gamma_upper_confidence = FloatField(
-        _("maximal ranking"), default=0, db_index=True
-    )  # used to select best unsure network for ranking games (matches)
+        _("log gamma upper confidence"), default=0, db_index=True, help_text=_("Upper confidence bound on BayesElo strength of network.")
+    )
 
     def __str__(self):
         return f"net-{self.id} ({self.elo}±{2 * self.elo_uncertainty})"
