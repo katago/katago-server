@@ -13,16 +13,14 @@ User = get_user_model()
 
 class TestAPI:
     def setup_method(self):
-        self.t1 = DynamicDistributedTaskConfiguration.get_solo()
         self.u1 = User.objects.create_user(username='test', password='test')
-        self.r1 = Run.objects.create(name="test-run")
+        self.r1 = Run.objects.create(name="test-run",rating_game_probability=0.0,status="Active")
         self.n1 = Network.objects.create(run=self.r1, name="123456", model_file="123456.gz", log_gamma=2)
 
     def teardown_method(self):
         self.n1.delete()
         self.r1.delete()
         self.u1.delete()
-        self.t1.delete()
 
     def test_get_job_anonymous(self):
         """
@@ -45,9 +43,14 @@ class TestAPI:
         # Then
         assert response.status_code == 200
         assert response.data['config'] == 'FILL ME'
-        assert response.data['kind'] == 'training'
-        assert response.data['type'] == 'dynamic'
-        assert response.data['network'] == {'url': f"http://testserver/api/networks/{self.n1.id}/", 'name': '123456', 'model_file': 'http://testserver/media/123456.gz'}
+        assert response.data['kind'] == 'selfplay'
+        assert response.data['network'] == {
+            'is_random': False,
+            'model_file_bytes': 0,
+            'model_file_sha256': '',
+            'name': '123456',
+            'model_file': 'http://testserver/media/123456.gz',
+        }
 
     # def test_get_job_authenticated_when_matches_task_in_run(self):
     #     # Given
