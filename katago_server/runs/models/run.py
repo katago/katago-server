@@ -1,4 +1,4 @@
-from django.db.models import Model, CharField, IntegerField, DateTimeField, TextChoices, AutoField, QuerySet
+from django.db.models import Model, CharField, IntegerField, FloatField, TextField, DateTimeField, TextChoices, AutoField, QuerySet
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 
