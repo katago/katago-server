@@ -2,13 +2,26 @@ from django.db.models import Model, CharField, IntegerField, FloatField, TextFie
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 
+
+# TODO: investigate extracting this class to a manager directory, like games
 class RunQuerySet(QuerySet):
     def select_current(self):
+        """
+        Select the last active run and return it
+
+        :return: the current run
+        """
         return self.filter(status=Run.RunStatus.ACTIVE).order_by("-created_at").first()
+
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.')
 
+
 class Run(Model):
+    """
+    A runs is a conceptual group of games and model. It allows katago server to perform
+    successive or concurrent (need some work) experiment while distinguishing associated objects.
+    """
     class Meta:
         verbose_name = _("Run")
         ordering = ['-created_at']
@@ -25,9 +38,11 @@ class Run(Model):
     # TODO enforce that name is UNIQUE
     name = CharField(
         _("name"),
-        max_length=64,
+        max_length=16,
         validators=[alphanumeric],
-        help_text=_("Run name. Should be short - used as a prefix for model names, for files and directories, etc.")
+        help_text=_("Run name. Should be short - used as a prefix for model names, for files and directories, etc."),
+        unique=True,
+        db_index=True
     )
 
     # Config

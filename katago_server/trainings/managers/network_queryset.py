@@ -16,6 +16,9 @@ def random_weighted_choice(networks):
 
 
 class NetworkQuerySet(QuerySet):
+    """
+    NetworkQuerySet helps selecting network that are either good or have a big uncertainty in their rating
+    """
     def select_best_without_uncertainty(self, run: Run):
         return self.filter(run=run).order_by("-log_gamma_lower_confidence").first()
 

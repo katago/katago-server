@@ -1,7 +1,7 @@
 from math import exp, log
 import logging
 
-import pandas as pd
+import pandas
 
 from katago_server.trainings.services.pandas_utils import PandasUtilsService
 
@@ -11,10 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class BayesianRatingService:
+    """
+    BayesianRatingService takes a list of network, an anchor network and the result of rating games and update the rating
+    """
     _simplified_tournament_results = None
     _networks_actual_score = None
 
-    def __init__(self, network_ratings: pd.DataFrame, network_anchor_id, detailed_tournament_results: pd.DataFrame):
+    def __init__(self, network_ratings: pandas.DataFrame, network_anchor_id, detailed_tournament_results: pandas.DataFrame):
         self._network_ratings = network_ratings
         self._network_anchor_id = network_anchor_id
         self._detailed_tournament_results = detailed_tournament_results
@@ -65,7 +68,7 @@ class BayesianRatingService:
         :param network_id:
         :return:
         """
-        tournament_results_only_total = pd.DataFrame()
+        tournament_results_only_total = pandas.DataFrame()
         tournament_results_only_total["reference_network"] = self._simplified_tournament_results["reference_network"]
         tournament_results_only_total["opponent_network"] = self._simplified_tournament_results["opponent_network"]
         tournament_results_only_total["nb_games"] = self._simplified_tournament_results["nb_games"]
@@ -94,9 +97,9 @@ class BayesianRatingService:
                 virtual_draws_src.append(draw1)
                 virtual_draws_src.append(draw2)
 
-        virtual_draw = pd.DataFrame(virtual_draws_src)
+        virtual_draw = pandas.DataFrame(virtual_draws_src)
 
-        tournament_results = pd.merge(self._detailed_tournament_results, virtual_draw, how="outer", on=["reference_network", "opponent_network"])
+        tournament_results = pandas.merge(self._detailed_tournament_results, virtual_draw, how="outer", on=["reference_network", "opponent_network"])
         # panda_utils.print_data_frame(tournament_results)
         tournament_results.fillna(0, inplace=True)
         self._detailed_tournament_results = tournament_results
@@ -106,7 +109,7 @@ class BayesianRatingService:
         For the rest of the algorithm, we do not need the full detail.
         We indeed consider that win as black or as white is similar.
         """
-        tournament_results = pd.DataFrame()
+        tournament_results = pandas.DataFrame()
 
         tournament_results["reference_network"] = self._detailed_tournament_results["reference_network"]
         tournament_results["opponent_network"] = self._detailed_tournament_results["opponent_network"]
@@ -142,7 +145,7 @@ class BayesianRatingService:
         """
         aggregated_tournament_results = self._simplified_tournament_results.groupby(["reference_network"]).sum()
 
-        networks_actual_score = pd.DataFrame(index=aggregated_tournament_results.index)
+        networks_actual_score = pandas.DataFrame(index=aggregated_tournament_results.index)
         networks_actual_score["actual_score"] = 0
         networks_actual_score["actual_score"] += aggregated_tournament_results["nb_wins"]
         networks_actual_score["actual_score"] += 1 / 2 * aggregated_tournament_results["nb_draws"]
@@ -195,11 +198,11 @@ class BayesianRatingService:
             win_probability = 1 / (1 + exp(log_gamma_diff))
             win_probability_dict = {"reference_network": network_id, "opponent_network": opponent_network, "win_probability": win_probability}
             games_played_win_probability_src.append(win_probability_dict)
-        games_played_win_probability = pd.DataFrame(games_played_win_probability_src)
+        games_played_win_probability = pandas.DataFrame(games_played_win_probability_src)
 
-        games_played_data = pd.merge(games_played, games_played_win_probability, how="outer", on=["reference_network", "opponent_network"])
+        games_played_data = pandas.merge(games_played, games_played_win_probability, how="outer", on=["reference_network", "opponent_network"])
 
-        games_played_expected_score = pd.DataFrame()
+        games_played_expected_score = pandas.DataFrame()
         games_played_expected_score["expected_score"] = games_played_data["nb_games"] * games_played_data["win_probability"]
 
         return games_played_expected_score["expected_score"].sum()
@@ -234,11 +237,11 @@ class BayesianRatingService:
             precision = 1 / pow(exp(log_gamma_diff / 2) + exp(-log_gamma_diff / 2), 2)
             precision_dict = {"reference_network": network_id, "opponent_network": opponent_network, "precision": precision}
             games_played_precision_src.append(precision_dict)
-        games_played_precision = pd.DataFrame(games_played_precision_src)
+        games_played_precision = pandas.DataFrame(games_played_precision_src)
 
-        games_played_data = pd.merge(games_played, games_played_precision, how="outer", on=["reference_network", "opponent_network"])
+        games_played_data = pandas.merge(games_played, games_played_precision, how="outer", on=["reference_network", "opponent_network"])
 
-        games_played_cumulative_precision = pd.DataFrame()
+        games_played_cumulative_precision = pandas.DataFrame()
         games_played_cumulative_precision["cumulative_precision"] = games_played_data["nb_games"] * games_played_data["precision"]
 
         return games_played_cumulative_precision["cumulative_precision"].sum()

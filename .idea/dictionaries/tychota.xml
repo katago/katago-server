@@ -3,8 +3,15 @@
     <words>
       <w>dataframe</w>
       <w>filterset</w>
+      <w>jigo</w>
+      <w>katago</w>
       <w>komi</w>
+      <w>moshoubou</w>
+      <w>pairer</w>
       <w>playouts</w>
+      <w>pytestmark</w>
+      <w>redoc</w>
+      <w>selfplay</w>
     </words>
   </dictionary>
 </component>

@@ -17,6 +17,7 @@ class RunViewSet(viewsets.ModelViewSet):
     serializer_class = RunSerializer
     filterset_fields = ['status']
 
+
 class RunClientViewSet(viewsets.ModelViewSet):
     """
     API endpoint that gives only the fields of a run that self-play clients need.
@@ -25,5 +26,4 @@ class RunClientViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
     permission_classes = [ReadOnly]
     serializer_class = RunClientSerializer
-    filterset_fields = ['status']
 

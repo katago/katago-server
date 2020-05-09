@@ -4,7 +4,11 @@ from django.apps import apps
 from katago_server.runs.models import Run
 
 
-class RatingGamePdQuerySet(QuerySet):
+class RatingGamePandasQuerySet(QuerySet):
+    """
+    RatingGamePandasQuerySet query the db and return the number of times network faces with another network, wins as black or as white,
+    or draws
+    """
     def get_total_games_count_as_white(self, run: Run):
         total_games_count_aggregate = Count("id")
         return self.filter(run=run).values(reference_network=F("white_network__pk"), opponent_network=F("black_network__pk")).annotate(

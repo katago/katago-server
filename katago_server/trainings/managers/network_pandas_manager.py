@@ -1,15 +1,28 @@
 from math import log10, e
 
 import numpy as np
-from django.db.models import Manager, F
+from django.db.models import Manager
 from django_pandas.io import read_frame
 
-from katago_server.trainings.managers.network_pd_queryset import NetworkPdQuerySet
+from katago_server.trainings.managers.network_pandas_queryset import NetworkPandasQuerySet
 
 
-class NetworkPdManager(Manager):
+class NetworkPandasManager(Manager):
+    """
+    NetworkPandasManager extract the rating using NetworkPandasQueryset.
+
+    Eg:
+
+        +----------+-------------------+-----------+-----------------------+
+        | id       | parent_network_id | log_gamma | log_gamma_uncertainty |
+        +==========+===================+===========+=======================+
+        | 1566604  | 1566603           | 2.6568    | 0.00235               |
+        +----------+-------------------+-----------+-----------------------+
+        | 1266565  | 1266564           | 1.6766    | 0.254                 |
+        +----------+-------------------+-----------+-----------------------+
+    """
     def get_queryset(self):
-        return NetworkPdQuerySet(self.model, using=self._db)
+        return NetworkPandasQuerySet(self.model, using=self._db)
 
     def get_ratings_dataframe(self, run):
         rating_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty").all()

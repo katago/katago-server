@@ -7,7 +7,6 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 from rest_framework import routers, permissions
-from rest_framework.authtoken.views import obtain_auth_token
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -43,7 +42,7 @@ router.register(r"tasks", DistributedTaskViewSet, basename="Task")
 
 
 # API
-api_urlpattern = [path("api/", include(router.urls)), path("api/token", obtain_auth_token, name="api_token_auth")]
+api_url_pattern = [path("api/", include(router.urls))]
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -64,7 +63,7 @@ api_swagger = [
 ]
 
 urlpatterns = (
-    api_urlpattern
+    api_url_pattern
     + [
         path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
         path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about",),

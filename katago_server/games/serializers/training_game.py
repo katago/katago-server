@@ -9,12 +9,21 @@ from katago_server.users.serializers import LimitedUserSerializer
 
 # Use as write only serializer
 class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
+    """
+    TrainingGameCreateSerializer serialize a new game adding the current user as submitter
+    """
     # https://www.django-rest-framework.org/api-guide/validators/#advanced-field-defaults
     submitted_by = HiddenField(default=CurrentUserDefault())
 
     class Meta:
         model = TrainingGame
-        fields = "__all__"
+        fields = ["url", "id", "run", "created_at", "submitted_by",
+                  "board_size_x", "board_size_y",
+                  "handicap", "komi",
+                  "rules", "extra_metadata",
+                  "winner", "score", "resigned",
+                  "white_network", "black_network",
+                  "sgf_file", "training_data_file", "kg_game_uid"]
 
 
 # Use as read only serializer
@@ -25,4 +34,10 @@ class TrainingGameListSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = TrainingGame
-        fields = "__all__"
+        fields = ["url", "id", "run", "created_at", "submitted_by",
+                  "board_size_x", "board_size_y",
+                  "handicap", "komi",
+                  "rules", "extra_metadata",
+                  "winner", "score", "resigned",
+                  "white_network", "black_network",
+                  "sgf_file", "training_data_file", "kg_game_uid"]

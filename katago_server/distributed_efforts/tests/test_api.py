@@ -51,21 +51,3 @@ class TestAPI:
             'name': '123456',
             'model_file': 'http://testserver/media/123456.gz',
         }
-
-    # def test_get_job_authenticated_when_matches_task_in_run(self):
-    #     # Given
-    #     client = APIClient()
-    #     client.login(username='test', password='test')
-    #     matches_task = RatingGameDistributedTask.objects.create(run=self.r1, status=RatingGameDistributedTask.Status.UNASSIGNED, white_network=self.n1, black_network=self.n1)
-    #     self.t1.probability_predefined_rating_game = 1
-    #     self.t1.save()
-    #     # When
-    #     response = client.post('/api/tasks/', {})
-    #     # Then
-    #     assert response.status_code == 200
-    #     assert response.data['kind'] == 'rating'
-    #     assert response.data['type'] == 'static'
-    #     assert response.data['content'] == {'url': f"http://testserver/api/networks/{self.n1.id}/", 'name': '123456', 'model_file': 'http://testserver/media/123456.gz'}
-    #     # Finally
-    #     matches_task.delete()
-

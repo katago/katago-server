@@ -30,10 +30,10 @@ sgf_data_storage = FileSystemStorage(location="/data/games/sgf")
 
 
 def upload_sgf_to(instance, _filename):
-    return os.path.join("games", f"{instance.game_hash}.sgf")
+    return os.path.join("games", f"{instance.kg_game_uid}.sgf")
 
 
-validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
+validate_sgf = FileValidator(max_size=1024 * 1024 * 10)
 
 
 class AbstractGame(Model):
@@ -55,10 +55,10 @@ class AbstractGame(Model):
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
-    board_size_x = IntegerField(_("board size x"), null=False, default=19, help_text=_("Width of board"))
-    board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"))
-    handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"))
-    komi = DecimalField(_("komi"), max_digits=3, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"))
+    board_size_x = IntegerField(_("board size x"), null=False, default=19, help_text=_("Width of board"), db_index=True)
+    board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"), db_index=True)
+    handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"), db_index=True)
+    komi = DecimalField(_("komi"), max_digits=3, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"), db_index=True)
     rules = JSONField(
         _("rules"),
         help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"),
@@ -82,11 +82,11 @@ class AbstractGame(Model):
     black_network = ForeignKey(Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True)
 
     sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200)
-    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"))
+    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True)
 
     @property
     def result_text(self):
-        score = "R" if self.has_resigned else self.score
+        score = "R" if self.resigned else self.score
         return f"{self.winner}+{score}" if self.winner in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE] else self.winner
 
     def __str__(self):

@@ -1,5 +1,5 @@
 from django.db.models import QuerySet
 
 
-class NetworkPdQuerySet(QuerySet):
+class NetworkPandasQuerySet(QuerySet):
     pass

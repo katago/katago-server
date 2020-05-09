@@ -3,6 +3,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class RunAdmin(admin.ModelAdmin):
+    """
+    GameAdmin allows admin to create or edit runs
+    """
     list_display = ("id", "created_at", "name", "status")
     list_filter = ("created_at",)
     fieldsets = (
@@ -19,7 +22,8 @@ class RunAdmin(admin.ModelAdmin):
     )
 
     def get_readonly_fields(self, request, obj=None):
-        if obj:
-            return ("id", "created_at", "name", "data_board_len", "inputs_version", "max_search_threads_allowed")
+        is_editing_existing_run = obj is not None
+        if is_editing_existing_run:
+            return "id", "created_at", "name", "data_board_len", "inputs_version", "max_search_threads_allowed"
         else:
-            return ("id", "created_at")
+            return "id", "created_at"
