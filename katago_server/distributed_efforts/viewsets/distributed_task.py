@@ -1,16 +1,14 @@
-from django.db import transaction
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 import logging
 import random
 
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from katago_server.distributed_efforts.services import RatingNetworkPairerService
 from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
 from katago_server.trainings.serializers import NetworkSerializerForTasks
-from katago_server.distributed_efforts.services import RatingNetworkPairerService
 
 logger = logging.getLogger(__name__)
 

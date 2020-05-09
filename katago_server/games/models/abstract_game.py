@@ -1,6 +1,5 @@
 import os
 
-import uuid as uuid
 from django.contrib.postgres.fields import JSONField
 from django.core.files.storage import FileSystemStorage
 from django.db.models import (
@@ -15,7 +14,6 @@ from django.db.models import (
     PROTECT,
     BigAutoField,
     TextChoices,
-    FloatField,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -26,14 +24,14 @@ from katago_server.users.models import User
 
 __ALL__ = ["TrainingGame", "RatingGame"]
 
-sgf_data_storage = FileSystemStorage(location="/data/games/sgf")
+sgf_data_storage = FileSystemStorage(location="/data/games")
 
 
 def upload_sgf_to(instance, _filename):
-    return os.path.join("games", f"{instance.kg_game_uid}.sgf")
+    return os.path.join(instance.run.name, f"{instance.kg_game_uid}.sgf")
 
 
-validate_sgf = FileValidator(max_size=1024 * 1024 * 10)
+validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
 
 
 class AbstractGame(Model):

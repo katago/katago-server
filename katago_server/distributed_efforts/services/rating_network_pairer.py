@@ -1,10 +1,11 @@
-import numpy as np
 import random
+
+import numpy as np
 from math import log10, e, exp
 
-from katago_server.games.models import TrainingGame
 from katago_server.runs.models import Run
 from katago_server.trainings.models import Network
+
 
 class RatingNetworkPairerService:
 
@@ -31,9 +32,9 @@ class RatingNetworkPairerService:
         reference_network = Network.objects.select_one_of_the_best_with_uncertainty(self.current_run)
         opponent_network = self._choose_opponent(reference_network)
         if random.random() < 0.5:
-            return (reference_network, opponent_network)
+            return reference_network, opponent_network
         else:
-            return (opponent_network,reference_network)
+            return opponent_network, reference_network
 
     def generate_high_uncertainty_game(self):
         """
@@ -44,9 +45,9 @@ class RatingNetworkPairerService:
         reference_network = Network.objects.select_one_of_the_more_uncertain(self.current_run)
         opponent_network = self._choose_opponent(reference_network)
         if random.random() < 0.5:
-            return (reference_network, opponent_network)
+            return reference_network, opponent_network
         else:
-            return (opponent_network,reference_network)
+            return opponent_network, reference_network
 
     def _choose_opponent(self, reference_network):
         """

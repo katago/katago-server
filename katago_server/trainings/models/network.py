@@ -1,24 +1,22 @@
 import os
 
 from django.core.files.storage import FileSystemStorage
-from math import log10, e
-
-from django.contrib.postgres.fields import JSONField
-from django.db.models import Model, BigIntegerField, IntegerField, FileField, CharField, DateTimeField, UUIDField, FloatField, \
+from django.core.validators import RegexValidator
+from django.db.models import Model, BigIntegerField, FileField, CharField, DateTimeField, FloatField, \
     ForeignKey, PROTECT, BigAutoField, BooleanField
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import RegexValidator
+from math import log10, e
 
 from katago_server.contrib.validators import FileValidator
 from katago_server.runs.models import Run
 from katago_server.trainings.managers.network_pandas_manager import NetworkPandasManager
 from katago_server.trainings.managers.network_queryset import NetworkQuerySet
 
-network_data_storage = FileSystemStorage(location="/data/network")
+network_data_storage = FileSystemStorage(location="/data/networks")
 
 
 def upload_network_to(instance, _filename):
-    return os.path.join("networks", f"{instance.name}.bin.gz")
+    return os.path.join(instance.run.name, f"{instance.name}.bin.gz")
 
 
 validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=("application/gzip",))

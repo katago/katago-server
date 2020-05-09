@@ -1,5 +1,3 @@
-import uuid as uuid
-
 from rest_framework.serializers import HyperlinkedModelSerializer, HiddenField, CurrentUserDefault
 
 from katago_server.games.models import RatingGame

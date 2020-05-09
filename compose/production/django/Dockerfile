@@ -58,12 +58,15 @@ COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
-RUN mkdir /data
+RUN mkdir -p /data/games
+RUN mkdir -p /data/training_npz
+RUN mkdir -p /data/networks
+RUN chown -R django /data
+
 COPY ./.credentials /.credentials
 
 COPY --from=client-builder /app /app
 RUN chown -R django /app
-RUN chown -R django /data
 
 USER django
 WORKDIR /app
