@@ -17,26 +17,6 @@ class RunSerializer(HyperlinkedModelSerializer):
             "data_board_len",
             "inputs_version",
             "max_search_threads_allowed",
-            "rating_game_probability",
-            "rating_game_high_elo_probability",
             "selfplay_client_config",
             "rating_client_config",
         ]
-
-
-# TODO: what about naming it RunTasksSerializer for consistency with NetworkSerializerForTasks
-class RunClientSerializer(HyperlinkedModelSerializer):
-    """
-    RunClientSerializer serializes a single run (the current one) inside a task
-    """
-    class Meta:
-        model = Run
-        fields = [
-            "url",
-            "name",
-            "data_board_len",
-            "inputs_version",
-            "max_search_threads_allowed",
-        ]
-
-
