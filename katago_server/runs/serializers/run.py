@@ -32,7 +32,7 @@ class RunClientSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Run
         fields = [
-            "url"
+            "url",
             "name",
             "data_board_len",
             "inputs_version",
