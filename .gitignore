@@ -3,8 +3,10 @@
 .credentials/*
 !.credentials/.gitkeep
 
-training_data/*
-!training_data/.gitkeep
+
+data/*
+!
+datad/.gitkeep
 
 
 ### Python template
@@ -346,3 +348,4 @@ katago_server/media/
 /node_modules/
 /venv/
 celerybeat.pid
+
