@@ -63,6 +63,7 @@ COPY ./.credentials /.credentials
 
 COPY --from=client-builder /app /app
 RUN chown -R django /app
+RUN chown -R django /data
 
 USER django
 WORKDIR /app
