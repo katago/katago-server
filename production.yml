@@ -30,7 +30,7 @@ services:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
     volumes:
-      - ./training_data:/training_data
+      - ./data:/data
     command: /start
 
   postgres:

@@ -20,7 +20,7 @@ RUN apt-get update \
   && apt-get install -y libmagic-dev \
   # Translations dependencies
   && apt-get install -y gettext \
-  # Let DBshell works 
+  # Let DBshell works
   && apt-get install -y postgresql \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
@@ -58,6 +58,7 @@ COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
+RUN mkdir /data
 COPY ./.credentials /.credentials
 
 COPY --from=client-builder /app /app
