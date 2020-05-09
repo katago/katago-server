@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
+from rest_framework.exceptions import NotFound
 
 from katago_server.contrib.permission import ReadOnly
 
@@ -26,5 +27,7 @@ class RunViewSet(viewsets.ModelViewSet):
         :return:
         """
         current_run = Run.objects.select_current()
+        if current_run is None:
+            return NotFound("No active run.")
         self.kwargs["pk"] = current_run.pk
         return self.retrieve(request)
