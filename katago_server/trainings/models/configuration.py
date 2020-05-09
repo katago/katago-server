@@ -10,4 +10,4 @@ class NetworkBayesianRatingConfiguration(SingletonModel):
     class Meta:
         verbose_name = "Bayesian elo configuration"
 
-    number_of_iterations = IntegerField(_("number of iterations"), help_text=_("updating log_gamma is iterative"), default=10)
+    number_of_iterations = IntegerField(_("number of iterations"), help_text=_("updating log_gamma is iterative"), default=10,)

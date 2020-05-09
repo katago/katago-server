@@ -19,10 +19,17 @@ class TrainingGame(AbstractGame):
     """
     A training game involves one network that plays both for black and white and is associated to numpy (npz) data used by the training loop
     """
+
     class Meta:
         verbose_name = _("Training game")
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     training_data_file = FileField(
-        _("training data (npz)"), upload_to=upload_training_data_to, validators=(validate_zip,), storage=training_data_storage, max_length=200, blank=False, null=False
+        _("training data (npz)"),
+        upload_to=upload_training_data_to,
+        validators=(validate_zip,),
+        storage=training_data_storage,
+        max_length=200,
+        blank=False,
+        null=False,
     )

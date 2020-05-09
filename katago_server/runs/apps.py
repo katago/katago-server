@@ -8,6 +8,7 @@ class RunsConfig(AppConfig):
 
     It allows consecutive or parallel experiments.
     """
+
     name = "katago_server.runs"
     verbose_name = _("Runs")
 

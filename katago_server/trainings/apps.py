@@ -6,6 +6,7 @@ class TrainingsConfig(AppConfig):
     """
     Katago Training app handles the creation and the rating update of network objects
     """
+
     name = "katago_server.trainings"
     verbose_name = _("Training")
 

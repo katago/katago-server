@@ -14,10 +14,13 @@ class BayesianRatingService:
     """
     BayesianRatingService takes a list of network, an anchor network and the result of rating games and update the rating
     """
+
     _simplified_tournament_results = None
     _networks_actual_score = None
 
-    def __init__(self, network_ratings: pandas.DataFrame, network_anchor_id, detailed_tournament_results: pandas.DataFrame):
+    def __init__(
+        self, network_ratings: pandas.DataFrame, network_anchor_id, detailed_tournament_results: pandas.DataFrame,
+    ):
         self._network_ratings = network_ratings
         self._network_anchor_id = network_anchor_id
         self._detailed_tournament_results = detailed_tournament_results
@@ -92,14 +95,22 @@ class BayesianRatingService:
             # Everything blows up if for some reason (eg first network, or deleted network)
             # the parent_network_id does not reference an actual network, so let's check that
             if parent_network_id in network_ids:
-                draw1 = {"reference_network": network_id, "opponent_network": parent_network_id, "total_bayesian_virtual_draws": 1}
-                draw2 = {"reference_network": parent_network_id, "opponent_network": network_id, "total_bayesian_virtual_draws": 1}
+                draw1 = {
+                    "reference_network": network_id,
+                    "opponent_network": parent_network_id,
+                    "total_bayesian_virtual_draws": 1,
+                }
+                draw2 = {
+                    "reference_network": parent_network_id,
+                    "opponent_network": network_id,
+                    "total_bayesian_virtual_draws": 1,
+                }
                 virtual_draws_src.append(draw1)
                 virtual_draws_src.append(draw2)
 
         virtual_draw = pandas.DataFrame(virtual_draws_src)
 
-        tournament_results = pandas.merge(self._detailed_tournament_results, virtual_draw, how="outer", on=["reference_network", "opponent_network"])
+        tournament_results = pandas.merge(self._detailed_tournament_results, virtual_draw, how="outer", on=["reference_network", "opponent_network"],)
         # panda_utils.print_data_frame(tournament_results)
         tournament_results.fillna(0, inplace=True)
         self._detailed_tournament_results = tournament_results
@@ -196,11 +207,15 @@ class BayesianRatingService:
             # logger.debug(network_log_gamma)
             log_gamma_diff = opponent_network_log_gamma - network_log_gamma
             win_probability = 1 / (1 + exp(log_gamma_diff))
-            win_probability_dict = {"reference_network": network_id, "opponent_network": opponent_network, "win_probability": win_probability}
+            win_probability_dict = {
+                "reference_network": network_id,
+                "opponent_network": opponent_network,
+                "win_probability": win_probability,
+            }
             games_played_win_probability_src.append(win_probability_dict)
         games_played_win_probability = pandas.DataFrame(games_played_win_probability_src)
 
-        games_played_data = pandas.merge(games_played, games_played_win_probability, how="outer", on=["reference_network", "opponent_network"])
+        games_played_data = pandas.merge(games_played, games_played_win_probability, how="outer", on=["reference_network", "opponent_network"],)
 
         games_played_expected_score = pandas.DataFrame()
         games_played_expected_score["expected_score"] = games_played_data["nb_games"] * games_played_data["win_probability"]
@@ -235,11 +250,15 @@ class BayesianRatingService:
             opponent_network_log_gamma = self._network_ratings.loc[opponent_network, "log_gamma"]
             log_gamma_diff = opponent_network_log_gamma - network_log_gamma
             precision = 1 / pow(exp(log_gamma_diff / 2) + exp(-log_gamma_diff / 2), 2)
-            precision_dict = {"reference_network": network_id, "opponent_network": opponent_network, "precision": precision}
+            precision_dict = {
+                "reference_network": network_id,
+                "opponent_network": opponent_network,
+                "precision": precision,
+            }
             games_played_precision_src.append(precision_dict)
         games_played_precision = pandas.DataFrame(games_played_precision_src)
 
-        games_played_data = pandas.merge(games_played, games_played_precision, how="outer", on=["reference_network", "opponent_network"])
+        games_played_data = pandas.merge(games_played, games_played_precision, how="outer", on=["reference_network", "opponent_network"],)
 
         games_played_cumulative_precision = pandas.DataFrame()
         games_played_cumulative_precision["cumulative_precision"] = games_played_data["nb_games"] * games_played_data["precision"]

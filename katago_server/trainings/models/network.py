@@ -2,8 +2,18 @@ import os
 
 from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
-from django.db.models import Model, BigIntegerField, FileField, CharField, DateTimeField, FloatField, \
-    ForeignKey, PROTECT, BigAutoField, BooleanField
+from django.db.models import (
+    Model,
+    BigIntegerField,
+    FileField,
+    CharField,
+    DateTimeField,
+    FloatField,
+    ForeignKey,
+    PROTECT,
+    BigAutoField,
+    BooleanField,
+)
 from django.utils.translation import gettext_lazy as _
 from math import log10, e
 
@@ -20,7 +30,7 @@ def upload_network_to(instance, _filename):
 
 
 validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=("application/gzip",))
-alphanumeric_and_dashes = RegexValidator(r'^[-0-9a-zA-Z]*$', 'Only alphanumeric or dash characters are allowed.')
+alphanumeric_and_dashes = RegexValidator(r"^[-0-9a-zA-Z]*$", "Only alphanumeric or dash characters are allowed.")
 
 
 class Network(Model):
@@ -32,42 +42,54 @@ class Network(Model):
 
     The training data are used to generate new network by an external training loop.
     """
+
     objects = NetworkQuerySet.as_manager()
     pandas = NetworkPandasManager()
 
     class Meta:
         verbose_name = _("Network")
         verbose_name_plural = _("Networks")
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     id = BigAutoField(primary_key=True)
-    name = CharField(_("neural network name"), max_length=128, null=False, blank=False, validators=[alphanumeric_and_dashes], db_index=True, unique=True)
-    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True)
+    name = CharField(
+        _("neural network name"), max_length=128, null=False, blank=False, validators=[alphanumeric_and_dashes], db_index=True, unique=True,
+    )
+    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True,)
     created_at = DateTimeField(_("creation date"), auto_now_add=True)
 
-    parent_network = ForeignKey("self", verbose_name=_("Parent network for BayesElo prior"), null=True, blank=True, related_name="variants", on_delete=PROTECT)
+    parent_network = ForeignKey(
+        "self", verbose_name=_("Parent network for BayesElo prior"), null=True, blank=True, related_name="variants", on_delete=PROTECT,
+    )
 
-    network_size = CharField(_("network size"), max_length=32,  null=False, blank=False, help_text=_("String describing blocks and channels in network."), db_index=True)
-    is_random = BooleanField(_("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"), db_index=True)
+    network_size = CharField(
+        _("network size"), max_length=32, null=False, blank=False, help_text=_("String describing blocks and channels in network."), db_index=True,
+    )
+    is_random = BooleanField(
+        _("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"), db_index=True,
+    )
     model_file = FileField(
         _("model file url"),
         upload_to=upload_network_to,
         validators=(validate_gzip,),
         storage=network_data_storage,
         max_length=200,
-        null=False, blank=False,
-        help_text=_("Url to download network model file.")
+        null=False,
+        blank=False,
+        help_text=_("Url to download network model file."),
     )
-    model_file_bytes = BigIntegerField(_("model file bytes"),  null=False, blank=False,  help_text=_("Number of bytes in network model file."))
-    model_file_sha256 = CharField(_("model file SHA256"), max_length=64,  null=False, blank=False, help_text=_("SHA256 hash of network model file for integrity verification."))
+    model_file_bytes = BigIntegerField(_("model file bytes"), null=False, blank=False, help_text=_("Number of bytes in network model file."),)
+    model_file_sha256 = CharField(
+        _("model file SHA256"), max_length=64, null=False, blank=False, help_text=_("SHA256 hash of network model file for integrity verification."),
+    )
 
-    log_gamma = FloatField(_("log gamma"), default=0, help_text=_("Estimated BayesElo strength of network."), db_index=True)
-    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0, help_text=_("Estimated stdev of BayesElo strength of network."))
+    log_gamma = FloatField(_("log gamma"), default=0, help_text=_("Estimated BayesElo strength of network."), db_index=True,)
+    log_gamma_uncertainty = FloatField(_("log gamma uncertainty"), default=0, help_text=_("Estimated stdev of BayesElo strength of network."),)
     log_gamma_lower_confidence = FloatField(
-        _("log gamma lower confidence"), default=0, db_index=True, help_text=_("Lower confidence bound on BayesElo strength of network.")
+        _("log gamma lower confidence"), default=0, db_index=True, help_text=_("Lower confidence bound on BayesElo strength of network."),
     )
     log_gamma_upper_confidence = FloatField(
-        _("log gamma upper confidence"), default=0, db_index=True, help_text=_("Upper confidence bound on BayesElo strength of network.")
+        _("log gamma upper confidence"), default=0, db_index=True, help_text=_("Upper confidence bound on BayesElo strength of network."),
     )
 
     def __str__(self):

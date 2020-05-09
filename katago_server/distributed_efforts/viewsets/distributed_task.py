@@ -23,7 +23,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         if random.random() < current_run.rating_game_probability:
             pairer = RatingNetworkPairerService(current_run)
-            (white_network,black_network) = pairer.generate_pairing()
+            (white_network, black_network) = pairer.generate_pairing()
             white_network_content = NetworkSerializerForTasks(white_network, context=serializer_context)
             black_network_content = NetworkSerializerForTasks(black_network, context=serializer_context)
             response_body = {
@@ -31,7 +31,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 "run": current_run.name,
                 "config": current_run.rating_client_config,
                 "white_network": white_network_content.data,
-                "black_network": black_network_content.data
+                "black_network": black_network_content.data,
             }
         else:
             best_network = Network.objects.select_best_without_uncertainty(current_run)
@@ -40,7 +40,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 "kind": "selfplay",
                 "run": current_run.name,
                 "config": current_run.selfplay_client_config,
-                "network": best_network_content.data
+                "network": best_network_content.data,
             }
 
         return Response(response_body)

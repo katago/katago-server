@@ -33,7 +33,10 @@ class FileValidator(object):
             raise ValidationError(self.error_messages["max_size"], "max_size", params)
 
         if self.min_size is not None and data.size < self.min_size:
-            params = {"min_size": filesizeformat(self.mix_size), "size": filesizeformat(data.size)}
+            params = {
+                "min_size": filesizeformat(self.mix_size),
+                "size": filesizeformat(data.size),
+            }
             raise ValidationError(self.error_messages["min_size"], "min_size", params)
 
         if self.content_types:

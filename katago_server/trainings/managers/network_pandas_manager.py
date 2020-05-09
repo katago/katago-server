@@ -21,6 +21,7 @@ class NetworkPandasManager(Manager):
         | 1266565  | 1266564           | 1.6766    | 0.254                 |
         +----------+-------------------+-----------+-----------------------+
     """
+
     def get_queryset(self):
         return NetworkPandasQuerySet(self.model, using=self._db)
 
@@ -41,10 +42,10 @@ class NetworkPandasManager(Manager):
         networks_db = self.all()
 
         dataframe["log_gamma_upper_confidence"] = np.round(
-            (dataframe["log_gamma"] + 2 * dataframe["log_gamma_uncertainty"]) * 400 * log10(e), decimals=2
+            (dataframe["log_gamma"] + 2 * dataframe["log_gamma_uncertainty"]) * 400 * log10(e), decimals=2,
         )
         dataframe["log_gamma_lower_confidence"] = np.round(
-            (dataframe["log_gamma"] - 2 * dataframe["log_gamma_uncertainty"]) * 400 * log10(e), decimals=2
+            (dataframe["log_gamma"] - 2 * dataframe["log_gamma_uncertainty"]) * 400 * log10(e), decimals=2,
         )
 
         for network_db in networks_db:
@@ -53,4 +54,6 @@ class NetworkPandasManager(Manager):
             network_db.log_gamma_upper_confidence = dataframe.loc[network_db.id, "log_gamma_upper_confidence"]
             network_db.log_gamma_lower_confidence = dataframe.loc[network_db.id, "log_gamma_lower_confidence"]
 
-        self.bulk_update(networks_db, ["log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence"])
+        self.bulk_update(
+            networks_db, ["log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence",],
+        )

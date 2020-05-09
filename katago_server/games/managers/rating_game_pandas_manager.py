@@ -24,6 +24,7 @@ class RatingGamePandasManager(Manager):
         +-------------------+------------------+---------------+---------------+-------+
 
     """
+
     def get_queryset(self):
         return RatingGamePandasQuerySet(self.model, using=self._db)
 

@@ -4,7 +4,10 @@ from rest_framework.permissions import IsAdminUser
 from katago_server.contrib.permission import ReadOrCreateOnly
 
 from katago_server.games.models import TrainingGame
-from katago_server.games.serializers import TrainingGameCreateSerializer, TrainingGameListSerializer
+from katago_server.games.serializers import (
+    TrainingGameCreateSerializer,
+    TrainingGameListSerializer,
+)
 
 
 class TrainingGameViewSet(viewsets.ModelViewSet):

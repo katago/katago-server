@@ -9,6 +9,7 @@ class PandasUtilsService:
     """
     This helper allows debug logs of pandas dataframe
     """
+
     @staticmethod
     def print_data_frame(x, level=logging.DEBUG):
         pandas.set_option("display.max_rows", len(x))

@@ -8,7 +8,6 @@ from katago_server.trainings.models import Network
 
 
 class RatingNetworkPairerService:
-
     def __init__(self, run: Run):
         self.current_run = run
 
@@ -65,7 +64,9 @@ class RatingNetworkPairerService:
         log_gamma_upper_bound = ref_net_log_gamma + log_gamma_search_range
 
         nearby_networks = (
-            Network.objects.exclude(pk=reference_network.pk).filter(run=self.current_run, log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound).all()
+            Network.objects.exclude(pk=reference_network.pk)
+            .filter(run=self.current_run, log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound,)
+            .all()
         )
         if len(nearby_networks) < 5:
             nearby_networks_a = Network.objects.filter(run=self.current_run, pk__lt=reference_network.pk).all()[:20]

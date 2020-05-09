@@ -50,37 +50,35 @@ class AbstractGame(Model):
         NO_RESULT = "-", _("No Result (Moshoubou)")  # https://senseis.xmp.net/?NoResult
 
     id = BigAutoField(primary_key=True)
-    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
+    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True,)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
-    submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True)
-    board_size_x = IntegerField(_("board size x"), null=False, default=19, help_text=_("Width of board"), db_index=True)
-    board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"), db_index=True)
-    handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"), db_index=True)
-    komi = DecimalField(_("komi"), max_digits=3, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"), db_index=True)
+    submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True,)
+    board_size_x = IntegerField(_("board size x"), null=False, default=19, help_text=_("Width of board"), db_index=True,)
+    board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"), db_index=True,)
+    handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"), db_index=True,)
+    komi = DecimalField(
+        _("komi"), max_digits=3, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"), db_index=True,
+    )
     rules = JSONField(
-        _("rules"),
-        help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"),
-        default=dict,
-        null=True,
-        blank=True,
+        _("rules"), help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"), default=dict, null=True, blank=True,
     )
     extra_metadata = JSONField(
-        _("extra metadata"),
-        help_text=_("Additional miscellaneous metadata about this game"),
-        default=dict,
-        null=True,
-        blank=True,
+        _("extra metadata"), help_text=_("Additional miscellaneous metadata about this game"), default=dict, null=True, blank=True,
     )
 
     winner = CharField(_("winner"), max_length=1, choices=GamesResult.choices, db_index=True)
-    score = DecimalField(_("score"), max_digits=4, decimal_places=1, null=True, blank=True, help_text=_("Final white points minus black points"))
-    resigned = BooleanField(_("resigned"), default=False, db_index=True, help_text=_("Did this game end in resignation?"))
+    score = DecimalField(_("score"), max_digits=4, decimal_places=1, null=True, blank=True, help_text=_("Final white points minus black points"),)
+    resigned = BooleanField(_("resigned"), default=False, db_index=True, help_text=_("Did this game end in resignation?"),)
 
-    white_network = ForeignKey(Network, verbose_name=_("white player network"), on_delete=PROTECT, related_name="%(class)s_games_as_white", db_index=True)
-    black_network = ForeignKey(Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True)
+    white_network = ForeignKey(
+        Network, verbose_name=_("white player network"), on_delete=PROTECT, related_name="%(class)s_games_as_white", db_index=True,
+    )
+    black_network = ForeignKey(
+        Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True,
+    )
 
-    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200)
-    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True)
+    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200,)
+    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True,)
 
     @property
     def result_text(self):

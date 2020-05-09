@@ -7,6 +7,7 @@ class RunSerializer(HyperlinkedModelSerializer):
     """
     RunSerializer serializes one or several run for create, list and detail display on the api
     """
+
     class Meta:
         model = Run
         fields = [

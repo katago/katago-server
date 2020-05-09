@@ -6,13 +6,24 @@ class RatingGameAdmin(admin.ModelAdmin):
     """
     GameAdmin allows admin to create or edit games
     """
+
     list_filter = ("run", "created_at", "handicap", "komi")
-    list_display = ("id", "run", "created_at", "handicap", "komi", "result_text", "submitted_by", "white_network", "black_network")
+    list_display = (
+        "id",
+        "run",
+        "created_at",
+        "handicap",
+        "komi",
+        "result_text",
+        "submitted_by",
+        "white_network",
+        "black_network",
+    )
     readonly_fields = ("id", "created_at")
     ordering = ("pk",)
     fieldsets = (
         (None, {"fields": (("id", "created_at", "kg_game_uid", "run"),)}),
-        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi"), "rules")}),
+        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi"), "rules",)},),
         (_("Result"), {"fields": (("winner", "score", "resigned"),)}),
         (_("Networks"), {"fields": (("white_network", "black_network"),)}),
         (_("Other"), {"fields": ("submitted_by",)}),
@@ -31,13 +42,24 @@ class TrainingGameAdmin(admin.ModelAdmin):
     """
     GameAdmin allows admin to create or edit games
     """
+
     list_filter = ("run", "created_at", "handicap", "komi")
-    list_display = ("id", "run", "created_at", "handicap", "komi", "result_text", "submitted_by", "white_network", "black_network")
+    list_display = (
+        "id",
+        "run",
+        "created_at",
+        "handicap",
+        "komi",
+        "result_text",
+        "submitted_by",
+        "white_network",
+        "black_network",
+    )
     readonly_fields = ("id", "created_at")
     ordering = ("pk",)
     fieldsets = (
         (None, {"fields": (("id", "created_at", "kg_game_uid", "run"),)}),
-        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi"), "rules")}),
+        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi"), "rules",)},),
         (_("Result"), {"fields": (("winner", "score", "resigned"),)}),
         (_("Networks"), {"fields": (("white_network", "black_network"),)}),
         (_("Other"), {"fields": ("submitted_by",)}),

@@ -16,16 +16,15 @@ class RunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = RunSerializer
-    filterset_fields = ['status']
+    filterset_fields = ["status"]
 
     # https://stackoverflow.com/a/58168950
-    @action(detail=False, methods=['GET'])
+    @action(detail=False, methods=["GET"])
     def current(self, request):
         """
         API endpoint that gives only the fields of a run that self-play clients need.
         :return:
         """
         current_run = Run.objects.select_current()
-        self.kwargs['pk'] = current_run.pk
+        self.kwargs["pk"] = current_run.pk
         return self.retrieve(request)
-

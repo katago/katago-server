@@ -8,28 +8,78 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Run',
+            name="Run",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='creation date')),
-                ('status', models.CharField(choices=[('Active', 'Active'), ('Inactive', 'Inactive')], db_index=True, default='Inactive', max_length=15, verbose_name='run status')),
-                ('name', models.CharField(db_index=True, help_text='Run name. Should be short - used as a prefix for model names, for files and directories, etc.', max_length=16, unique=True, validators=[django.core.validators.RegexValidator('^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.')], verbose_name='name')),
-                ('data_board_len', models.IntegerField(default=19, help_text='Max board size for npz tensors. Should never change mid-run.', verbose_name='dataBoardLen')),
-                ('inputs_version', models.IntegerField(default=7, help_text='Version of neural net features that nets are trained with.', verbose_name='inputsVersion')),
-                ('max_search_threads_allowed', models.IntegerField(default=8, help_text='Maximum search threads that server promises to never exceed.', verbose_name='Maximum numSearchThreads')),
-                ('rating_game_probability', models.FloatField(default=0.1, help_text='Probability that a task is a rating game instead of a selfplay game.', verbose_name='Rating game probability')),
-                ('rating_game_high_elo_probability', models.FloatField(default=0.5, help_text='Rating games are randomly selected to either be high_elo or highest_uncertainty', verbose_name='Rating game high Elo probability')),
-                ('selfplay_client_config', models.TextField(default='FILL ME', help_text='Client config for selfplay games', verbose_name='Selfplay game config')),
-                ('rating_client_config', models.TextField(default='FILL ME', help_text='Client config for rating games', verbose_name='Rating game config')),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="creation date"),),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("Inactive", "Inactive")],
+                        db_index=True,
+                        default="Inactive",
+                        max_length=15,
+                        verbose_name="run status",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_index=True,
+                        help_text="Run name. Should be short - used as a prefix for model names, for files and directories, etc.",
+                        max_length=16,
+                        unique=True,
+                        validators=[django.core.validators.RegexValidator("^[0-9a-zA-Z]*$", "Only alphanumeric characters are allowed.",)],
+                        verbose_name="name",
+                    ),
+                ),
+                (
+                    "data_board_len",
+                    models.IntegerField(
+                        default=19, help_text="Max board size for npz tensors. Should never change mid-run.", verbose_name="dataBoardLen",
+                    ),
+                ),
+                (
+                    "inputs_version",
+                    models.IntegerField(
+                        default=7, help_text="Version of neural net features that nets are trained with.", verbose_name="inputsVersion",
+                    ),
+                ),
+                (
+                    "max_search_threads_allowed",
+                    models.IntegerField(
+                        default=8, help_text="Maximum search threads that server promises to never exceed.", verbose_name="Maximum numSearchThreads",
+                    ),
+                ),
+                (
+                    "rating_game_probability",
+                    models.FloatField(
+                        default=0.1,
+                        help_text="Probability that a task is a rating game instead of a selfplay game.",
+                        verbose_name="Rating game probability",
+                    ),
+                ),
+                (
+                    "rating_game_high_elo_probability",
+                    models.FloatField(
+                        default=0.5,
+                        help_text="Rating games are randomly selected to either be high_elo or highest_uncertainty",
+                        verbose_name="Rating game high Elo probability",
+                    ),
+                ),
+                (
+                    "selfplay_client_config",
+                    models.TextField(default="FILL ME", help_text="Client config for selfplay games", verbose_name="Selfplay game config",),
+                ),
+                (
+                    "rating_client_config",
+                    models.TextField(default="FILL ME", help_text="Client config for rating games", verbose_name="Rating game config",),
+                ),
             ],
-            options={
-                'verbose_name': 'Run',
-                'ordering': ['-created_at'],
-            },
+            options={"verbose_name": "Run", "ordering": ["-created_at"],},
         ),
     ]

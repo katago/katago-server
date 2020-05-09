@@ -15,63 +15,256 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('runs', '0001_initial'),
+        ("runs", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('trainings', '0001_initial'),
+        ("trainings", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TrainingGame',
+            name="TrainingGame",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='creation date')),
-                ('board_size_x', models.IntegerField(db_index=True, default=19, help_text='Width of board', verbose_name='board size x')),
-                ('board_size_y', models.IntegerField(db_index=True, default=19, help_text='Height of board', verbose_name='board size y')),
-                ('handicap', models.IntegerField(db_index=True, default=0, help_text='Number of handicap stones, generally 0 or >= 2', verbose_name='handicap')),
-                ('komi', models.DecimalField(db_index=True, decimal_places=1, default=7.0, help_text="Number of points added to white's score", max_digits=3, verbose_name='komi')),
-                ('rules', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='Rules are described at https://lightvector.github.io/KataGo/rules.html', null=True, verbose_name='rules')),
-                ('extra_metadata', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='Additional miscellaneous metadata about this game', null=True, verbose_name='extra metadata')),
-                ('winner', models.CharField(choices=[('W', 'White'), ('B', 'Black'), ('0', 'Draw (Jigo)'), ('-', 'No Result (Moshoubou)')], db_index=True, max_length=1, verbose_name='winner')),
-                ('score', models.DecimalField(blank=True, decimal_places=1, help_text='Final white points minus black points', max_digits=4, null=True, verbose_name='score')),
-                ('resigned', models.BooleanField(db_index=True, default=False, help_text='Did this game end in resignation?', verbose_name='resigned')),
-                ('sgf_file', models.FileField(max_length=200, storage=django.core.files.storage.FileSystemStorage(location='/data/games/sgf'), upload_to=katago_server.games.models.abstract_game.upload_sgf_to, validators=[katago_server.contrib.validators.FileValidator(max_size=10485760)], verbose_name='SGF file')),
-                ('kg_game_uid', models.CharField(db_index=True, default='', help_text='Game uid from KataGo client', max_length=48, verbose_name='KG game uid')),
-                ('training_data_file', models.FileField(max_length=200, storage=django.core.files.storage.FileSystemStorage(location='./data/games/training'), upload_to=katago_server.games.models.training_game.upload_training_data_to, validators=[katago_server.contrib.validators.FileValidator(content_types=('application/zip',), max_size=314572800)], verbose_name='training data (npz)')),
-                ('black_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='traininggame_games_as_black', to='trainings.Network', verbose_name='black player network')),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='traininggame_games', to='runs.Run', verbose_name='run')),
-                ('submitted_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='traininggame_games', to=settings.AUTH_USER_MODEL, verbose_name='submitted by')),
-                ('white_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='traininggame_games_as_white', to='trainings.Network', verbose_name='white player network')),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="creation date"),),
+                ("board_size_x", models.IntegerField(db_index=True, default=19, help_text="Width of board", verbose_name="board size x",),),
+                ("board_size_y", models.IntegerField(db_index=True, default=19, help_text="Height of board", verbose_name="board size y",),),
+                (
+                    "handicap",
+                    models.IntegerField(
+                        db_index=True, default=0, help_text="Number of handicap stones, generally 0 or >= 2", verbose_name="handicap",
+                    ),
+                ),
+                (
+                    "komi",
+                    models.DecimalField(
+                        db_index=True,
+                        decimal_places=1,
+                        default=7.0,
+                        help_text="Number of points added to white's score",
+                        max_digits=3,
+                        verbose_name="komi",
+                    ),
+                ),
+                (
+                    "rules",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Rules are described at https://lightvector.github.io/KataGo/rules.html",
+                        null=True,
+                        verbose_name="rules",
+                    ),
+                ),
+                (
+                    "extra_metadata",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Additional miscellaneous metadata about this game",
+                        null=True,
+                        verbose_name="extra metadata",
+                    ),
+                ),
+                (
+                    "winner",
+                    models.CharField(
+                        choices=[("W", "White"), ("B", "Black"), ("0", "Draw (Jigo)"), ("-", "No Result (Moshoubou)"),],
+                        db_index=True,
+                        max_length=1,
+                        verbose_name="winner",
+                    ),
+                ),
+                (
+                    "score",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=1,
+                        help_text="Final white points minus black points",
+                        max_digits=4,
+                        null=True,
+                        verbose_name="score",
+                    ),
+                ),
+                (
+                    "resigned",
+                    models.BooleanField(db_index=True, default=False, help_text="Did this game end in resignation?", verbose_name="resigned",),
+                ),
+                (
+                    "sgf_file",
+                    models.FileField(
+                        max_length=200,
+                        storage=django.core.files.storage.FileSystemStorage(location="/data/games/sgf"),
+                        upload_to=katago_server.games.models.abstract_game.upload_sgf_to,
+                        validators=[katago_server.contrib.validators.FileValidator(max_size=10485760)],
+                        verbose_name="SGF file",
+                    ),
+                ),
+                (
+                    "kg_game_uid",
+                    models.CharField(db_index=True, default="", help_text="Game uid from KataGo client", max_length=48, verbose_name="KG game uid",),
+                ),
+                (
+                    "training_data_file",
+                    models.FileField(
+                        max_length=200,
+                        storage=django.core.files.storage.FileSystemStorage(location="./data/games/training"),
+                        upload_to=katago_server.games.models.training_game.upload_training_data_to,
+                        validators=[katago_server.contrib.validators.FileValidator(content_types=("application/zip",), max_size=314572800)],
+                        verbose_name="training data (npz)",
+                    ),
+                ),
+                (
+                    "black_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="traininggame_games_as_black",
+                        to="trainings.Network",
+                        verbose_name="black player network",
+                    ),
+                ),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, related_name="traininggame_games", to="runs.Run", verbose_name="run",
+                    ),
+                ),
+                (
+                    "submitted_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="traininggame_games",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="submitted by",
+                    ),
+                ),
+                (
+                    "white_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="traininggame_games_as_white",
+                        to="trainings.Network",
+                        verbose_name="white player network",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Training game',
-                'ordering': ['-created_at'],
-            },
+            options={"verbose_name": "Training game", "ordering": ["-created_at"],},
         ),
         migrations.CreateModel(
-            name='RatingGame',
+            name="RatingGame",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='creation date')),
-                ('board_size_x', models.IntegerField(db_index=True, default=19, help_text='Width of board', verbose_name='board size x')),
-                ('board_size_y', models.IntegerField(db_index=True, default=19, help_text='Height of board', verbose_name='board size y')),
-                ('handicap', models.IntegerField(db_index=True, default=0, help_text='Number of handicap stones, generally 0 or >= 2', verbose_name='handicap')),
-                ('komi', models.DecimalField(db_index=True, decimal_places=1, default=7.0, help_text="Number of points added to white's score", max_digits=3, verbose_name='komi')),
-                ('rules', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='Rules are described at https://lightvector.github.io/KataGo/rules.html', null=True, verbose_name='rules')),
-                ('extra_metadata', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='Additional miscellaneous metadata about this game', null=True, verbose_name='extra metadata')),
-                ('winner', models.CharField(choices=[('W', 'White'), ('B', 'Black'), ('0', 'Draw (Jigo)'), ('-', 'No Result (Moshoubou)')], db_index=True, max_length=1, verbose_name='winner')),
-                ('score', models.DecimalField(blank=True, decimal_places=1, help_text='Final white points minus black points', max_digits=4, null=True, verbose_name='score')),
-                ('resigned', models.BooleanField(db_index=True, default=False, help_text='Did this game end in resignation?', verbose_name='resigned')),
-                ('sgf_file', models.FileField(max_length=200, storage=django.core.files.storage.FileSystemStorage(location='/data/games/sgf'), upload_to=katago_server.games.models.abstract_game.upload_sgf_to, validators=[katago_server.contrib.validators.FileValidator(max_size=10485760)], verbose_name='SGF file')),
-                ('kg_game_uid', models.CharField(db_index=True, default='', help_text='Game uid from KataGo client', max_length=48, verbose_name='KG game uid')),
-                ('black_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='ratinggame_games_as_black', to='trainings.Network', verbose_name='black player network')),
-                ('run', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='ratinggame_games', to='runs.Run', verbose_name='run')),
-                ('submitted_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='ratinggame_games', to=settings.AUTH_USER_MODEL, verbose_name='submitted by')),
-                ('white_network', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='ratinggame_games_as_white', to='trainings.Network', verbose_name='white player network')),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="creation date"),),
+                ("board_size_x", models.IntegerField(db_index=True, default=19, help_text="Width of board", verbose_name="board size x",),),
+                ("board_size_y", models.IntegerField(db_index=True, default=19, help_text="Height of board", verbose_name="board size y",),),
+                (
+                    "handicap",
+                    models.IntegerField(
+                        db_index=True, default=0, help_text="Number of handicap stones, generally 0 or >= 2", verbose_name="handicap",
+                    ),
+                ),
+                (
+                    "komi",
+                    models.DecimalField(
+                        db_index=True,
+                        decimal_places=1,
+                        default=7.0,
+                        help_text="Number of points added to white's score",
+                        max_digits=3,
+                        verbose_name="komi",
+                    ),
+                ),
+                (
+                    "rules",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Rules are described at https://lightvector.github.io/KataGo/rules.html",
+                        null=True,
+                        verbose_name="rules",
+                    ),
+                ),
+                (
+                    "extra_metadata",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Additional miscellaneous metadata about this game",
+                        null=True,
+                        verbose_name="extra metadata",
+                    ),
+                ),
+                (
+                    "winner",
+                    models.CharField(
+                        choices=[("W", "White"), ("B", "Black"), ("0", "Draw (Jigo)"), ("-", "No Result (Moshoubou)"),],
+                        db_index=True,
+                        max_length=1,
+                        verbose_name="winner",
+                    ),
+                ),
+                (
+                    "score",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=1,
+                        help_text="Final white points minus black points",
+                        max_digits=4,
+                        null=True,
+                        verbose_name="score",
+                    ),
+                ),
+                (
+                    "resigned",
+                    models.BooleanField(db_index=True, default=False, help_text="Did this game end in resignation?", verbose_name="resigned",),
+                ),
+                (
+                    "sgf_file",
+                    models.FileField(
+                        max_length=200,
+                        storage=django.core.files.storage.FileSystemStorage(location="/data/games/sgf"),
+                        upload_to=katago_server.games.models.abstract_game.upload_sgf_to,
+                        validators=[katago_server.contrib.validators.FileValidator(max_size=10485760)],
+                        verbose_name="SGF file",
+                    ),
+                ),
+                (
+                    "kg_game_uid",
+                    models.CharField(db_index=True, default="", help_text="Game uid from KataGo client", max_length=48, verbose_name="KG game uid",),
+                ),
+                (
+                    "black_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="ratinggame_games_as_black",
+                        to="trainings.Network",
+                        verbose_name="black player network",
+                    ),
+                ),
+                (
+                    "run",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, related_name="ratinggame_games", to="runs.Run", verbose_name="run",
+                    ),
+                ),
+                (
+                    "submitted_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="ratinggame_games",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="submitted by",
+                    ),
+                ),
+                (
+                    "white_network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="ratinggame_games_as_white",
+                        to="trainings.Network",
+                        verbose_name="white player network",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Rating game',
-                'ordering': ['-created_at'],
-            },
+            options={"verbose_name": "Rating game", "ordering": ["-created_at"],},
         ),
     ]
