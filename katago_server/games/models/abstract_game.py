@@ -31,7 +31,9 @@ def upload_sgf_to(instance, _filename):
     return os.path.join(instance.run.name, f"{instance.kg_game_uid}.sgf")
 
 
-validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
+# TODO: Ideally use this validator: requires an extension to magic such as https://github.com/threatstack/libmagic/blob/1249b5cd02c3b6fb9b917d16c76bc76c862932b6/magic/Magdir/games#L176
+# validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
+validate_sgf = FileValidator(max_size=1024 * 512)  # max 0.5mb
 
 
 class AbstractGame(Model):
