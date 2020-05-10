@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from katago_server.distributed_efforts.services import RatingNetworkPairerService
 from katago_server.runs.models import Run
+from katago_server.runs.serializers import RunSerializerForClient
 from katago_server.trainings.models import Network
 from katago_server.trainings.serializers import NetworkSerializerForTasks
 
@@ -20,6 +21,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
     def create(self, request):
         current_run = Run.objects.select_current()
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
+        run_content = RunSerializerForClient(current_run)
 
         if random.random() < current_run.rating_game_probability:
             pairer = RatingNetworkPairerService(current_run)
@@ -28,7 +30,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             black_network_content = NetworkSerializerForTasks(black_network, context=serializer_context)
             response_body = {
                 "kind": "rating",
-                "run": current_run.name,
+                "run": run_content.data,
                 "config": current_run.rating_client_config,
                 "white_network": white_network_content.data,
                 "black_network": black_network_content.data,
@@ -38,7 +40,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             best_network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
             response_body = {
                 "kind": "selfplay",
-                "run": current_run.name,
+                "run": run_content.data,
                 "config": current_run.selfplay_client_config,
                 "network": best_network_content.data,
             }

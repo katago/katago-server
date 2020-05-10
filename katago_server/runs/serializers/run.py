@@ -21,3 +21,19 @@ class RunSerializer(HyperlinkedModelSerializer):
             "selfplay_client_config",
             "rating_client_config",
         ]
+
+
+class RunSerializerForClient(HyperlinkedModelSerializer):
+    """
+    Serializer exposing only the fields of a run that a self-play client needs on startup.
+    """
+
+    class Meta:
+        model = Run
+        fields = [
+            "id",
+            "name",
+            "data_board_len",
+            "inputs_version",
+            "max_search_threads_allowed",
+        ]
