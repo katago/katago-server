@@ -75,7 +75,7 @@ class Network(Model):
         storage=network_data_storage,
         max_length=200,
         null=False,
-        blank=False,
+        blank=True,
         help_text=_("Url to download network model file."),
     )
     model_file_bytes = BigIntegerField(_("model file bytes"), null=False, blank=False, help_text=_("Number of bytes in network model file."),)
@@ -118,4 +118,8 @@ class Network(Model):
             # TODO: We should let the api to create a model throw if there is no parent mode
             if not self.parent_network:
                 self.parent_network = Network.objects.last()
+        # Allow blank file only if random
+        if (not self.is_random) and (self.model_file is None or len(self.model_file) <= 0):
+            raise ValueError("model_file is only allowed to be blank when is_random is True")
+
         return super(Network, self).save(*args, **kwargs)
