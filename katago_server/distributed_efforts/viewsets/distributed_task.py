@@ -25,24 +25,29 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         if random.random() < current_run.rating_game_probability:
             pairer = RatingNetworkPairerService(current_run)
-            (white_network, black_network) = pairer.generate_pairing()
-            white_network_content = NetworkSerializerForTasks(white_network, context=serializer_context)
-            black_network_content = NetworkSerializerForTasks(black_network, context=serializer_context)
-            response_body = {
-                "kind": "rating",
-                "run": run_content.data,
-                "config": current_run.rating_client_config,
-                "white_network": white_network_content.data,
-                "black_network": black_network_content.data,
-            }
-        else:
-            best_network = Network.objects.select_best_without_uncertainty(current_run)
-            best_network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
-            response_body = {
-                "kind": "selfplay",
-                "run": run_content.data,
-                "config": current_run.selfplay_client_config,
-                "network": best_network_content.data,
-            }
+            pairing = pairer.generate_pairing()
+            if pairing is not None:
+                (white_network, black_network) = pairing
+                white_network_content = NetworkSerializerForTasks(white_network, context=serializer_context)
+                black_network_content = NetworkSerializerForTasks(black_network, context=serializer_context)
+                response_body = {
+                    "kind": "rating",
+                    "run": run_content.data,
+                    "config": current_run.rating_client_config,
+                    "white_network": white_network_content.data,
+                    "black_network": black_network_content.data,
+                }
+                return Response(response_body)
 
+        best_network = Network.objects.select_best_without_uncertainty(current_run)
+        if best_network is None:
+            return Response({'error': 'No networks for run.'}, status=status.HTTP_404_NOT_FOUND)
+
+        best_network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
+        response_body = {
+            "kind": "selfplay",
+            "run": run_content.data,
+            "config": current_run.selfplay_client_config,
+            "network": best_network_content.data,
+        }
         return Response(response_body)
