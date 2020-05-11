@@ -32,6 +32,7 @@ class RunSerializerForClient(HyperlinkedModelSerializer):
         model = Run
         fields = [
             "id",
+            "url",
             "name",
             "data_board_len",
             "inputs_version",

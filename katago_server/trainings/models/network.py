@@ -52,6 +52,9 @@ class Network(Model):
         ordering = ["-created_at"]
 
     id = BigAutoField(primary_key=True)
+    # TODO is it possible to make this the primary key?
+    # Having a url like https://katago.tycoach.me/api/networks/2/ is not very useful if the intended name for users
+    # to recognize the network is not "2", but rather this name.
     name = CharField(
         _("neural network name"), max_length=128, null=False, blank=False, validators=[alphanumeric_and_dashes], db_index=True, unique=True,
     )
@@ -93,7 +96,7 @@ class Network(Model):
     )
 
     def __str__(self):
-        return f"net-{self.id} ({self.elo}±{2 * self.elo_uncertainty})"
+        return f"{self.name} ({self.elo}±{2 * self.elo_uncertainty})"
 
     @property
     def size(self):
