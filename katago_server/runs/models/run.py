@@ -46,7 +46,9 @@ class Run(Model):
     id = AutoField(primary_key=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     status = CharField(_("run status"), max_length=15, choices=RunStatus.choices, db_index=True, default=RunStatus.INACTIVE,)
-    # TODO enforce that name is UNIQUE
+    # TODO is it possible to make this the primary key?
+    # Having a url like https://katago.tycoach.me/api/runs/2/ is not very useful if the intended name for users
+    # to recognize the run is not "2", but rather this name.
     name = CharField(
         _("name"),
         max_length=16,
