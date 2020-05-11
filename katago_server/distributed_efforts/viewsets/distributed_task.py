@@ -24,7 +24,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             return Response({'error': 'No active run.'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
-        run_content = RunSerializerForClient(current_run)
+        run_content = RunSerializerForClient(current_run,serializer_context)
 
         if random.random() < current_run.rating_game_probability:
             pairer = RatingNetworkPairerService(current_run)
