@@ -13,6 +13,8 @@ def update_bayesian_rating():
     :return:
     """
     current_run = Run.objects.select_current()
+    if current_run is None:
+        return
 
     network_ratings = Network.pandas.get_ratings_dataframe(current_run)
     anchor_network = Network.objects.filter(run=current_run).order_by("pk").first()
