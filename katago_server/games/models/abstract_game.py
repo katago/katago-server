@@ -88,4 +88,4 @@ class AbstractGame(Model):
         return f"{self.winner}+{score}" if self.winner in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE] else self.winner
 
     def __str__(self):
-        return f"{self.id} ({self.result_text})"
+        return f"{self.kg_game_uid} ({self.result_text})"
