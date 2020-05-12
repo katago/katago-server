@@ -15,3 +15,5 @@ class NetworkViewSet(viewsets.ModelViewSet):
     queryset = Network.objects.all()
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = NetworkSerializer
+    lookup_field = "name"
+
