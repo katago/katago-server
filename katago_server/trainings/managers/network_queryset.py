@@ -31,6 +31,6 @@ class NetworkQuerySet(QuerySet):
 
     def select_one_of_the_more_uncertain(self, run: Run):
         more_uncertain_networks = self.filter(run=run).order_by("-log_gamma_uncertainty")[:10]
-        if len(best_networks) <= 0:
+        if len(more_uncertain_networks) <= 0:
             return None
         return random_weighted_choice(more_uncertain_networks)
