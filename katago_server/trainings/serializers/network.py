@@ -23,7 +23,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "parent_network",
         ]
         extra_kwargs = {
-            "url": {"lookup_field": "name"},
+            # "url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
         }
 
@@ -46,6 +46,6 @@ class NetworkSerializerForTasks(HyperlinkedModelSerializer):
             "model_file_sha256",
         ]
         extra_kwargs = {
-            "url": {"lookup_field": "name"},
+            #"url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
         }
