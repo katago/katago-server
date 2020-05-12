@@ -41,6 +41,11 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
             "training_data_file",
             "kg_game_uid",
         ]
+        extra_kwargs = {
+            "run": {"lookup_field": "name"},
+            "white_network": {"lookup_field": "name"},
+            "black_network": {"lookup_field": "name"},
+        }
 
 
 # Use as read only serializer
@@ -72,3 +77,8 @@ class TrainingGameListSerializer(HyperlinkedModelSerializer):
             "training_data_file",
             "kg_game_uid",
         ]
+        extra_kwargs = {
+            "run": {"lookup_field": "name"},
+            "white_network": {"lookup_field": "name"},
+            "black_network": {"lookup_field": "name"},
+        }

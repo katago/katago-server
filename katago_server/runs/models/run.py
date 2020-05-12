@@ -73,4 +73,4 @@ class Run(Model):
     rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games"), default="FILL ME",)
 
     def __str__(self):
-        return f"run-{self.id}: {self.name}"
+        return f"{self.name}"
