@@ -18,19 +18,7 @@ class RunViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = RunSerializer
     filterset_fields = ["status"]
-
-    # https://stackoverflow.com/a/58168950
-    @action(detail=False, methods=["GET"])
-    def current(self, request):
-        """
-        API endpoint that gives only the fields of a run that self-play clients need.
-        :return:
-        """
-        current_run = Run.objects.select_current()
-        if current_run is None:
-            return Response({'error': 'No active run.'}, status=status.HTTP_404_NOT_FOUND)
-        self.kwargs["pk"] = current_run.pk
-        return self.retrieve(request)
+    lookup_field = "name"
 
     @action(detail=False, methods=["GET"])
     def current_for_client(self, request):
@@ -41,4 +29,5 @@ class RunViewSet(viewsets.ModelViewSet):
         current_run = Run.objects.select_current()
         if current_run is None:
             return Response({'error': 'No active run.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(RunSerializerForClient(current_run,context={'request': request}).data)
+        run_content = RunSerializerForClient(current_run,context={'request': request})
+        return Response(run_content.data)

@@ -21,6 +21,9 @@ class RunSerializer(HyperlinkedModelSerializer):
             "selfplay_client_config",
             "rating_client_config",
         ]
+        extra_kwargs = {
+            "url": {"lookup_field": "name"},
+        }
 
 
 class RunSerializerForClient(HyperlinkedModelSerializer):
@@ -38,3 +41,6 @@ class RunSerializerForClient(HyperlinkedModelSerializer):
             "inputs_version",
             "max_search_threads_allowed",
         ]
+        extra_kwargs = {
+            "url": {"lookup_field": "name"},
+        }
