@@ -40,6 +40,11 @@ class RatingGameCreateSerializer(HyperlinkedModelSerializer):
             "sgf_file",
             "kg_game_uid",
         ]
+        extra_kwargs = {
+            "run": {"lookup_field": "name"},
+            "white_network": {"lookup_field": "name"},
+            "black_network": {"lookup_field": "name"},
+        }
 
 
 # Use as read only serializer
@@ -70,3 +75,8 @@ class RatingGameListSerializer(HyperlinkedModelSerializer):
             "sgf_file",
             "kg_game_uid",
         ]
+        extra_kwargs = {
+            "run": {"lookup_field": "name"},
+            "white_network": {"lookup_field": "name"},
+            "black_network": {"lookup_field": "name"},
+        }
