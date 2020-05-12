@@ -122,7 +122,7 @@ class Network(Model):
             if not self.parent_network:
                 self.parent_network = Network.objects.last()
         # Allow blank file only if random
-        no_model_file = self.model_file is None or len(self.model_file) <= 0
+        no_model_file = not self.model_file or len(self.model_file) <= 0
         if no_model_file and not self.is_random:
             raise ValueError("model_file is only allowed to be blank when is_random is True")
 

@@ -88,7 +88,7 @@ class RatingNetworkPairerService:
                 .order_by("log_gamma")
                 .all()[:2]
             )
-            nearby_networks = nearby_weaker_networks + nearby_stronger_networks
+            nearby_networks = list(nearby_weaker_networks) + list(nearby_stronger_networks)
             if len(nearby_networks) <= 0:
                 return None
             return np.random.choice(nearby_networks)
