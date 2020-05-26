@@ -1,25 +1,26 @@
-pytz==2019.3  # https://github.com/stub42/pytz
+pytz==2020.1  # https://github.com/stub42/pytz
 python-slugify==4.0.0  # https://github.com/un33k/python-slugify
-Pillow==7.1.1  # https://github.com/python-pillow/Pillow
+Pillow==7.1.2  # https://github.com/python-pillow/Pillow
 rcssmin==1.0.6  # https://github.com/ndparker/rcssmin
-argon2-cffi==19.2.0  # https://github.com/hynek/argon2_cffi
-whitenoise==5.0.1  # https://github.com/evansd/whitenoise
-redis==3.4.1  # https://github.com/antirez/redis
+argon2-cffi==20.1.0  # https://github.com/hynek/argon2_cffi
+whitenoise==5.1.0  # https://github.com/evansd/whitenoise
+redis==3.5.2  # https://github.com/andymccurdy/redis-py
+hiredis==1.0.1  # https://github.com/redis/hiredis-py
 celery==4.4.2  # pyup: < 5.0  # https://github.com/celery/celery
 django-celery-beat==2.0.0  # https://github.com/celery/django-celery-beat
 flower==0.9.4  # https://github.com/mher/flower
 
 # Django
 # ------------------------------------------------------------------------------
-django==3.0.5  # pyup: < 3.0  # https://www.djangoproject.com/
+django==3.0.6  # pyup: < 3.0  # https://www.djangoproject.com/
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==4.0.0  # https://github.com/jazzband/django-model-utils
-django-allauth==0.41.0  # https://github.com/pennersr/django-allauth
-django-crispy-forms==1.9.0  # https://github.com/django-crispy-forms/django-crispy-forms
-django-redis==4.11.0  # https://github.com/niwinz/django-redis
+django-allauth==0.42.0  # https://github.com/pennersr/django-allauth
+django-crispy-forms==1.9.1  # https://github.com/django-crispy-forms/django-crispy-forms
+django-redis==4.11.0  # https://github.com/jazzband/django-redis
 docutils==0.16
 uuid==1.30
-python-magic==0.4.15
+python-magic==0.4.18
 
 # Django REST Framework
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
@@ -30,7 +31,7 @@ drf-yasg==1.17.1
 
 
 # Scientific libs
-numpy==1.18.3
+numpy==1.18.4
 pandas==1.0.3
 django-pandas==0.6.1
 scipy==1.4.1

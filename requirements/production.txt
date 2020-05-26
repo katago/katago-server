@@ -2,10 +2,10 @@
 
 -r ./base.txt
 
-uvicorn==0.11.3
+uvicorn==0.11.5
 gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
 psycopg2==2.8.5 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
-sentry-sdk==0.14.3  # https://github.com/getsentry/sentry-python
+sentry-sdk==0.14.4  # https://github.com/getsentry/sentry-python
 
 # Django
 # ------------------------------------------------------------------------------
@@ -13,4 +13,4 @@ django-storages[google]==1.9.1  # https://github.com/jschneier/django-storages
 django-anymail[mailgun]==7.1.0  # https://github.com/anymail/django-anymail
 
 # APM
-ddtrace[profile]==0.36.1
+ddtrace[profile]==0.38.0

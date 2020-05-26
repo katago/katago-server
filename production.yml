@@ -63,6 +63,7 @@ services:
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
+      - "0.0.0.0:5555:5555"
 
   redis:
     image: redis:5.0
@@ -91,8 +92,6 @@ services:
   flower:
     <<: *django
     image: katago_server_production_flower
-    ports:
-      - "5555:5555"
     command: /start-flower
 
 

@@ -37,6 +37,7 @@ CACHES = {
             # Mimicing memcache behavior.
             # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
             "IGNORE_EXCEPTIONS": True,
+            "PARSER_CLASS": "redis.connection.HiredisParser",
         },
     }
 }
