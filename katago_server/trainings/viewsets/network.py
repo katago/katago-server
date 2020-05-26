@@ -16,4 +16,3 @@ class NetworkViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = NetworkSerializer
     lookup_field = "name"
-

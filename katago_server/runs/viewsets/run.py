@@ -28,6 +28,6 @@ class RunViewSet(viewsets.ModelViewSet):
         """
         current_run = Run.objects.select_current()
         if current_run is None:
-            return Response({'error': 'No active run.'}, status=status.HTTP_404_NOT_FOUND)
-        run_content = RunSerializerForClient(current_run,context={'request': request})
+            return Response({"error": "No active run."}, status=status.HTTP_404_NOT_FOUND)
+        run_content = RunSerializerForClient(current_run, context={"request": request})
         return Response(run_content.data)

@@ -9,13 +9,21 @@ import katago_server.trainings.models.network
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trainings', '0002_auto_20200509_1435'),
+        ("trainings", "0002_auto_20200509_1435"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='network',
-            name='model_file',
-            field=models.FileField(blank=True, help_text='Url to download network model file.', max_length=200, storage=django.core.files.storage.FileSystemStorage(location='/data/networks'), upload_to=katago_server.trainings.models.network.upload_network_to, validators=[katago_server.contrib.validators.FileValidator(content_types=('application/gzip',), max_size=1073741824)], verbose_name='model file url'),
+            model_name="network",
+            name="model_file",
+            field=models.FileField(
+                blank=True,
+                help_text="Url to download network model file.",
+                max_length=200,
+                storage=django.core.files.storage.FileSystemStorage(location="/data/networks"),
+                upload_to=katago_server.trainings.models.network.upload_network_to,
+                validators=[katago_server.contrib.validators.FileValidator(content_types=("application/gzip",), max_size=1073741824)],
+                verbose_name="model file url",
+            ),
         ),
     ]

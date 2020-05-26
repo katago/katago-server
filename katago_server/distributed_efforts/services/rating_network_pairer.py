@@ -66,7 +66,7 @@ class RatingNetworkPairerService:
 
         ref_net_log_gamma = reference_network.log_gamma
 
-        log_gamma_search_range = 1200 / (400 * log10(e)) # Hardcoded window of 1200 Elo, we could dehardcode if needed in the future
+        log_gamma_search_range = 1200 / (400 * log10(e))  # Hardcoded window of 1200 Elo, we could dehardcode if needed in the future
         log_gamma_lower_bound = ref_net_log_gamma - log_gamma_search_range
         log_gamma_upper_bound = ref_net_log_gamma + log_gamma_search_range
 

@@ -21,7 +21,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
     def create(self, request):
         current_run = Run.objects.select_current()
         if current_run is None:
-            return Response({'error': 'No active run.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "No active run."}, status=status.HTTP_404_NOT_FOUND)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         run_content = RunSerializerForClient(current_run, context=serializer_context)
@@ -44,7 +44,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         best_network = Network.objects.select_best_without_uncertainty(current_run)
         if best_network is None:
-            return Response({'error': 'No networks for run.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "No networks for run."}, status=status.HTTP_404_NOT_FOUND)
 
         best_network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
         response_body = {
