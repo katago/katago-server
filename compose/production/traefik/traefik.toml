@@ -27,6 +27,8 @@
     rule = "Host(`katago.tycoach.me`) && PathPrefix(`/media`)"
     entryPoints = ["web-secure"]
     service = "nginx"
+    [http.routers.media-secure.tls]
+      certResolver = "letsencrypt"
   [http.routers.web]
     rule = "Host(`katago.tycoach.me`)"
     entryPoints = ["web"]
