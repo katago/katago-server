@@ -93,7 +93,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootGoogleCloudStorage"
 
 
-MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
+# MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
+
+MEDIA_URL = "https://katago.tycoach.me/media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
