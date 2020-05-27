@@ -66,9 +66,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool("DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", def
 # STORAGES
 # ------------------------------------------------------------------------------
 # https://django-storages.readthedocs.io/en/latest/#installation
-INSTALLED_APPS += ["storages"]  # noqa F405
-GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
-GS_DEFAULT_ACL = "publicRead"
+# INSTALLED_APPS += ["storages"]  # noqa F405
+# GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
+# GS_DEFAULT_ACL = "publicRead"
 
 # STATIC
 # ------------------------
@@ -94,8 +94,8 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
-
-MEDIA_URL = "https://katago.tycoach.me/media/"
+MEDIA_ROOT = "/data"
+MEDIA_URL = "/media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------

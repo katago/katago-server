@@ -24,7 +24,7 @@ from katago_server.users.models import User
 
 __ALL__ = ["TrainingGame", "RatingGame"]
 
-sgf_data_storage = FileSystemStorage(location="/data/games")
+sgf_data_storage = FileSystemStorage(location="/data/games", base_url="/media/")
 
 
 def upload_sgf_to(instance, _filename):
