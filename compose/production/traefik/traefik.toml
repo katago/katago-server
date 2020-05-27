@@ -26,7 +26,7 @@
   [http.routers.web-secure]
     rule = "Host:katago.tycoach.me"
     entryPoints = ["web-secure"]
-    middlewares = "csrf"
+    middlewares = ["csrf"]
     service = "django"
     [http.routers.web-secure.tls]
       certResolver = "letsencrypt"
