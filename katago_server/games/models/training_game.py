@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from katago_server.contrib.validators import FileValidator
 from katago_server.games.models.abstract_game import AbstractGame
 
-training_data_storage = FileSystemStorage(location="/data/training_npz", base_url="/media/")
+training_data_storage = FileSystemStorage(location="/data/training_npz", base_url="/media/training_npz/")
 validate_zip = FileValidator(max_size=1024 * 1024 * 300, content_types=("application/zip",))
 
 

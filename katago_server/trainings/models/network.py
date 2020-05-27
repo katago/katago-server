@@ -22,7 +22,7 @@ from katago_server.runs.models import Run
 from katago_server.trainings.managers.network_pandas_manager import NetworkPandasManager
 from katago_server.trainings.managers.network_queryset import NetworkQuerySet
 
-network_data_storage = FileSystemStorage(location="/data/networks", base_url="/media/")
+network_data_storage = FileSystemStorage(location="/data/networks", base_url="/media/networks/")
 
 
 def upload_network_to(instance, _filename):
