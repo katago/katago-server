@@ -46,10 +46,10 @@
 
 [http.services]
   [http.services.django.loadBalancer]
-    [http.services.django.loadBalancer.servers]
+    [[http.services.django.loadBalancer.servers]]
       url = "http://django:5000"
   [http.services.flower.loadBalancer]
-    [http.services.flower.loadBalancer.servers]
+    [[http.services.flower.loadBalancer.servers]]
       url = "http://flower:5555"
 
 [providers]
