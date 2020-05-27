@@ -6,13 +6,8 @@
     address = ":80"
   [entryPoints.web-secure]
     address = ":443"
-    [entryPoints.web-secure.http.tls]
-      certResolver = "letsencrypt"
   [entryPoints.flower]
     address = ":5555"
-    [entryPoints.flower.http.tls]
-      certResolver = "letsencrypt"
-
 
 [certificatesResolvers]
   [certificatesResolvers.letsencrypt]
@@ -22,23 +17,25 @@
       [certificatesResolvers.letsencrypt.acme.httpChallenge]
         entryPoint = "web"
 
-
 [http.routers]
   [http.routers.web]
     rule = "Host:katago.tycoach.me"
-    entryPoints = "web"
+    entryPoints = ["web"]
     middlewares = ["redirect", "csrf"]
     service = "django"
-
   [http.routers.web-secure]
     rule = "Host:katago.tycoach.me"
-    entryPoints = "web-secure"
+    entryPoints = ["web-secure"]
     middlewares = "csrf"
     service = "django"
+    [http.routers.web-secure.tls]
+      certResolver = "letsencrypt"
   [http.routers.flower]
     rule = "Host:katago.tycoach.me"
-    entryPoints = "flower"
+    entryPoints = ["flower"]
     service = "flower"
+    [http.routers.flower.tls]
+      certResolver = "letsencrypt"
 
 [http.middlewares]
   [http.middlewares.redirect.redirectScheme]
@@ -55,8 +52,7 @@
     [http.services.flower.loadBalancer.servers]
       url = "http://flower:5555"
 
-
 [providers]
   [providers.file]    
-    filename = "/etc/traefik/traefik.yml"
+    filename = "/etc/traefik/traefik.toml"
     watch = true
