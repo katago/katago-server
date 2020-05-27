@@ -19,14 +19,13 @@
 
 [http.routers]
   [http.routers.media]
-    rule = "Host(`katago.tycoach.me`) && Path(`/media`)"
+    rule = "Host(`katago.tycoach.me`) && PathPrefix(`/media`)"
     entryPoints = ["web"]
-    middlewares = ["redirect", "csrf"]
+    middlewares = ["redirect"]
     service = "nginx"
   [http.routers.media-secure]
-    rule = "Host(`katago.tycoach.me`) && Path(`/media`)"
+    rule = "Host(`katago.tycoach.me`) && PathPrefix(`/media`)"
     entryPoints = ["web-secure"]
-    middlewares = ["redirect", "csrf"]
     service = "nginx"
   [http.routers.web]
     rule = "Host(`katago.tycoach.me`)"
