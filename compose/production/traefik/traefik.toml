@@ -19,19 +19,19 @@
 
 [http.routers]
   [http.routers.web]
-    rule = "Host:katago.tycoach.me"
+    rule = "Host(` katago.tycoach.me` )"
     entryPoints = ["web"]
     middlewares = ["redirect", "csrf"]
     service = "django"
   [http.routers.web-secure]
-    rule = "Host:katago.tycoach.me"
+    rule = "Host(` katago.tycoach.me`` )"
     entryPoints = ["web-secure"]
     middlewares = ["csrf"]
     service = "django"
     [http.routers.web-secure.tls]
       certResolver = "letsencrypt"
   [http.routers.flower]
-    rule = "Host:katago.tycoach.me"
+    rule = "Host(` katago.tycoach.me`` )"
     entryPoints = ["flower"]
     service = "flower"
     [http.routers.flower.tls]
