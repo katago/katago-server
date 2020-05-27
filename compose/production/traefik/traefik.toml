@@ -18,6 +18,16 @@
         entryPoint = "web"
 
 [http.routers]
+  [http.routers.media]
+    rule = "Host(`katago.tycoach.me`) && Path(`/media`)"
+    entryPoints = ["web"]
+    middlewares = ["redirect", "csrf"]
+    service = "nginx"
+  [http.routers.media-secure]
+    rule = "Host(`katago.tycoach.me`) && Path(`/media`)"
+    entryPoints = ["web-secure"]
+    middlewares = ["redirect", "csrf"]
+    service = "nginx"
   [http.routers.web]
     rule = "Host(`katago.tycoach.me`)"
     entryPoints = ["web"]
@@ -48,6 +58,9 @@
   [http.services.django.loadBalancer]
     [[http.services.django.loadBalancer.servers]]
       url = "http://django:5000"
+  [http.services.nginx.loadBalancer]
+    [[http.services.nginx.loadBalancer.servers]]
+      url = "http://nginx:80"
   [http.services.flower.loadBalancer]
     [[http.services.flower.loadBalancer.servers]]
       url = "http://flower:5555"
