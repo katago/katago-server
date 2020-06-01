@@ -21,6 +21,7 @@ class RunAdmin(admin.ModelAdmin):
                     "rating_game_high_elo_probability",
                     "selfplay_client_config",
                     "rating_client_config",
+                    "git_revision_hash_whitelist",
                 )
             },
         ),

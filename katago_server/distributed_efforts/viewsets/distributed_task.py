@@ -21,7 +21,23 @@ class DistributedTaskViewSet(viewsets.ViewSet):
     def create(self, request):
         current_run = Run.objects.select_current()
         if current_run is None:
-            return Response({"error": "No active run."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "No active run."}, status=404)
+
+        git_revision_hash_whitelist = current_run.git_revision_hash_whitelist
+        git_revision_hash_whitelist = [s.strip().lower() for s in git_revision_hash_whitelist.replace(" ",",").split(",")]
+        git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
+        git_revision = request.POST["git_revision"].strip().lower() if "git_revision" in request.POST else ""
+        # Git revision hashes are 32 chars
+        if len(git_revision) != 32:
+            return Response(
+                {"error": "This version of KataGo is not usable for distributed because either it's had custom modifications or has been compiled without version info."},
+                status=400,
+            )
+        elif git_revision not in git_revision_hash_whitelist:
+            return Response(
+                {"error": "This version of KataGo is not enabled for distributed. If this is an official version and/or you think this is an oversight, please ask server admins to enable the following version hash: " + git_revision},
+                status=400,
+            )
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         run_content = RunSerializerForClient(current_run, context=serializer_context)
@@ -44,7 +60,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         best_network = Network.objects.select_best_without_uncertainty(current_run)
         if best_network is None:
-            return Response({"error": "No networks for run."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "No networks for run."}, status=400)
 
         best_network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
         response_body = {

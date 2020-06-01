@@ -20,6 +20,7 @@ class RunSerializer(HyperlinkedModelSerializer):
             "max_search_threads_allowed",
             "selfplay_client_config",
             "rating_client_config",
+            "git_revision_hash_whitelist",
         ]
         extra_kwargs = {
             "url": {"lookup_field": "name"},
