@@ -25,6 +25,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
         extra_kwargs = {
             "url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
+            "parent_network": {"lookup_field": "name"}
         }
 
 
