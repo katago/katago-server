@@ -72,7 +72,7 @@ class Network(Model):
         _("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"), db_index=True,
     )
     model_file = FileField(
-        _("model file url"),
+        verbose_name=_("model file url"),
         upload_to=upload_network_to,
         validators=(validate_gzip,),
         storage=network_data_storage,
