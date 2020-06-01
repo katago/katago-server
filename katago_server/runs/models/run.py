@@ -71,6 +71,7 @@ class Run(Model):
     )
     selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games"), default="FILL ME",)
     rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games"), default="FILL ME",)
+    git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Comma-or-space-separated whitelist of allowed client git revision hashes"), default="",)
 
     def __str__(self):
         return f"{self.name}"
