@@ -27,8 +27,8 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         git_revision_hash_whitelist = [s.strip().lower() for s in git_revision_hash_whitelist.replace(" ",",").split(",")]
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
         git_revision = request.POST["git_revision"].strip().lower() if "git_revision" in request.POST else ""
-        # Git revision hashes are 32 chars
-        if len(git_revision) != 32:
+        # Git revision hashes are 40 chars
+        if len(git_revision) != 40:
             return Response(
                 {"error": "This version of KataGo is not usable for distributed because either it's had custom modifications or has been compiled without version info."},
                 status=400,
