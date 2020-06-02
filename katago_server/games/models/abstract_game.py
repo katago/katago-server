@@ -59,7 +59,7 @@ class AbstractGame(Model):
     board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"), db_index=True,)
     handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"), db_index=True,)
     komi = DecimalField(
-        _("komi"), max_digits=3, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"), db_index=True,
+        _("komi"), max_digits=4, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"), db_index=True,
     )
     rules = JSONField(
         _("rules"), help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"), default=dict, null=True, blank=True,
@@ -69,7 +69,7 @@ class AbstractGame(Model):
     )
 
     winner = CharField(_("winner"), max_length=1, choices=GamesResult.choices, db_index=True)
-    score = DecimalField(_("score"), max_digits=4, decimal_places=1, null=True, blank=True, help_text=_("Final white points minus black points"),)
+    score = DecimalField(_("score"), max_digits=5, decimal_places=1, null=True, blank=True, help_text=_("Final white points minus black points"),)
     resigned = BooleanField(_("resigned"), default=False, db_index=True, help_text=_("Did this game end in resignation?"),)
 
     white_network = ForeignKey(
