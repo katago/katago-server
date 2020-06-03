@@ -19,6 +19,7 @@ class RunAdmin(admin.ModelAdmin):
                     "max_search_threads_allowed",
                     "rating_game_probability",
                     "rating_game_high_elo_probability",
+                    "virtual_draw_strength",
                     "selfplay_client_config",
                     "rating_client_config",
                     "git_revision_hash_whitelist",

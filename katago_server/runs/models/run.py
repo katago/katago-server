@@ -69,6 +69,11 @@ class Run(Model):
         help_text=_("Rating games are randomly selected to either be high_elo or highest_uncertainty"),
         default=0.5,
     )
+    virtual_draw_strength = FloatField(
+        _("Virtual draw strength"),
+        help_text=_("Between networks and parent networks, add a prior of equal Elo with strength equal to this many virtual draws"),
+        default=4.0,
+    )
     selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games"), default="FILL ME",)
     rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games"), default="FILL ME",)
     git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes"), default="",)
