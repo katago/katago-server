@@ -41,12 +41,8 @@ class NetworkPandasManager(Manager):
     def bulk_update_ratings_from_dataframe(self, dataframe):
         networks_db = self.all()
 
-        dataframe["log_gamma_upper_confidence"] = np.round(
-            (dataframe["log_gamma"] + 2 * dataframe["log_gamma_uncertainty"]) * 400 * log10(e), decimals=2,
-        )
-        dataframe["log_gamma_lower_confidence"] = np.round(
-            (dataframe["log_gamma"] - 2 * dataframe["log_gamma_uncertainty"]) * 400 * log10(e), decimals=2,
-        )
+        dataframe["log_gamma_upper_confidence"] = dataframe["log_gamma"] + 2 * dataframe["log_gamma_uncertainty"]
+        dataframe["log_gamma_lower_confidence"] = dataframe["log_gamma"] - 2 * dataframe["log_gamma_uncertainty"]
 
         for network_db in networks_db:
             network_db.log_gamma = dataframe.loc[network_db.id, "log_gamma"]
