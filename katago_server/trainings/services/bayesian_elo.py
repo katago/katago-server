@@ -108,12 +108,12 @@ class BayesianRatingService:
                 draw1 = {
                     "reference_network": network_id,
                     "opponent_network": parent_network_id,
-                    "total_bayesian_virtual_draws": virtual_draw_strength,
+                    "total_bayesian_virtual_draws": self._virtual_draw_strength,
                 }
                 draw2 = {
                     "reference_network": parent_network_id,
                     "opponent_network": network_id,
-                    "total_bayesian_virtual_draws": virtual_draw_strength,
+                    "total_bayesian_virtual_draws": self._virtual_draw_strength,
                 }
                 virtual_draws_src.append(draw1)
                 virtual_draws_src.append(draw2)
