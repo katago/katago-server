@@ -25,7 +25,7 @@ def update_bayesian_rating():
 
     nb_of_iterations = NetworkBayesianRatingConfiguration.get_solo().number_of_iterations
 
-    bayesian_rating_service = BayesianRatingService(network_ratings, anchor_network.id, detailed_tournament_result)
+    bayesian_rating_service = BayesianRatingService(network_ratings, anchor_network.id, detailed_tournament_result, current_run.virtual_draw_strength)
     new_network_ratings = bayesian_rating_service.update_ratings_iteratively(nb_of_iterations)
 
     Network.pandas.bulk_update_ratings_from_dataframe(new_network_ratings)

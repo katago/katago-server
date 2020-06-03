@@ -19,15 +19,26 @@ class BayesianRatingService:
     _networks_actual_score = None
 
     def __init__(
-        self, network_ratings: pandas.DataFrame, network_anchor_id, detailed_tournament_results: pandas.DataFrame,
+        self,
+        network_ratings: pandas.DataFrame,
+        network_anchor_id,
+        detailed_tournament_results: pandas.DataFrame,
+        virtual_draw_strength
     ):
         self._network_ratings = network_ratings
         self._network_anchor_id = network_anchor_id
         self._detailed_tournament_results = detailed_tournament_results
+        self._virtual_draw_strength = virtual_draw_strength
 
     def update_ratings_iteratively(self, number_of_iterations):
+        # Skip if we don't have enough networks to have ratings
+        if len(self._network_ratings) <= 1:
+            return self._network_ratings
+
         logger.debug("---> network_anchor_id (start)")
         logger.debug(self._network_anchor_id)
+        logger.debug("---> virtual_draw_strength (start)")
+        logger.debug(self._virtual_draw_strength)
         logger.debug("---> network_ratings (start)")
         pandas_utils.print_data_frame(self._network_ratings)
         logger.debug("---> detailed_tournament_results (start)")
@@ -60,7 +71,6 @@ class BayesianRatingService:
             network_id = network[0]
             network_log_gamma = network.log_gamma
             self._update_specific_network_log_gamma_uncertainty(network_id, network_log_gamma)
-        self._reset_anchor_log_gamma_uncertainty()
 
         return self._network_ratings
 
@@ -83,7 +93,7 @@ class BayesianRatingService:
         """
          Whenever a NEW player is added to the above, it is necessary to add a Bayesian prior to obtain good results
          and keep the math from blowing up.
-         A reasonable prior is to add a single "virtual draw" between the new player and the immediately previous neural net version.
+         A reasonable prior is to add some number of "virtual draws" between the new player and the immediately previous neural net version.
         """
         virtual_draws_src = []
         network_ids = list(self._network_ratings.index)
@@ -98,15 +108,34 @@ class BayesianRatingService:
                 draw1 = {
                     "reference_network": network_id,
                     "opponent_network": parent_network_id,
-                    "total_bayesian_virtual_draws": 1,
+                    "total_bayesian_virtual_draws": virtual_draw_strength,
                 }
                 draw2 = {
                     "reference_network": parent_network_id,
                     "opponent_network": network_id,
-                    "total_bayesian_virtual_draws": 1,
+                    "total_bayesian_virtual_draws": virtual_draw_strength,
                 }
                 virtual_draws_src.append(draw1)
                 virtual_draws_src.append(draw2)
+            # It's possible to get a divide by zero if we have no parent network
+            # If we don't know a parent network and it's not the anchor, then add a very weak prior that the network is equal to every network except itself
+            elif network_id != self._network_anchor_id:
+                num_other_networks = len(self._network_ratings) - 1
+                for other_network in self._network_ratings.itertuples():
+                    other_network_id = other_network[0]
+                    if other_network_id != network_id:
+                        draw1 = {
+                            "reference_network": network_id,
+                            "opponent_network": other_network_id,
+                            "total_bayesian_virtual_draws": 1.0 / num_other_networks,
+                        }
+                        draw2 = {
+                            "reference_network": other_network_id,
+                            "opponent_network": network_id,
+                            "total_bayesian_virtual_draws": 1.0 / num_other_networks,
+                        }
+                        virtual_draws_src.append(draw1)
+                        virtual_draws_src.append(draw2)
 
         virtual_draw = pandas.DataFrame(virtual_draws_src)
 
@@ -159,7 +188,7 @@ class BayesianRatingService:
         networks_actual_score = pandas.DataFrame(index=aggregated_tournament_results.index)
         networks_actual_score["actual_score"] = 0
         networks_actual_score["actual_score"] += aggregated_tournament_results["nb_wins"]
-        networks_actual_score["actual_score"] += 1 / 2 * aggregated_tournament_results["nb_draws"]
+        networks_actual_score["actual_score"] += 0.5 * aggregated_tournament_results["nb_draws"]
 
         # panda_utils.print_data_frame(networks_actual_score)
 
@@ -232,7 +261,11 @@ class BayesianRatingService:
 
     def _update_specific_network_log_gamma_uncertainty(self, network_id, network_log_gamma):
         precision = self._calculate_specific_network_precision(network_id, network_log_gamma)
-        self._network_ratings.loc[network_id, "log_gamma_uncertainty"] = 1 / precision
+        uncertainty = 1 / precision
+        # Cap the amount of uncertainty, so that if we nearly divide by 0, we don't end up with a totally ridiculous number
+        # for user display and game matching and other such purposes.
+        uncertainty = min(uncertainty,10.0)
+        self._network_ratings.loc[network_id, "log_gamma_uncertainty"] = uncertainty
 
     def _calculate_specific_network_precision(self, network_id, network_log_gamma):
         """
@@ -265,5 +298,3 @@ class BayesianRatingService:
 
         return games_played_cumulative_precision["cumulative_precision"].sum()
 
-    def _reset_anchor_log_gamma_uncertainty(self):
-        self._network_ratings.loc[self._network_anchor_id, "log_gamma_uncertainty"] = 0
