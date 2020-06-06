@@ -27,7 +27,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist.split("\n") if len(s) > 0]
         git_revision_hash_whitelist = [s.split("#")[0].strip().lower() for s in git_revision_hash_whitelist]
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
-        git_revision = request.POST["git_revision"].strip().lower() if "git_revision" in request.POST else ""
+        git_revision = request.data["git_revision"].strip().lower() if "git_revision" in request.data else ""
         # Git revision hashes are at least 40 chars, we can also optionally allow plus revisions and other stuff
         if len(git_revision) < 40:
             return Response(
