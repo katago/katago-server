@@ -74,6 +74,11 @@ class Run(Model):
         help_text=_("Between networks and parent networks, add a prior of equal Elo with strength equal to this many virtual draws"),
         default=4.0,
     )
+    elo_number_of_iterations = IntegerField(
+        _("Elo computation number of iterations"),
+        help_text=_("How many iterations to use per celery task to compute log_gammas and Elos"),
+        default=10,
+    )
     selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games"), default="FILL ME",)
     rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games"), default="FILL ME",)
     git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes"), default="",)
