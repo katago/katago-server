@@ -20,6 +20,7 @@ class RunAdmin(admin.ModelAdmin):
                     "rating_game_probability",
                     "rating_game_high_elo_probability",
                     "virtual_draw_strength",
+                    "elo_number_of_iterations",
                     "selfplay_client_config",
                     "rating_client_config",
                     "git_revision_hash_whitelist",
