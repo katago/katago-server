@@ -1,3 +1,4 @@
+import logging
 import pandas
 from django.db.models import Manager
 from django_pandas.io import read_frame
@@ -5,11 +6,18 @@ from django_pandas.io import read_frame
 from katago_server.games.managers.rating_game_pandas_queryset import RatingGamePandasQuerySet
 from katago_server.runs.models import Run
 
+logger = logging.getLogger(__name__)
+
 
 class RatingGamePandasManager(Manager):
     """
-    RatingGamePandasManager generate a tournament result using RatingGamePandasQuerySet
-    which is use to update the rating.
+    RatingGamePandasManager generates a tournament result using RatingGamePandasQuerySet
+    which is use to update the Elo ratings.
+
+    Every game played is present BOTH ways. If player 1 plays player 2, then this game
+    should be included in the stats for reference_network = player 1 and
+    opponent_network = player 2, but ALSO it should be included in the stats for
+    reference_network = player 2 and opponent_network = player 1.
 
     Eg:
 
@@ -50,7 +58,13 @@ class RatingGamePandasManager(Manager):
         )
         tournament_results = pandas.merge(
             tournament_results,
-            read_frame(self.get_queryset().get_total_draw_or_no_result(run)),
+            read_frame(self.get_queryset().get_total_draw_or_no_result_as_white(run)),
+            how="outer",
+            on=["reference_network", "opponent_network"],
+        )
+        tournament_results = pandas.merge(
+            tournament_results,
+            read_frame(self.get_queryset().get_total_draw_or_no_result_as_black(run)),
             how="outer",
             on=["reference_network", "opponent_network"],
         )
