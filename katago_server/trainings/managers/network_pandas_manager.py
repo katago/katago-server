@@ -1,3 +1,4 @@
+import logging
 from math import log10, e
 
 import numpy as np
@@ -6,6 +7,8 @@ from django_pandas.io import read_frame
 
 from katago_server.trainings.managers.network_pandas_queryset import NetworkPandasQuerySet
 
+logger = logging.getLogger(__name__)
+
 
 class NetworkPandasManager(Manager):
     """
@@ -13,13 +16,13 @@ class NetworkPandasManager(Manager):
 
     Eg:
 
-        +----------+-------------------+-----------+-----------------------+
-        | id       | parent_network_id | log_gamma | log_gamma_uncertainty |
-        +==========+===================+===========+=======================+
-        | 1566604  | 1566603           | 2.6568    | 0.00235               |
-        +----------+-------------------+-----------+-----------------------+
-        | 1266565  | 1266564           | 1.6766    | 0.254                 |
-        +----------+-------------------+-----------+-----------------------+
+        +----------+--------------------+-----------+-----------------------+
+        | id       | parent_network__pk | log_gamma | log_gamma_uncertainty |
+        +==========+====================+===========+=======================+
+        | 1566604  | 1566603            | 2.6568    | 0.00235               |
+        +----------+--------------------+-----------+-----------------------+
+        | 1266565  | 1266564            | 1.6766    | 0.254                 |
+        +----------+--------------------+-----------+-----------------------+
     """
 
     def get_queryset(self):
@@ -45,10 +48,12 @@ class NetworkPandasManager(Manager):
         dataframe["log_gamma_lower_confidence"] = dataframe["log_gamma"] - 2 * dataframe["log_gamma_uncertainty"]
 
         for network_db in networks_db:
-            network_db.log_gamma = dataframe.loc[network_db.id, "log_gamma"]
-            network_db.log_gamma_uncertainty = dataframe.loc[network_db.id, "log_gamma_uncertainty"]
-            network_db.log_gamma_upper_confidence = dataframe.loc[network_db.id, "log_gamma_upper_confidence"]
-            network_db.log_gamma_lower_confidence = dataframe.loc[network_db.id, "log_gamma_lower_confidence"]
+            # Avoid races where the networks db changed in the meantime
+            if network_db.id in dataframe.index:
+                network_db.log_gamma = dataframe.loc[network_db.id, "log_gamma"]
+                network_db.log_gamma_uncertainty = dataframe.loc[network_db.id, "log_gamma_uncertainty"]
+                network_db.log_gamma_upper_confidence = dataframe.loc[network_db.id, "log_gamma_upper_confidence"]
+                network_db.log_gamma_lower_confidence = dataframe.loc[network_db.id, "log_gamma_lower_confidence"]
 
         self.bulk_update(
             networks_db, ["log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence",],

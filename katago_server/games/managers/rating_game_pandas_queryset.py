@@ -15,6 +15,7 @@ class RatingGamePandasQuerySet(QuerySet):
         return (
             self.filter(run=run)
             .values(reference_network=F("white_network__pk"), opponent_network=F("black_network__pk"),)
+            .order_by()
             .annotate(total_games_white=total_games_count_aggregate)
         )
 
@@ -23,6 +24,7 @@ class RatingGamePandasQuerySet(QuerySet):
         return (
             self.filter(run=run)
             .values(reference_network=F("black_network__pk"), opponent_network=F("white_network__pk"),)
+            .order_by()
             .annotate(total_games_black=total_games_count_aggregate)
         )
 
@@ -33,6 +35,7 @@ class RatingGamePandasQuerySet(QuerySet):
         return (
             self.filter(run=run)
             .values(reference_network=F("white_network__pk"), opponent_network=F("black_network__pk"),)
+            .order_by()
             .annotate(total_wins_white=total_wins_as_white_count_aggregate)
         )
 
@@ -43,15 +46,28 @@ class RatingGamePandasQuerySet(QuerySet):
         return (
             self.filter(run=run)
             .values(reference_network=F("black_network__pk"), opponent_network=F("white_network__pk"),)
+            .order_by()
             .annotate(total_wins_black=total_wins_as_black_count_aggregate)
         )
 
-    def get_total_draw_or_no_result(self, run: Run):
+    def get_total_draw_or_no_result_as_white(self, run: Run):
         RatingGame = apps.get_model("games.RatingGame")
         is_draw_or_no_result = Q(winner=RatingGame.GamesResult.DRAW) | Q(winner=RatingGame.GamesResult.NO_RESULT)
         total_draw_or_no_result_count_aggregate = Count("id", filter=is_draw_or_no_result)
         return (
             self.filter(run=run)
             .values(reference_network=F("white_network__pk"), opponent_network=F("black_network__pk"),)
-            .annotate(total_draw_or_no_result=total_draw_or_no_result_count_aggregate)
+            .order_by()
+            .annotate(total_draw_or_no_result_white=total_draw_or_no_result_count_aggregate)
+        )
+
+    def get_total_draw_or_no_result_as_black(self, run: Run):
+        RatingGame = apps.get_model("games.RatingGame")
+        is_draw_or_no_result = Q(winner=RatingGame.GamesResult.DRAW) | Q(winner=RatingGame.GamesResult.NO_RESULT)
+        total_draw_or_no_result_count_aggregate = Count("id", filter=is_draw_or_no_result)
+        return (
+            self.filter(run=run)
+            .values(reference_network=F("black_network__pk"), opponent_network=F("white_network__pk"),)
+            .order_by()
+            .annotate(total_draw_or_no_result_black=total_draw_or_no_result_count_aggregate)
         )
