@@ -37,6 +37,7 @@ class RatingGamePandasManager(Manager):
         return RatingGamePandasQuerySet(self.model, using=self._db)
 
     def get_detailed_tournament_results_dataframe(self, run: Run):
+        # TODO - fix race condition where games could change in between these queries
         tournament_results = read_frame(self.get_queryset().get_total_games_count_as_white(run))
         tournament_results = pandas.merge(
             tournament_results,
