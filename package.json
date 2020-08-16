@@ -1,6 +1,13 @@
 {
   "name": "katago_server",
   "version": "0.1.0",
+  "description": "KataGo distributed training server",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/katago/katago-server.git"
+  },
+  "private":true,
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^9.8.0",
