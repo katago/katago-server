@@ -8,7 +8,7 @@ from katago_server.contrib.validators import FileValidator
 from katago_server.games.models.abstract_game import AbstractGame
 
 training_data_storage = FileSystemStorage(location="/data/training_npz", base_url="/media/training_npz/")
-validate_zip = FileValidator(max_size=1024 * 1024 * 300, content_types=("application/zip",))
+validate_zip = FileValidator(max_size=1024 * 500, content_types=["application/zip"])
 
 
 def upload_training_data_to(instance: AbstractGame, _filename):
@@ -27,7 +27,7 @@ class TrainingGame(AbstractGame):
     training_data_file = FileField(
         _("training data (npz)"),
         upload_to=upload_training_data_to,
-        validators=(validate_zip,),
+        validators=[validate_zip],
         storage=training_data_storage,
         max_length=200,
         blank=False,

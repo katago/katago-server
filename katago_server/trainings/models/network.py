@@ -29,7 +29,7 @@ def upload_network_to(instance, _filename):
     return os.path.join(instance.run.name, f"{instance.name}.bin.gz")
 
 
-validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=("application/gzip",))
+validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=["application/gzip"])
 alphanumeric_and_dashes = RegexValidator(r"^[-0-9a-zA-Z]*$", "Only alphanumeric or dash characters are allowed.")
 
 
@@ -71,7 +71,7 @@ class Network(Model):
     model_file = FileField(
         verbose_name=_("model file url"),
         upload_to=upload_network_to,
-        validators=(validate_gzip,),
+        validators=[validate_gzip],
         storage=network_data_storage,
         max_length=200,
         null=False,
