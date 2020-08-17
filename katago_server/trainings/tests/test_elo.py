@@ -41,7 +41,7 @@ class TestEloLoneNetwork:
         self.r1.delete()
 
     def test_elos(self):
-        update_bayesian_rating()
+        update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         assert(self.n1.log_gamma == 0)
         assert(self.n1.log_gamma_uncertainty == 0)
@@ -83,7 +83,7 @@ class TestEloTwoNetworksNoGames:
         self.r1.delete()
 
     def test_elos(self):
-        update_bayesian_rating()
+        update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
         assert(self.n1.log_gamma == 0)
@@ -181,7 +181,7 @@ class TestEloTwoNetworksSomeGames:
         self.u1.delete()
 
     def test_elos(self):
-        update_bayesian_rating()
+        update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
         assert(self.n1.log_gamma == pytest.approx(0.0))
@@ -238,7 +238,7 @@ class TestEloTwoNetworksSomeGamesWithDraws:
         self.u1.delete()
 
     def test_elos(self):
-        update_bayesian_rating()
+        update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
         assert(self.n1.log_gamma == pytest.approx(0.0))
@@ -331,7 +331,7 @@ class TestEloChain:
         self.u1.delete()
 
     def test_elos(self):
-        update_bayesian_rating()
+        update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
         self.n3.refresh_from_db()
