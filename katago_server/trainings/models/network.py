@@ -68,6 +68,12 @@ class Network(Model):
     is_random = BooleanField(
         _("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"), db_index=True,
     )
+    training_games_enabled = BooleanField(
+        _("training games enabled"), default=True, help_text=_("If true, this network can be used for training games"), db_index=True,
+    )
+    rating_games_enabled = BooleanField(
+        _("rating games enabled"), default=True, help_text=_("If true, this network can be used for rating games"), db_index=True,
+    )
     model_file = FileField(
         verbose_name=_("model file url"),
         upload_to=upload_network_to,

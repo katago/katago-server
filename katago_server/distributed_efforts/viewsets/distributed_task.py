@@ -59,9 +59,9 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 }
                 return Response(response_body)
 
-        best_network = Network.objects.select_best_without_uncertainty(current_run)
+        best_network = Network.objects.select_most_recent(current_run,for_training_games=True)
         if best_network is None:
-            return Response({"error": "No networks for run."}, status=400)
+            return Response({"error": "No networks found for run enabled for training games."}, status=400)
 
         best_network_content = NetworkSerializerForTasks(best_network, context=serializer_context)
         response_body = {
