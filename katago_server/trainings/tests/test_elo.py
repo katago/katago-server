@@ -74,6 +74,7 @@ class TestEloTwoNetworksNoGames:
             model_file_sha256=fake_sha256,
             log_gamma=0,
             is_random=True,
+            parent_network=self.n1,
         )
 
     def teardown_method(self):
@@ -159,6 +160,7 @@ class TestEloTwoNetworksSomeGames:
             model_file_sha256=fake_sha256,
             log_gamma=0,
             is_random=True,
+            parent_network=self.n1,
         )
 
         # With 4 losses, 10 wins, and 4 virtual draws, that's effectively
@@ -215,6 +217,7 @@ class TestEloTwoNetworksSomeGamesWithDraws:
             model_file_sha256=fake_sha256,
             log_gamma=0,
             is_random=True,
+            parent_network=self.n1,
         )
 
         # With 8 losses, 32 wins, and 4 virtual draws and 4 fake draws, that's effectively
@@ -273,6 +276,7 @@ class TestEloChain:
             model_file_sha256=fake_sha256,
             log_gamma=0,
             is_random=True,
+            parent_network=self.n1,
         )
         self.n3 = Network.objects.create(
             run=self.r1,

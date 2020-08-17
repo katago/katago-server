@@ -112,12 +112,6 @@ class Network(Model):
         return f"{self.elo} ±{2 * self.elo_uncertainty}"
 
     def save(self, *args, **kwargs):
-        is_creating_a_new_model = not self.pk
-        if is_creating_a_new_model:
-            # default the parent net to actual last net
-            # TODO: We should let the api to create a model throw if there is no parent mode
-            if not self.parent_network:
-                self.parent_network = Network.objects.last()
         # Allow blank file only if random
         no_model_file = not self.model_file or len(self.model_file) <= 0
         if no_model_file and not self.is_random:
