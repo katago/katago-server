@@ -37,7 +37,6 @@ class RatingGameAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-# TODO: split into another file
 class TrainingGameAdmin(admin.ModelAdmin):
     """
     GameAdmin allows admin to create or edit games

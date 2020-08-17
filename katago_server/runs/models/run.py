@@ -13,7 +13,6 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 
 
-# TODO: investigate extracting this class to a manager directory, like games
 class RunQuerySet(QuerySet):
     def select_current(self):
         """
