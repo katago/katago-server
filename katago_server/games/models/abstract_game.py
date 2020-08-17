@@ -16,6 +16,7 @@ from django.db.models import (
     TextChoices,
 )
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 from katago_server.contrib.validators import FileValidator
 from katago_server.runs.models import Run
@@ -31,10 +32,46 @@ def upload_sgf_to(instance, _filename):
     return os.path.join(instance.run.name, f"{instance.kg_game_uid}.sgf")
 
 
-# TODO: Ideally use this validator: requires an extension to magic such as https://github.com/threatstack/libmagic/blob/1249b5cd02c3b6fb9b917d16c76bc76c862932b6/magic/Magdir/games#L176
-# validate_sgf = FileValidator(max_size=1024 * 1024 * 10, magic_types=("Smart Game Format (Go)",))
-validate_sgf = FileValidator(max_size=1024 * 512)  # max 0.5mb
+validate_sgf = FileValidator(max_size=1024 * 200, magic_types=("Smart Game Format (Go)",))
 
+def validate_board_size(value):
+    if value < 3 or value > 39:
+        raise ValidationError(
+            _('%(value)s must range from 3 to 39'),
+            params={'value': value},
+        )
+
+def validate_handicap(value):
+    if value < 0 or value > 13:
+        raise ValidationError(
+            _('%(value)s must range from 0 to 13'),
+            params={'value': value},
+        )
+
+def validate_komi(value):
+    if value < -1000 or value > 1000:
+        raise ValidationError(
+            _('%(value)s must range from -1000 to 1000'),
+            params={'value': value},
+        )
+    if round(value * 2) != value * 2:
+        raise ValidationError(
+            _('%(value)s must be an integer or a half-integer'),
+            params={'value': value},
+        )
+
+def validate_score(value):
+    if value is not None:
+        if value < -10000 or value > 10000:
+            raise ValidationError(
+                _('%(value)s must range from -10000 to 10000'),
+                params={'value': value},
+            )
+        if round(value * 2) != value * 2:
+            raise ValidationError(
+                _('%(value)s must be an integer or a half-integer'),
+                params={'value': value},
+            )
 
 class AbstractGame(Model):
     """
@@ -55,11 +92,11 @@ class AbstractGame(Model):
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True,)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     submitted_by = ForeignKey(User, verbose_name=_("submitted by"), on_delete=PROTECT, related_name="%(class)s_games", db_index=True,)
-    board_size_x = IntegerField(_("board size x"), null=False, default=19, help_text=_("Width of board"), db_index=True,)
-    board_size_y = IntegerField(_("board size y"), null=False, default=19, help_text=_("Height of board"), db_index=True,)
-    handicap = IntegerField(_("handicap"), null=False, default=0, help_text=_("Number of handicap stones, generally 0 or >= 2"), db_index=True,)
+    board_size_x = IntegerField(_("board size x"), null=False, default=19, validators=[validate_board_size], help_text=_("Width of board"), db_index=True,)
+    board_size_y = IntegerField(_("board size y"), null=False, default=19, validators=[validate_board_size], help_text=_("Height of board"), db_index=True,)
+    handicap = IntegerField(_("handicap"), null=False, default=0, validators=[validate_handicap], help_text=_("Number of handicap stones, generally 0 or >= 2"), db_index=True,)
     komi = DecimalField(
-        _("komi"), max_digits=4, decimal_places=1, null=False, default=7.0, help_text=_("Number of points added to white's score"), db_index=True,
+        _("komi"), max_digits=4, decimal_places=1, null=False, default=7.0, validators=[validate_komi], help_text=_("Number of points added to white's score"), db_index=True,
     )
     rules = JSONField(
         _("rules"), help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"), default=dict, null=True, blank=True,
@@ -69,7 +106,7 @@ class AbstractGame(Model):
     )
 
     winner = CharField(_("winner"), max_length=1, choices=GamesResult.choices, db_index=True)
-    score = DecimalField(_("score"), max_digits=5, decimal_places=1, null=True, blank=True, help_text=_("Final white points minus black points"),)
+    score = DecimalField(_("score"), max_digits=5, decimal_places=1, null=True, validators=[validate_score], blank=True, help_text=_("Final white points minus black points"),)
     resigned = BooleanField(_("resigned"), default=False, db_index=True, help_text=_("Did this game end in resignation?"),)
 
     white_network = ForeignKey(
@@ -79,7 +116,7 @@ class AbstractGame(Model):
         Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True,
     )
 
-    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=(validate_sgf,), storage=sgf_data_storage, max_length=200,)
+    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=[validate_sgf], storage=sgf_data_storage, max_length=200,)
     kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True,)
 
     @property
