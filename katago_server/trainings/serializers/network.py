@@ -17,6 +17,8 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "created_at",
             "network_size",
             "is_random",
+            "training_games_enabled",
+            "rating_games_enabled",
             "model_file",
             "model_file_bytes",
             "model_file_sha256",

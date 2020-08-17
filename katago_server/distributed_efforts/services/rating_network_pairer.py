@@ -28,7 +28,7 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_one_of_the_best_with_uncertainty(self.current_run)
+        reference_network = Network.objects.select_high_upper_confidence(self.current_run,for_rating_games=True)
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -43,7 +43,7 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_one_of_the_more_uncertain(self.current_run)
+        reference_network = Network.objects.select_high_uncertainty(self.current_run,for_rating_games=True)
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -72,19 +72,19 @@ class RatingNetworkPairerService:
 
         nearby_networks = (
             Network.objects.exclude(pk=reference_network.pk)
-            .filter(run=self.current_run, log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound,)
+            .filter(run=self.current_run, rating_games_enabled=True, log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound,)
             .all()
         )
         if len(nearby_networks) < 4:
             nearby_weaker_networks = (
                 Network.objects.exclude(pk=reference_network.pk)
-                .filter(run=self.current_run, log_gamma__lte=ref_net_log_gamma)
+                .filter(run=self.current_run, rating_games_enabled=True, log_gamma__lte=ref_net_log_gamma)
                 .order_by("-log_gamma")
                 .all()[:2]
             )
             nearby_stronger_networks = (
                 Network.objects.exclude(pk=reference_network.pk)
-                .filter(run=self.current_run, log_gamma__gte=ref_net_log_gamma)
+                .filter(run=self.current_run, rating_games_enabled=True, log_gamma__gte=ref_net_log_gamma)
                 .order_by("log_gamma")
                 .all()[:2]
             )
