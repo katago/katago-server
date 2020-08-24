@@ -7,11 +7,11 @@
     "type": "git",
     "url": "git://github.com/katago/katago-server.git"
   },
-  "private":true,
+  "private": true,
   "dependencies": {},
   "devDependencies": {
-    "autoprefixer": "^9.8.0",
-    "browser-sync": "^2.26.7",
+    "autoprefixer": "^9.8.6",
+    "browser-sync": "^2.26.12",
     "cssnano": "^4.1.10",
     "gulp": "^4.0.2",
     "gulp-imagemin": "^7.1.0",
