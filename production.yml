@@ -48,7 +48,7 @@ services:
     labels:
       com.datadoghq.ad.check_names: '["postgres"]'
       com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"host":"%%host%%", "port":"5432", "username":"%%env_POSTGRES_USER%%", "password":"%%env_POSTGRES_PASSWORD%%", "dbname": "katago_server"}]'
+      com.datadoghq.ad.instances: '[{"host":"%%host%%", "port":"5432", "username":"%%env_POSTGRES_USER%%", "password":"%%env_POSTGRES_PASSWORD%%", "dbname": "%%env_POSTGRES_DB%%"}]'
       com.datadoghq.ad.logs: '[{"source": "postgresql", "service": "postgresql"}]'
 
   traefik:
