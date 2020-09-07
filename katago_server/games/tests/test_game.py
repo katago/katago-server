@@ -1,5 +1,6 @@
 import pytest
 import math
+import base64
 
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
@@ -17,6 +18,8 @@ User = get_user_model()
 
 fake_sha256 = "12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd"
 
+goodnpzbase64 = b"UEsDBBQAAgAIACgvJ1G3q7wfbQAAAPQEAAAVAAAAYmluYXJ5SW5wdXROQ0hXUGFja2Vkm+wX6hsQycjwjaFaPSW1OLlI3Uq9ptRQXUc9Lb+opCgxLz6/KCUVKOqWmFOcqqNenJFYkKpupWGoY2SkY2KmWaswpAHXBwY5BuYDDBUMRAI2BtIAUwPDIAGDxyW0AyykhgmN1ILBCAjvoZkbAFBLAwQUAAIACAAoLydRPC6Dg1oAAABMAQAADQAAAGdsb2JhbElucHV0TkOb7BfqGxDJyPCNoVo9JbU4uUjdSt0mzURdRz0tv6ikKDEvPr8oJRUo6paYU5yqo16ckViQqm6lYahjaKlZqzDUARcDQ4M9Axq4NXOlHVR8PwNOgKrvw6/9dgBQSwMEFAACAAgAKC8nUfcZaStZAAAAqAYAABMAAABwb2xpY3lUYXJnZXRzTkNNb3Zlm+wX6hsQycjwjaFaPSW1OLlI3UrdJtNIXUc9Lb+opCgxLz6/KCUVKOqWmFOcqqNenJFYkKpupWGoY6RjbGakWaswpAEXA5GAiWEUjIKhAEwYGEfhKBxmEABQSwMEFAACAAgAKC8nURKSnqvDAAAAAAIAAA8AAABnbG9iYWxUYXJnZXRzTkOb7BfqGxDJyPCNoVo9JbU4uUjdSt0mzURdRz0tv6ikKDEvPr8oJRUo6paYU5yqo16ckViQqm6lYahjZqJZqzDUARcDQ4M9AxQEMlxxWFlSZf8ia6MNiO/Bccoh6nqJfVyXkS2I//H9foe96vn2cofawPy127Y6nLmeZb/YcSWYv//rWgeQGQwMDvY55+/bMMAByA4YhvGRAbocKq5htvNSqEjyTOiY5TFD67SnjGGa14LYbx4Qu5DNWuDAQBAscELmAQBQSwMEFAACAAgAKC8nUYN/ouZQAAAASgQAAAsAAABzY29yZURpc3RyTpvsF+obEMnI8I2hWj0ltTi5SN1KvSbTUF1HPS2/qKQoMS8+vyglFSjqlphTnKqjXpyRWJCqbqVhqGNhYqRZqzDEARfDKBgqIJx3NAwGMQAAUEsDBBQAAgAIACgvJ1HEPGydZwAAAA0IAAAQAAAAdmFsdWVUYXJnZXRzTkNIV5vsF+obEMnI8I2hWj0ltTi5SN1KvSbTUF1HPS2/qKQoMS8+vyglFSjqlphTnKqjXpyRWJCqbqVhqGOqY2gJRJq1CkMYcDFgA4yMaAL/gXAUjIIhC0ZT9GhADy9QUYEm0AGEo4AiAABQSwECPwMUAAIACAAoLydRt6u8H20AAAD0BAAAFQAAAAAAAAAAAAAAtoEAAAAAYmluYXJ5SW5wdXROQ0hXUGFja2VkUEsBAj8DFAACAAgAKC8nUTwug4NaAAAATAEAAA0AAAAAAAAAAAAAALaBoAAAAGdsb2JhbElucHV0TkNQSwECPwMUAAIACAAoLydR9xlpK1kAAACoBgAAEwAAAAAAAAAAAAAAtoElAQAAcG9saWN5VGFyZ2V0c05DTW92ZVBLAQI/AxQAAgAIACgvJ1ESkp6rwwAAAAACAAAPAAAAAAAAAAAAAAC2ga8BAABnbG9iYWxUYXJnZXRzTkNQSwECPwMUAAIACAAoLydRg3+i5lAAAABKBAAACwAAAAAAAAAAAAAAtoGfAgAAc2NvcmVEaXN0ck5QSwECPwMUAAIACAAoLydRxDxsnWcAAAANCAAAEAAAAAAAAAAAAAAAtoEYAwAAdmFsdWVUYXJnZXRzTkNIV1BLBQYAAAAABgAGAHMBAACtAwAAAAA="
+
 def create_training_game(
         run,
         submitted_by,
@@ -33,7 +36,7 @@ def create_training_game(
         black_network=None,
         white_network=None,
         sgf_file=SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
-        training_data_file=SimpleUploadedFile(name='game.npz', content=b"\x50\x4b\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", content_type='application/octet-stream'),
+        training_data_file=SimpleUploadedFile(name='game.npz', content=base64.decodebytes(goodnpzbase64), content_type='application/octet-stream'),
         num_training_rows = 0,
         kg_game_uid="12341234ABCDABCD",
 ):
@@ -136,6 +139,9 @@ class TestGame:
         ))
         self.bad_games.extend(self.create_games_with_defaults(
             training_data_file=SimpleUploadedFile(name='game.npz', content=b"NOT A ZIP", content_type='application/octet-stream')
+        ))
+        self.bad_games.extend(self.create_games_with_defaults(
+            training_data_file=SimpleUploadedFile(name='game.npz', content=b"\x50\x4b\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", content_type='application/octet-stream')
         ))
 
 
