@@ -22,6 +22,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "model_file",
             "model_file_bytes",
             "model_file_sha256",
+            "model_zip_file",
             "parent_network",
         ]
         extra_kwargs = {

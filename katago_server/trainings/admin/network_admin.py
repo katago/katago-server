@@ -30,6 +30,7 @@ class NetworkAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": (("id", "created_at"), ("name", "run"), "parent_network")}),
         (_("Model File"), {"fields": (("model_file", "model_file_bytes", "model_file_sha256"),)},),
+        (_("Model Zip Extras"), {"fields": (("model_zip_file"),)},),
         (_("Strength"), {"fields": (("log_gamma", "log_gamma_uncertainty"), "log_gamma_upper_confidence",)},),
         (_("Network architecture"), {"fields": (("network_size", "is_random"),)}),
         (_("Enable/Disable"), {"fields": (("training_games_enabled", "rating_games_enabled"),)}),
