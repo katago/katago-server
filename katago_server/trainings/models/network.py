@@ -27,9 +27,12 @@ network_data_storage = FileSystemStorage(location="/data/networks", base_url="/m
 
 def upload_network_to(instance, _filename):
     return os.path.join(instance.run.name, f"{instance.name}.bin.gz")
+def upload_network_zip_to(instance, _filename):
+    return os.path.join(instance.run.name, f"{instance.name}.zip")
 
 
 validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=["application/gzip"])
+validate_model_zip = FileValidator(max_size=1024 * 1024 * 1024 * 3 / 2, content_types=["application/zip"])
 alphanumeric_and_dashes = RegexValidator(r"^[-0-9a-zA-Z]*$", "Only alphanumeric or dash characters are allowed.")
 
 
@@ -87,6 +90,16 @@ class Network(Model):
     model_file_bytes = BigIntegerField(_("model file bytes"), null=False, blank=False, help_text=_("Number of bytes in network model file."),)
     model_file_sha256 = CharField(
         _("model file SHA256"), max_length=64, null=False, blank=False, help_text=_("SHA256 hash of network model file for integrity verification."),
+    )
+    model_zip_file = FileField(
+        verbose_name=_("model zip file url"),
+        upload_to=upload_network_zip_to,
+        validators=[validate_model_zip],
+        storage=network_data_storage,
+        max_length=200,
+        null=False,
+        blank=True,
+        help_text=_("Url to download zipped network model file with also tensorflow weights."),
     )
 
     log_gamma = FloatField(_("log gamma"), default=0, help_text=_("Estimated BayesElo strength of network."), db_index=True,)
