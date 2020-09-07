@@ -17,6 +17,10 @@
       [certificatesResolvers.letsencrypt.acme.httpChallenge]
         entryPoint = "web"
 
+[tls.options]
+  [tls.options.default]
+    minVersion = "VersionTLS12"
+    
 [http.routers]
   [http.routers.media]
     rule = "Host(`katago.tycoach.me`) && PathPrefix(`/media`)"
