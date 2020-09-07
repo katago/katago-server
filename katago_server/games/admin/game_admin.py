@@ -7,11 +7,21 @@ class RatingGameAdmin(admin.ModelAdmin):
     GameAdmin allows admin to create or edit games
     """
 
-    list_filter = ("run", "created_at", "handicap", "komi")
+    list_filter = (
+        "run",
+        "created_at",
+        "handicap",
+        "board_size_x",
+        "board_size_y",
+        "komi",
+        "submitted_by",
+    )
     list_display = (
         "id",
         "run",
         "created_at",
+        "board_size_x",
+        "board_size_y",
         "handicap",
         "komi",
         "result_text",
@@ -42,17 +52,27 @@ class TrainingGameAdmin(admin.ModelAdmin):
     GameAdmin allows admin to create or edit games
     """
 
-    list_filter = ("run", "created_at", "handicap", "komi")
+    list_filter = (
+        "run",
+        "created_at",
+        "handicap",
+        "board_size_x",
+        "board_size_y",
+        "white_network",
+        "komi",
+        "submitted_by",
+    )
     list_display = (
         "id",
         "run",
         "created_at",
+        "board_size_x",
+        "board_size_y",
         "handicap",
         "komi",
         "result_text",
         "submitted_by",
         "white_network",
-        "black_network",
     )
     readonly_fields = ("id", "created_at")
     ordering = ("pk",)

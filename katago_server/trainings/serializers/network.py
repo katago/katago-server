@@ -24,6 +24,8 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "model_file_sha256",
             "model_zip_file",
             "parent_network",
+            "log_gamma",
+            "log_gamma_uncertainty",
         ]
         extra_kwargs = {
             "url": {"lookup_field": "name"},
