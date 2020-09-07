@@ -29,7 +29,10 @@ sgf_data_storage = FileSystemStorage(location="/data/games", base_url="/media/ga
 
 
 def upload_sgf_to(instance, _filename):
-    return os.path.join(instance.run.name, f"{instance.kg_game_uid}.sgf")
+    if instance.white_network.name == instance.black_network.name:
+        return os.path.join(instance.run.name, instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.sgf")
+    else:
+        return os.path.join(instance.run.name, "versus", instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.sgf")
 
 
 validate_sgf = FileValidator(max_size=1024 * 200, magic_types=("Smart Game Format (Go)",))
