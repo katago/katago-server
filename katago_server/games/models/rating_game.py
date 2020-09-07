@@ -17,6 +17,3 @@ class RatingGame(AbstractGame):
         verbose_name = _("Rating game")
         ordering = ["-created_at"]
 
-    def clean(self):
-        if not self.white_network.rating_games_enabled or not self.black_network.rating_games_enabled:
-            raise ValidationError("Network is no longer enabled for rating games")

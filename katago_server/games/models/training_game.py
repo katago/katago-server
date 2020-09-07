@@ -15,12 +15,12 @@ from katago_server.games.models.abstract_game import AbstractGame
 training_data_storage = FileSystemStorage(location="/data/training_npz", base_url="/media/training_npz/")
 validate_zip = FileValidator(max_size=1024 * 500, content_types=["application/zip"])
 
-def validate_game_npzdata(game):
-    npz_file = game.training_data_file
+def validate_game_npzdata(training_data_file,run):
+    npz_file = training_data_file
     max_size = 1024 * 500
     max_unzipped_size = 1024 * 1024 * 20
 
-    data_board_len = game.run.data_board_len
+    data_board_len = run.data_board_len
 
     if npz_file.size > max_size:
         params = {
@@ -166,6 +166,4 @@ class TrainingGame(AbstractGame):
     num_training_rows = IntegerField(_("num training rows"), null=False, default=32, validators=[validate_num_training_rows], help_text=_("Number of training rows in data file"), db_index=True,)
 
     def clean(self):
-        validate_game_npzdata(self)
-        if not self.white_network.training_games_enabled or not self.black_network.training_games_enabled:
-            raise ValidationError("Network is no longer enabled for training games")
+        validate_game_npzdata(self.training_data_file,self.run)

@@ -4,7 +4,7 @@ from rest_framework.serializers import (
     CurrentUserDefault,
 )
 
-from katago_server.games.models import TrainingGame
+from katago_server.games.models import TrainingGame, validate_game_npzdata
 from katago_server.trainings.serializers import NetworkSerializerForTasks
 from katago_server.users.serializers import LimitedUserSerializer
 
@@ -48,6 +48,12 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
             "white_network": {"lookup_field": "name"},
             "black_network": {"lookup_field": "name"},
         }
+
+    def validate(self,data):
+        validate_game_npzdata(data["training_data_file"], data["run"])
+        if not data["white_network"].training_games_enabled or not data["black_network"].training_games_enabled:
+            raise ValidationError("Network is no longer enabled for training games")
+        return data
 
 
 # Use as read only serializer
