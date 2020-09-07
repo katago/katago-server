@@ -29,10 +29,12 @@ def create_training_game(
         extra_metadata={},
         score=100.0,
         resigned=False,
+        game_length=0,
         black_network=None,
         white_network=None,
         sgf_file=SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
         training_data_file=SimpleUploadedFile(name='game.npz', content=b"\x50\x4b\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", content_type='application/octet-stream'),
+        num_training_rows = 0,
         kg_game_uid="12341234ABCDABCD",
 ):
     return TrainingGame.objects.create(
@@ -47,10 +49,12 @@ def create_training_game(
         extra_metadata=extra_metadata,
         score=score,
         resigned=resigned,
+        game_length=game_length,
         black_network=black_network,
         white_network=white_network,
         sgf_file=sgf_file,
         training_data_file=training_data_file,
+        num_training_rows=num_training_rows,
         kg_game_uid=kg_game_uid,
     )
 def create_rating_game(
@@ -65,6 +69,7 @@ def create_rating_game(
         extra_metadata={},
         score=100.0,
         resigned=False,
+        game_length=0,
         black_network=None,
         white_network=None,
         sgf_file=SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
@@ -82,6 +87,7 @@ def create_rating_game(
         extra_metadata=extra_metadata,
         score=score,
         resigned=resigned,
+        game_length=game_length,
         black_network=black_network,
         white_network=white_network,
         sgf_file=sgf_file,

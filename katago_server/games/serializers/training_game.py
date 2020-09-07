@@ -35,10 +35,12 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
             "winner",
             "score",
             "resigned",
+            "game_length",
             "white_network",
             "black_network",
             "sgf_file",
             "training_data_file",
+            "num_training_rows",
             "kg_game_uid",
         ]
         extra_kwargs = {
@@ -71,10 +73,12 @@ class TrainingGameListSerializer(HyperlinkedModelSerializer):
             "winner",
             "score",
             "resigned",
+            "game_length",
             "white_network",
             "black_network",
             "sgf_file",
             "training_data_file",
+            "num_training_rows",
             "kg_game_uid",
         ]
         extra_kwargs = {

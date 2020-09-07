@@ -51,6 +51,13 @@ def validate_handicap(value):
             params={'value': value},
         )
 
+def validate_game_length(value):
+    if value < 0 or value > 50000:
+        raise ValidationError(
+            _('%(value)s must range from 0 to 50000'),
+            params={'value': value},
+        )
+
 def validate_komi(value):
     if value < -1000 or value > 1000:
         raise ValidationError(
@@ -111,6 +118,7 @@ class AbstractGame(Model):
     winner = CharField(_("winner"), max_length=1, choices=GamesResult.choices, db_index=True)
     score = DecimalField(_("score"), max_digits=5, decimal_places=1, null=True, validators=[validate_score], blank=True, help_text=_("Final white points minus black points"),)
     resigned = BooleanField(_("resigned"), default=False, db_index=True, help_text=_("Did this game end in resignation?"),)
+    game_length = IntegerField(_("game length"), null=False, default=0, validators=[validate_game_length], help_text=_("Length of game in ply"), db_index=True,)
 
     white_network = ForeignKey(
         Network, verbose_name=_("white player network"), on_delete=PROTECT, related_name="%(class)s_games_as_white", db_index=True,
