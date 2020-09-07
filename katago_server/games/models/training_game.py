@@ -167,3 +167,5 @@ class TrainingGame(AbstractGame):
 
     def clean(self):
         validate_game_npzdata(self)
+        if not self.white_network.training_games_enabled or not self.black_network.training_games_enabled:
+            raise ValidationError("Network is no longer enabled for training games")
