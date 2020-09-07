@@ -12,7 +12,7 @@ validate_zip = FileValidator(max_size=1024 * 500, content_types=["application/zi
 
 
 def upload_training_data_to(instance: AbstractGame, _filename):
-    return os.path.join(instance.run.name, instance.white_network.name, f"{instance.kg_game_uid}.npz")
+    return os.path.join(instance.run.name, instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.npz")
 
 
 class TrainingGame(AbstractGame):
