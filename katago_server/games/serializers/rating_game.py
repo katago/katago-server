@@ -47,6 +47,10 @@ class RatingGameCreateSerializer(HyperlinkedModelSerializer):
             "black_network": {"lookup_field": "name"},
         }
 
+    def validate(self,data):
+        if not data["white_network"].rating_games_enabled or not data["black_network"].rating_games_enabled:
+            raise ValidationError("Network is no longer enabled for rating games")
+        return data
 
 # Use as read only serializer
 class RatingGameListSerializer(HyperlinkedModelSerializer):
