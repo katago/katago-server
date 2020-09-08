@@ -43,9 +43,8 @@ class BayesianRatingService:
         self._calculate_networks_actual_score()
 
         for iteration_index in range(number_of_iterations):
-            for network in self._network_ratings.itertuples():
-                network_id = network[0]
-                network_log_gamma = network.log_gamma
+            for network_id in reversed(self._network_ratings.index):
+                network_log_gamma = self._network_ratings.loc[network_id,"log_gamma"]
                 self._update_specific_network_log_gamma(network_id, network_log_gamma)
             self._reset_anchor_log_gamma()
 
