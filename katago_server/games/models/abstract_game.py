@@ -132,8 +132,16 @@ class AbstractGame(Model):
 
     @property
     def result_text(self):
-        score = "R" if self.resigned else self.score
-        return f"{self.winner}+{score}" if self.winner in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE] else self.winner
+        if self.resigned:
+            return f"{self.winner}+R"
+        if self.winner not in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE]:
+            return self.winner
+
+        if self.winner == AbstractGame.GamesResult.BLACK:
+            score = -self.score
+        else:
+            score = self.score
+        return f"{self.winner}+{score}"
 
     def __str__(self):
         return f"{self.kg_game_uid} ({self.result_text})"

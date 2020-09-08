@@ -13,6 +13,8 @@ class RatingGameAdmin(admin.ModelAdmin):
         "handicap",
         "board_size_x",
         "board_size_y",
+        "white_network",
+        "black_network",
         "komi",
         "submitted_by",
     )
