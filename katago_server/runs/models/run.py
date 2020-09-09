@@ -13,7 +13,7 @@ from django.db.models import (
 )
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
-
+from django.core.exceptions import ValidationError
 
 class RunQuerySet(QuerySet):
     def select_current(self):
@@ -36,7 +36,7 @@ def validate_probability(value):
         )
 
 def validate_positive(value):
-    if np.isnan(value) or value > 0:
+    if np.isnan(value) or value < 0:
         raise ValidationError(
             _('%(value)s must be positive'),
             params={'value': value},
