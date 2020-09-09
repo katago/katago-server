@@ -18,6 +18,9 @@ def update_bayesian_rating(for_tests=False):
 
     network_ratings = Network.pandas.get_ratings_dataframe(current_run)
     anchor_network = Network.objects.filter(run=current_run).order_by("pk").first()
+    if anchor_network is None:
+        return
+
     detailed_tournament_result = RatingGame.pandas.get_detailed_tournament_results_dataframe(current_run,for_tests=for_tests)
 
     assert_no_match_with_same_network = detailed_tournament_result["reference_network"] != detailed_tournament_result["opponent_network"]
