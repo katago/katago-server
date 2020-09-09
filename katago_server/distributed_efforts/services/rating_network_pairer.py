@@ -96,7 +96,7 @@ class RatingNetworkPairerService:
             return np.random.choice(nearby_networks)
 
         win_probability = np.asarray([
-            1 / (1 + exp((opp_net.log_gamma - ref_net_log_gamma) / current_run.rating_game_entropy_scale)) for opp_net in nearby_networks
+            1 / (1 + exp((opp_net.log_gamma - ref_net_log_gamma) / self.current_run.rating_game_entropy_scale)) for opp_net in nearby_networks
         ])
         shannon_entropy = -win_probability * np.log2(win_probability) - (1 - win_probability) * np.log2(1 - win_probability)
 
