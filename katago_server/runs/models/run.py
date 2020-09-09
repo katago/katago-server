@@ -1,3 +1,5 @@
+import numpy as np
+
 from django.db.models import (
     Model,
     CharField,
