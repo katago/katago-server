@@ -59,7 +59,7 @@ def validate_game_length(value):
         )
 
 def validate_komi(value):
-    if value < -1000 or value > 1000:
+    if np.isnan(value) or value < -1000 or value > 1000:
         raise ValidationError(
             _('%(value)s must range from -1000 to 1000'),
             params={'value': value},
@@ -72,7 +72,7 @@ def validate_komi(value):
 
 def validate_score(value):
     if value is not None:
-        if value < -10000 or value > 10000:
+        if np.isnan(value) or value < -10000 or value > 10000:
             raise ValidationError(
                 _('%(value)s must range from -10000 to 10000'),
                 params={'value': value},

@@ -64,7 +64,9 @@ class RatingNetworkPairerService:
         if reference_network is None:
             return None
 
-        ref_net_log_gamma = reference_network.log_gamma
+        # Vary the reference net's log gamma so that networks that are uncertain will play a greater variety of opponents
+        # based on that uncertainty
+        ref_net_log_gamma = reference_network.log_gamma + np.random.normal() * reference_network.log_gamma_uncertainty
 
         log_gamma_search_range = 1200 / (400 * log10(e))  # Hardcoded window of 1200 Elo, we could dehardcode if needed in the future
         log_gamma_lower_bound = ref_net_log_gamma - log_gamma_search_range
@@ -93,7 +95,9 @@ class RatingNetworkPairerService:
                 return None
             return np.random.choice(nearby_networks)
 
-        win_probability = np.asarray([1 / (1 + exp(opp_net.log_gamma - ref_net_log_gamma)) for opp_net in nearby_networks])
+        win_probability = np.asarray([
+            1 / (1 + exp((opp_net.log_gamma - ref_net_log_gamma) / current_run.rating_game_entropy_scale)) for opp_net in nearby_networks
+        ])
         shannon_entropy = -win_probability * np.log2(win_probability) - (1 - win_probability) * np.log2(1 - win_probability)
 
         return np.random.choice(nearby_networks, p=shannon_entropy / np.sum(shannon_entropy))

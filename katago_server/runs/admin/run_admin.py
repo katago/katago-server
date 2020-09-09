@@ -19,6 +19,7 @@ class RunAdmin(admin.ModelAdmin):
                     "max_search_threads_allowed",
                     "rating_game_probability",
                     "rating_game_high_elo_probability",
+                    "rating_game_entropy_scale",
                     "virtual_draw_strength",
                     "elo_number_of_iterations",
                     "selfplay_client_config",

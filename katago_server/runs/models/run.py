@@ -26,6 +26,21 @@ class RunQuerySet(QuerySet):
 alphanumeric = RegexValidator(r"^[0-9a-zA-Z]*$", "Only alphanumeric characters are allowed.")
 
 
+def validate_probability(value):
+    if np.isnan(value) or value < 0 or value > 1:
+        raise ValidationError(
+            _('%(value)s must range from 0 to 1'),
+            params={'value': value},
+        )
+
+def validate_positive(value):
+    if np.isnan(value) or value > 0:
+        raise ValidationError(
+            _('%(value)s must be positive'),
+            params={'value': value},
+        )
+
+
 class Run(Model):
     """
     A runs is a conceptual group of games and model. It allows katago server to perform
@@ -55,32 +70,57 @@ class Run(Model):
     )
 
     # Config
-    data_board_len = IntegerField(_("dataBoardLen"), default=19, help_text=_("Max board size for npz tensors. Should never change mid-run."),)
-    inputs_version = IntegerField(_("inputsVersion"), default=7, help_text=_("Version of neural net features that nets are trained with."),)
+    data_board_len = IntegerField(
+        _("dataBoardLen"),
+        default=19,
+        help_text=_("Max board size for npz tensors. Should never change mid-run."),
+        validators=[validate_positive],
+    )
+    inputs_version = IntegerField(
+        _("inputsVersion"),
+        default=7,
+        help_text=_("Version of neural net features that nets are trained with."),
+        validators=[validate_positive],
+    )
     max_search_threads_allowed = IntegerField(
-        _("Maximum numSearchThreads"), default=8, help_text=_("Maximum search threads that server promises to never exceed."),
+        _("Maximum numSearchThreads"),
+        default=8,
+        help_text=_("Maximum search threads that server promises to never exceed."),
+        validators=[validate_positive],
     )
     rating_game_probability = FloatField(
-        _("Rating game probability"), help_text=_("Probability that a task is a rating game instead of a selfplay game."), default=0.1,
+        _("Rating game probability"),
+        help_text=_("Probability that a task is a rating game instead of a selfplay game."),
+        default=0.1,
+        validators=[validate_probability],
     )
     rating_game_high_elo_probability = FloatField(
         _("Rating game high Elo probability"),
-        help_text=_("Rating games are randomly selected to either be high_elo or highest_uncertainty"),
+        help_text=_("Rating games are randomly selected to test a network with high Elo or high uncertainty."),
         default=0.5,
+        validators=[validate_probability],
+    )
+    rating_game_entropy_scale = FloatField(
+        _("Rating game entropy scale"),
+        help_text=_("Rating games normally choose opponent based on entropy of predicted result, set larger to add more variability, smaller to scale it down."),
+        default=1.0,
+        validators=[validate_positive],
     )
     virtual_draw_strength = FloatField(
         _("Virtual draw strength"),
-        help_text=_("Between networks and parent networks, add a prior of equal Elo with strength equal to this many virtual draws"),
+        help_text=_("Between networks and parent networks, add a prior of equal Elo with strength equal to this many virtual draws."),
         default=4.0,
+        validators=[validate_positive],
     )
     elo_number_of_iterations = IntegerField(
         _("Elo computation number of iterations"),
-        help_text=_("How many iterations to use per celery task to compute log_gammas and Elos"),
+        help_text=_("How many iterations to use per celery task to compute log_gammas and Elos."),
         default=10,
+        validators=[validate_positive],
     )
-    selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games"), default="FILL ME",)
-    rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games"), default="FILL ME",)
-    git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes"), default="",)
+    selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games."), default="FILL ME",)
+    rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games."), default="FILL ME",)
+    git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes, hash comments."), default="",)
 
     def __str__(self):
         return f"{self.name}"
