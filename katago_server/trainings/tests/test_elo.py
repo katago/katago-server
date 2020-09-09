@@ -15,6 +15,23 @@ User = get_user_model()
 
 fake_sha256 = "12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd"
 
+class TestEloNoNetwork:
+
+    def setup_method(self):
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.0,
+            status="Active",
+            elo_number_of_iterations = 50,
+            virtual_draw_strength = 4.0,
+        )
+
+    def teardown_method(self):
+        self.r1.delete()
+
+    def test_elos(self):
+        update_bayesian_rating(for_tests=True)
+
 
 class TestEloLoneNetwork:
 

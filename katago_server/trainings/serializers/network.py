@@ -37,11 +37,19 @@ class NetworkSerializer(HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         data = validated_data.copy()
-        if data["parent_network"]:
-            data["log_gamma"] = data["parent_network"].log_gamma
+        if "parent_network" in data:
+            if data["parent_network"]:
+                data["log_gamma"] = data["parent_network"].log_gamma
+                data["log_gamma_uncertainty"] = 2.0
+                data["log_gamma_lower_confidence"] = data["log_gamma"] - 2 * data["log_gamma_uncertainty"]
+                data["log_gamma_upper_confidence"] = data["log_gamma"] + 2 * data["log_gamma_uncertainty"]
+        if "log_gamma" in data and "log_gamma_uncertainty" not in data:
             data["log_gamma_uncertainty"] = 2.0
-            data["log_gamma_lower_confidence"] = data["log_gamma"] - 2 * data["log_gamma_uncertainty"]
-            data["log_gamma_upper_confidence"] = data["log_gamma"] + 2 * data["log_gamma_uncertainty"]
+        if "log_gamma" in data and "log_gamma_uncertainty" in data:
+            if "log_gamma_lower_confidence" not in data:
+                data["log_gamma_lower_confidence"] = data["log_gamma"] - 2 * data["log_gamma_uncertainty"]
+            if "log_gamma_upper_confidence" not in data:
+                data["log_gamma_upper_confidence"] = data["log_gamma"] + 2 * data["log_gamma_uncertainty"]
 
         return super().create(data)
 
