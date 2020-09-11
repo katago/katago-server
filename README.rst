@@ -35,6 +35,30 @@ Starting/Stopping Docker
 to stop it
 
      docker-compose -f local.yml up
+     
+Removing Docker Images and Volumes
+--------
+
+Check for images and volumes
+
+    docker image list
+    
+    docker volume list
+
+Then you can prune both lists
+
+    docker image prune
+    
+    docker volume prune
+    
+You can remove images you don't want
+
+    docker image rm INSERT_NAME_OF_IMAGE
+
+Create an admin user for the website
+--------
+
+    docker-compose -f local.yml run --rm django python manage.py createsuperuser
 
 Settings
 --------
