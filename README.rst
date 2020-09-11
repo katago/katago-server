@@ -17,18 +17,18 @@ Installation and Setup
 --------
 After setting up KataGo you should do the following steps on Ubuntu:
 
-`sudo apt install docker docker-compose`
-`sudo systemctl enable docker`
-`sudo usermod -aG docker INSERT_YOUR_USERNAME`
-then reboot
+`sudo apt install docker docker-compose`  
+`sudo systemctl enable docker`  
+`sudo usermod -aG docker INSERT_YOUR_USERNAME`  
+then reboot  
 
 Starting/Stopping Docker
 --------
-`docker-compose -f local.yml build`
-`docker-compose -f local.yml up`
+`docker-compose -f local.yml build`  
+`docker-compose -f local.yml up`  
 
 to stop it
-`docker-compose -f local.yml up`
+`docker-compose -f local.yml up`  
 
 Settings
 --------
