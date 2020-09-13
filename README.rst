@@ -34,7 +34,7 @@ Starting/Stopping Docker
 
 to stop it
 
-     docker-compose -f local.yml up
+     docker-compose -f local.yml down
      
 Removing Docker Images and Volumes
 --------
