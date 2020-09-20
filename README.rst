@@ -18,39 +18,39 @@ Installation and Setup
 After setting up KataGo you should do the following steps on Ubuntu:
 
     sudo apt install docker docker-compose
-    
+
     sudo systemctl enable docker
-    
+
     sudo usermod -aG docker INSERT_YOUR_USERNAME
-    
-then reboot  
+
+then reboot
 
 Starting/Stopping Docker
 --------
 
      docker-compose -f local.yml build
-     
+
      docker-compose -f local.yml up
 
 to stop it
 
      docker-compose -f local.yml down
-     
+
 Removing Docker Images and Volumes
 --------
 
 Check for images and volumes
 
     docker image list
-    
+
     docker volume list
 
 Then you can prune both lists
 
     docker image prune
-    
+
     docker volume prune
-    
+
 You can remove images you don't want
 
     docker image rm INSERT_NAME_OF_IMAGE
@@ -125,7 +125,7 @@ To run a celery worker:
 .. code-block:: bash
 
     cd katago_server
-    celery -A config.celery_app worker -l info
+    celery -A src.celery_app worker -l info
 
 Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the same folder with *manage.py*, you should be right.
 
