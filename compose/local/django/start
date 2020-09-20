@@ -6,4 +6,4 @@ set -o nounset
 
 
 python manage.py migrate
-/usr/local/bin/gunicorn config.asgi --bind 0.0.0.0:8000 --chdir=/app -k uvicorn.workers.UvicornWorker -e DJANGO_SETTINGS_MODULE=config.settings.local --reload
+/usr/local/bin/gunicorn src.asgi --bind 0.0.0.0:8000 --chdir=/app -k uvicorn.workers.UvicornWorker -e DJANGO_SETTINGS_MODULE=src.settings.local --reload
