@@ -18,99 +18,99 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: katago_server/distributed_efforts/admin.py:20
-#: katago_server/games/admin.py:24
+#: src/apps/distributed_efforts/admin.py:20
+#: src/apps/games/admin.py:24
 msgid "Game"
 msgstr ""
 
-#: katago_server/distributed_efforts/admin.py:23
-#: katago_server/games/admin.py:30 katago_server/trainings/models.py:32
+#: src/apps/distributed_efforts/admin.py:23
+#: src/apps/games/admin.py:30 src/apps/trainings/models.py:32
 msgid "Network"
 msgstr ""
 
-#: katago_server/distributed_efforts/apps.py:7
+#: src/apps/distributed_efforts/apps.py:7
 msgid "Distributed efforts"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:32
+#: src/apps/distributed_efforts/models.py:32
 msgid "Unassigned"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:33
+#: src/apps/distributed_efforts/models.py:33
 msgid "Ongoing"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:34
+#: src/apps/distributed_efforts/models.py:34
 msgid "Done"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:35
+#: src/apps/distributed_efforts/models.py:35
 msgid "Canceled"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:39
-#: katago_server/games/models.py:43 katago_server/trainings/models.py:35
+#: src/apps/distributed_efforts/models.py:39
+#: src/apps/games/models.py:43 src/apps/trainings/models.py:35
 msgid "unique identifier"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:40
+#: src/apps/distributed_efforts/models.py:40
 msgid "task status"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:42
-#: katago_server/games/models.py:45 katago_server/trainings/models.py:36
+#: src/apps/distributed_efforts/models.py:42
+#: src/apps/games/models.py:45 src/apps/trainings/models.py:36
 msgid "creation date"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:43
+#: src/apps/distributed_efforts/models.py:43
 msgid "assigned to"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:44
+#: src/apps/distributed_efforts/models.py:44
 msgid "assignation date"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:45
+#: src/apps/distributed_efforts/models.py:45
 msgid "expiration date"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:47
-#: katago_server/games/models.py:62
+#: src/apps/distributed_efforts/models.py:47
+#: src/apps/games/models.py:62
 msgid "network white"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:48
-#: katago_server/games/models.py:63
+#: src/apps/distributed_efforts/models.py:48
+#: src/apps/games/models.py:63
 msgid "network black"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:50
-#: katago_server/games/models.py:49
+#: src/apps/distributed_efforts/models.py:50
+#: src/apps/games/models.py:49
 msgid "board absciss"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:51
-#: katago_server/games/models.py:50
+#: src/apps/distributed_efforts/models.py:51
+#: src/apps/games/models.py:50
 msgid "board ordinate"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:52
-#: katago_server/games/models.py:51
+#: src/apps/distributed_efforts/models.py:52
+#: src/apps/games/models.py:51
 msgid "nb of handicap stone"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:53
-#: katago_server/games/models.py:52
+#: src/apps/distributed_efforts/models.py:53
+#: src/apps/games/models.py:52
 msgid "komi (white)"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:55
-#: katago_server/games/models.py:53
+#: src/apps/distributed_efforts/models.py:55
+#: src/apps/games/models.py:53
 msgid "game rules"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:55
-#: katago_server/games/models.py:53
+#: src/apps/distributed_efforts/models.py:55
+#: src/apps/games/models.py:53
 msgid ""
 "Depending on rule set, the ko (https://senseis.xmp.net/?Ko), the scoring "
 "(https://senseis.xmp.net/?Scoring), the group tax (https://senseis.xmp.net/?"
@@ -119,262 +119,262 @@ msgid ""
 "html"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:57
-#: katago_server/games/models.py:65
+#: src/apps/distributed_efforts/models.py:57
+#: src/apps/games/models.py:65
 msgid "initial position, as sgf file"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:58
-#: katago_server/games/models.py:66
+#: src/apps/distributed_efforts/models.py:58
+#: src/apps/games/models.py:66
 msgid "initial position extra parameters"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:61
-#: katago_server/games/models.py:56
+#: src/apps/distributed_efforts/models.py:61
+#: src/apps/games/models.py:56
 msgid "extra game parameters regarding game, like number of playout"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:69
+#: src/apps/distributed_efforts/models.py:69
 msgid "resulting ranking game"
 msgstr ""
 
-#: katago_server/distributed_efforts/models.py:74
+#: src/apps/distributed_efforts/models.py:74
 msgid "resulting training game"
 msgstr ""
 
-#: katago_server/games/admin.py:27
+#: src/apps/games/admin.py:27
 msgid "Score"
 msgstr ""
 
-#: katago_server/games/admin.py:33
+#: src/apps/games/admin.py:33
 msgid "Distributed effort"
 msgstr ""
 
-#: katago_server/games/admin.py:36 katago_server/trainings/admin.py:17
+#: src/apps/games/admin.py:36 src/apps/trainings/admin.py:17
 msgid "Download"
 msgstr ""
 
-#: katago_server/games/apps.py:7
+#: src/apps/games/apps.py:7
 msgid "Games"
 msgstr ""
 
-#: katago_server/games/models.py:36
+#: src/apps/games/models.py:36
 msgid "White"
 msgstr ""
 
-#: katago_server/games/models.py:37
+#: src/apps/games/models.py:37
 msgid "Black"
 msgstr ""
 
-#: katago_server/games/models.py:38
+#: src/apps/games/models.py:38
 msgid "Draw (Jigo)"
 msgstr ""
 
-#: katago_server/games/models.py:39
+#: src/apps/games/models.py:39
 msgid "No Result (Moshoubou)"
 msgstr ""
 
-#: katago_server/games/models.py:46
+#: src/apps/games/models.py:46
 msgid "submitted by"
 msgstr ""
 
-#: katago_server/games/models.py:47
+#: src/apps/games/models.py:47
 msgid "game duration"
 msgstr ""
 
-#: katago_server/games/models.py:56
+#: src/apps/games/models.py:56
 msgid "Some parameters (like the playout) are randomized by katago engine"
 msgstr ""
 
-#: katago_server/games/models.py:58
+#: src/apps/games/models.py:58
 msgid "game result"
 msgstr ""
 
-#: katago_server/games/models.py:59
+#: src/apps/games/models.py:59
 msgid "game score"
 msgstr ""
 
-#: katago_server/games/models.py:60
+#: src/apps/games/models.py:60
 msgid "game end up with resign"
 msgstr ""
 
-#: katago_server/games/models.py:68
+#: src/apps/games/models.py:68
 msgid "resulting sgf file"
 msgstr ""
 
-#: katago_server/games/models.py:80
+#: src/apps/games/models.py:80
 msgid "training data (npz)"
 msgstr ""
 
-#: katago_server/games/models.py:83
+#: src/apps/games/models.py:83
 msgid "Training Game"
 msgstr ""
 
-#: katago_server/games/models.py:88
+#: src/apps/games/models.py:88
 msgid "Ranking Estimation Game"
 msgstr ""
 
-#: katago_server/templates/account/account_inactive.html:5
-#: katago_server/templates/account/account_inactive.html:8
+#: src/frontend/templates/account/account_inactive.html:5
+#: src/frontend/templates/account/account_inactive.html:8
 msgid "Account Inactive"
 msgstr ""
 
-#: katago_server/templates/account/account_inactive.html:10
+#: src/frontend/templates/account/account_inactive.html:10
 msgid "This account is inactive."
 msgstr ""
 
-#: katago_server/templates/account/email.html:7
+#: src/frontend/templates/account/email.html:7
 msgid "Account"
 msgstr ""
 
-#: katago_server/templates/account/email.html:10
+#: src/frontend/templates/account/email.html:10
 msgid "E-mail Addresses"
 msgstr ""
 
-#: katago_server/templates/account/email.html:13
+#: src/frontend/templates/account/email.html:13
 msgid "The following e-mail addresses are associated with your account:"
 msgstr ""
 
-#: katago_server/templates/account/email.html:27
+#: src/frontend/templates/account/email.html:27
 msgid "Verified"
 msgstr ""
 
-#: katago_server/templates/account/email.html:29
+#: src/frontend/templates/account/email.html:29
 msgid "Unverified"
 msgstr ""
 
-#: katago_server/templates/account/email.html:31
+#: src/frontend/templates/account/email.html:31
 msgid "Primary"
 msgstr ""
 
-#: katago_server/templates/account/email.html:37
+#: src/frontend/templates/account/email.html:37
 msgid "Make Primary"
 msgstr ""
 
-#: katago_server/templates/account/email.html:38
+#: src/frontend/templates/account/email.html:38
 msgid "Re-send Verification"
 msgstr ""
 
-#: katago_server/templates/account/email.html:39
+#: src/frontend/templates/account/email.html:39
 msgid "Remove"
 msgstr ""
 
-#: katago_server/templates/account/email.html:46
+#: src/frontend/templates/account/email.html:46
 msgid "Warning:"
 msgstr ""
 
-#: katago_server/templates/account/email.html:46
+#: src/frontend/templates/account/email.html:46
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
 "an e-mail address so you can receive notifications, reset your password, etc."
 msgstr ""
 
-#: katago_server/templates/account/email.html:51
+#: src/frontend/templates/account/email.html:51
 msgid "Add E-mail Address"
 msgstr ""
 
-#: katago_server/templates/account/email.html:56
+#: src/frontend/templates/account/email.html:56
 msgid "Add E-mail"
 msgstr ""
 
-#: katago_server/templates/account/email.html:66
+#: src/frontend/templates/account/email.html:66
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
 
-#: katago_server/templates/account/email_confirm.html:6
-#: katago_server/templates/account/email_confirm.html:10
+#: src/frontend/templates/account/email_confirm.html:6
+#: src/frontend/templates/account/email_confirm.html:10
 msgid "Confirm E-mail Address"
 msgstr ""
 
-#: katago_server/templates/account/email_confirm.html:16
+#: src/frontend/templates/account/email_confirm.html:16
 #, python-format
 msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
 
-#: katago_server/templates/account/email_confirm.html:20
+#: src/frontend/templates/account/email_confirm.html:20
 msgid "Confirm"
 msgstr ""
 
-#: katago_server/templates/account/email_confirm.html:27
+#: src/frontend/templates/account/email_confirm.html:27
 #, python-format
 msgid ""
 "This e-mail confirmation link expired or is invalid. Please <a href="
 "\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
 
-#: katago_server/templates/account/login.html:7
-#: katago_server/templates/account/login.html:11
-#: katago_server/templates/account/login.html:23
-#: katago_server/templates/base.html:66
+#: src/frontend/templates/account/login.html:7
+#: src/frontend/templates/account/login.html:11
+#: src/frontend/templates/account/login.html:23
+#: src/frontend/templates/base.html:66
 msgid "Sign In"
 msgstr ""
 
-#: katago_server/templates/account/login.html:13
+#: src/frontend/templates/account/login.html:13
 #, python-format
 msgid ""
 "If you have not created an account yet, then please\n"
 "<a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
 
-#: katago_server/templates/account/login.html:22
+#: src/frontend/templates/account/login.html:22
 msgid "Forgot Password?"
 msgstr ""
 
-#: katago_server/templates/account/logout.html:5
-#: katago_server/templates/account/logout.html:8
-#: katago_server/templates/account/logout.html:17
-#: katago_server/templates/base.html:57
+#: src/frontend/templates/account/logout.html:5
+#: src/frontend/templates/account/logout.html:8
+#: src/frontend/templates/account/logout.html:17
+#: src/frontend/templates/base.html:57
 msgid "Sign Out"
 msgstr ""
 
-#: katago_server/templates/account/logout.html:10
+#: src/frontend/templates/account/logout.html:10
 msgid "Are you sure you want to sign out?"
 msgstr ""
 
-#: katago_server/templates/account/password_change.html:6
-#: katago_server/templates/account/password_change.html:9
-#: katago_server/templates/account/password_change.html:14
-#: katago_server/templates/account/password_reset_from_key.html:5
-#: katago_server/templates/account/password_reset_from_key.html:8
-#: katago_server/templates/account/password_reset_from_key_done.html:4
-#: katago_server/templates/account/password_reset_from_key_done.html:7
+#: src/frontend/templates/account/password_change.html:6
+#: src/frontend/templates/account/password_change.html:9
+#: src/frontend/templates/account/password_change.html:14
+#: src/frontend/templates/account/password_reset_from_key.html:5
+#: src/frontend/templates/account/password_reset_from_key.html:8
+#: src/frontend/templates/account/password_reset_from_key_done.html:4
+#: src/frontend/templates/account/password_reset_from_key_done.html:7
 msgid "Change Password"
 msgstr ""
 
-#: katago_server/templates/account/password_reset.html:7
-#: katago_server/templates/account/password_reset.html:11
-#: katago_server/templates/account/password_reset_done.html:6
-#: katago_server/templates/account/password_reset_done.html:9
+#: src/frontend/templates/account/password_reset.html:7
+#: src/frontend/templates/account/password_reset.html:11
+#: src/frontend/templates/account/password_reset_done.html:6
+#: src/frontend/templates/account/password_reset_done.html:9
 msgid "Password Reset"
 msgstr ""
 
-#: katago_server/templates/account/password_reset.html:16
+#: src/frontend/templates/account/password_reset.html:16
 msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll send you "
 "an e-mail allowing you to reset it."
 msgstr ""
 
-#: katago_server/templates/account/password_reset.html:21
+#: src/frontend/templates/account/password_reset.html:21
 msgid "Reset My Password"
 msgstr ""
 
-#: katago_server/templates/account/password_reset.html:24
+#: src/frontend/templates/account/password_reset.html:24
 msgid "Please contact us if you have any trouble resetting your password."
 msgstr ""
 
-#: katago_server/templates/account/password_reset_done.html:15
+#: src/frontend/templates/account/password_reset_done.html:15
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
 
-#: katago_server/templates/account/password_reset_from_key.html:8
+#: src/frontend/templates/account/password_reset_from_key.html:8
 msgid "Bad Token"
 msgstr ""
 
-#: katago_server/templates/account/password_reset_from_key.html:12
+#: src/frontend/templates/account/password_reset_from_key.html:12
 #, python-format
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
@@ -382,141 +382,141 @@ msgid ""
 "a>."
 msgstr ""
 
-#: katago_server/templates/account/password_reset_from_key.html:18
+#: src/frontend/templates/account/password_reset_from_key.html:18
 msgid "change password"
 msgstr ""
 
-#: katago_server/templates/account/password_reset_from_key.html:21
-#: katago_server/templates/account/password_reset_from_key_done.html:8
+#: src/frontend/templates/account/password_reset_from_key.html:21
+#: src/frontend/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
 msgstr ""
 
-#: katago_server/templates/account/password_set.html:6
-#: katago_server/templates/account/password_set.html:9
-#: katago_server/templates/account/password_set.html:14
+#: src/frontend/templates/account/password_set.html:6
+#: src/frontend/templates/account/password_set.html:9
+#: src/frontend/templates/account/password_set.html:14
 msgid "Set Password"
 msgstr ""
 
-#: katago_server/templates/account/signup.html:6
+#: src/frontend/templates/account/signup.html:6
 msgid "Signup"
 msgstr ""
 
-#: katago_server/templates/account/signup.html:9
-#: katago_server/templates/account/signup.html:19
-#: katago_server/templates/base.html:62
+#: src/frontend/templates/account/signup.html:9
+#: src/frontend/templates/account/signup.html:19
+#: src/frontend/templates/base.html:62
 msgid "Sign Up"
 msgstr ""
 
-#: katago_server/templates/account/signup.html:11
+#: src/frontend/templates/account/signup.html:11
 #, python-format
 msgid ""
 "Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
 msgstr ""
 
-#: katago_server/templates/account/signup_closed.html:5
-#: katago_server/templates/account/signup_closed.html:8
+#: src/frontend/templates/account/signup_closed.html:5
+#: src/frontend/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
 msgstr ""
 
-#: katago_server/templates/account/signup_closed.html:10
+#: src/frontend/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
 msgstr ""
 
-#: katago_server/templates/account/verification_sent.html:5
-#: katago_server/templates/account/verification_sent.html:8
-#: katago_server/templates/account/verified_email_required.html:5
-#: katago_server/templates/account/verified_email_required.html:8
+#: src/frontend/templates/account/verification_sent.html:5
+#: src/frontend/templates/account/verification_sent.html:8
+#: src/frontend/templates/account/verified_email_required.html:5
+#: src/frontend/templates/account/verified_email_required.html:8
 msgid "Verify Your E-mail Address"
 msgstr ""
 
-#: katago_server/templates/account/verification_sent.html:10
+#: src/frontend/templates/account/verification_sent.html:10
 msgid ""
 "We have sent an e-mail to you for verification. Follow the link provided to "
 "finalize the signup process. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
 
-#: katago_server/templates/account/verified_email_required.html:12
+#: src/frontend/templates/account/verified_email_required.html:12
 msgid ""
 "This part of the site requires us to verify that\n"
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
 
-#: katago_server/templates/account/verified_email_required.html:16
+#: src/frontend/templates/account/verified_email_required.html:16
 msgid ""
 "We have sent an e-mail to you for\n"
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
 
-#: katago_server/templates/account/verified_email_required.html:20
+#: src/frontend/templates/account/verified_email_required.html:20
 #, python-format
 msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
 "mail address</a>."
 msgstr ""
 
-#: katago_server/templates/base.html:53
+#: src/frontend/templates/base.html:53
 msgid "My Profile"
 msgstr ""
 
-#: katago_server/templates/rest_framework/api.html:6
+#: src/frontend/templates/rest_framework/api.html:6
 msgid "Katago API"
 msgstr ""
 
-#: katago_server/trainings/admin.py:20
+#: src/apps/trainings/admin.py:20
 msgid "Strength"
 msgstr ""
 
-#: katago_server/trainings/admin.py:23
+#: src/apps/trainings/admin.py:23
 msgid "Network architecture"
 msgstr ""
 
-#: katago_server/trainings/apps.py:7
+#: src/apps/trainings/apps.py:7
 msgid "Training"
 msgstr ""
 
-#: katago_server/trainings/models.py:33
+#: src/apps/trainings/models.py:33
 msgid "Networks"
 msgstr ""
 
-#: katago_server/trainings/models.py:38
+#: src/apps/trainings/models.py:38
 msgid "number of blocks in network"
 msgstr ""
 
-#: katago_server/trainings/models.py:39
+#: src/apps/trainings/models.py:39
 msgid "number of channels in network"
 msgstr ""
 
-#: katago_server/trainings/models.py:40
+#: src/apps/trainings/models.py:40
 msgid "network architecture schema"
 msgstr ""
 
-#: katago_server/trainings/models.py:41
+#: src/apps/trainings/models.py:41
 msgid "network Archive url"
 msgstr ""
 
-#: katago_server/trainings/models.py:44
+#: src/apps/trainings/models.py:44
 msgid "estimated rank value"
 msgstr ""
 
-#: katago_server/trainings/models.py:45
+#: src/apps/trainings/models.py:45
 msgid "estimated rank uncertainty"
 msgstr ""
 
-#: katago_server/users/apps.py:7
+#: src/apps/users/apps.py:7
 msgid "Users"
 msgstr ""
 
-#: katago_server/users/forms.py:16
+#: src/apps/users/forms.py:16
 msgid "This username has already been taken."
 msgstr ""
 
-#: katago_server/users/models.py:11
+#: src/apps/users/models.py:11
 msgid "Name of User"
 msgstr ""
 
-#: katago_server/users/views.py:34
+#: src/apps/users/views.py:34
 msgid "Infos successfully updated"
 msgstr ""
