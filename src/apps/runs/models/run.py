@@ -2,6 +2,7 @@ import numpy as np
 
 from django.db.models import (
     Model,
+    BooleanField,
     CharField,
     IntegerField,
     FloatField,
@@ -102,6 +103,12 @@ class Run(Model):
         default=0.5,
         validators=[validate_probability],
     )
+    selfplay_startpos_probability = FloatField(
+        _("Selfplay startpos probability"),
+        help_text=_("Probability that a selfplay game uses a starting position, if there are any."),
+        default=0.0,
+        validators=[validate_probability],
+    )
     rating_game_entropy_scale = FloatField(
         _("Rating game entropy scale"),
         help_text=_("Rating games normally choose opponent based on entropy of predicted result, set larger to add more variability, smaller to scale it down."),
@@ -123,6 +130,16 @@ class Run(Model):
     selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games."), default="FILL ME",)
     rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games."), default="FILL ME",)
     git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes, hash comments."), default="",)
+    startpos_locked = BooleanField(
+        _("StartPoses being updated?"),
+        help_text=_("Are startposes in the middle of being updated?."),
+        default=False,
+    )
+    startpos_total_weight = FloatField(
+        _("Total weight of StartPoses"),
+        help_text=_("Total cumulative weight of StartPoses last time they were updated."),
+        default=-1,
+    )
 
     def __str__(self):
         return f"{self.name}"
