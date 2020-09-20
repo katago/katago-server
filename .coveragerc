@@ -1,5 +1,5 @@
 [run]
-include = katago_server/*
+include = src/*
 omit = *migrations*, *tests*
 plugins =
     django_coverage_plugin
