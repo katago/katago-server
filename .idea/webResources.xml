@@ -5,7 +5,7 @@
       <entry url="file://$PROJECT_DIR$">
         <entryData>
           <resourceRoots>
-            <path value="file://$PROJECT_DIR$/katago_server/static" />
+            <path value="file://$PROJECT_DIR$/src/apps/static" />
           </resourceRoots>
         </entryData>
       </entry>
