@@ -1,1 +1,1 @@
-from .startpos import StartPos
+from .startpos import StartPos, StartPosCumWeightOnly

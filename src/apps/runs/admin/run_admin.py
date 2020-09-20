@@ -43,7 +43,6 @@ class RunAdmin(admin.ModelAdmin):
                 "data_board_len",
                 "inputs_version",
                 "max_search_threads_allowed",
-                "startpos_locked",
                 "startpos_total_weight",
             )
         else:

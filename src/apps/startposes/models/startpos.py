@@ -6,7 +6,6 @@ from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
 from django.db.models import (
     Model,
-    JSONField,
     DateTimeField,
     FloatField,
     ForeignKey,
@@ -14,13 +13,14 @@ from django.db.models import (
     BigAutoField,
     QuerySet,
 )
+from django.contrib.postgres.fields import JSONField
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from src.apps.runs.models import Run
 
 class StartPosQuerySet(QuerySet):
-    def select_weighted_random(self, for_tests=True):
+    def select_weighted_random(self):
         current_run = Run.objects.select_current()
         if current_run is None:
             return None
@@ -48,9 +48,10 @@ class StartPos(Model):
     objects = StartPosQuerySet.as_manager()
 
     class Meta:
-        verbose_name = _("StartPosesNetwork")
-        verbose_name_plural = _("Networks")
+        verbose_name = _("StartPos")
+        verbose_name_plural = _("StartPoses")
         ordering = ["-created_at"]
+        db_table = "startposes_startpos"
 
     id = BigAutoField(primary_key=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True,)
@@ -61,6 +62,20 @@ class StartPos(Model):
     weight = FloatField(
         _("weight"), null=False, help_text=_("Weight for random selection."), validators=[validate_weight], db_index=True,
     )
+    cumulative_weight = FloatField(
+        _("cumulative_weight"), default=-1, null=False, help_text=_("Cumulative weight, for efficient random selection."), db_index=True,
+    )
+
+class StartPosCumWeightOnly(Model):
+    """
+    An unmanaged version of StartPos to allow for updating without expensively loading the data field.
+    """
+
+    class Meta:
+        managed = False
+        db_table = "startposes_startpos"
+
+    id = BigAutoField(primary_key=True)
     cumulative_weight = FloatField(
         _("cumulative_weight"), default=-1, null=False, help_text=_("Cumulative weight, for efficient random selection."), db_index=True,
     )
