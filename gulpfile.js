@@ -23,18 +23,18 @@ const uglify = require('gulp-uglify-es').default
 
 // Relative paths function
 function pathsConfig(appName) {
-  this.app = `./${pjson.name}`
+  this.app = `./src`
   const vendorsRoot = 'node_modules'
 
   return {
-    
+
     app: this.app,
-    templates: `${this.app}/templates`,
-    css: `${this.app}/static/css`,
-    sass: `${this.app}/static/sass`,
-    fonts: `${this.app}/static/fonts`,
-    images: `${this.app}/static/images`,
-    js: `${this.app}/static/js`,
+    templates: `${this.app}/frontend/templates`,
+    css: `${this.app}/frontend/static/css`,
+    sass: `${this.app}/frontend/static/sass`,
+    fonts: `${this.app}/frontend/static/fonts`,
+    images: `${this.app}/frontend/static/images`,
+    js: `${this.app}/frontend/static/js`,
   }
 }
 
@@ -58,7 +58,7 @@ function styles() {
   return src(`${paths.sass}/project.scss`)
     .pipe(sass({
       includePaths: [
-        
+
         paths.sass
       ]
     }).on('error', sass.logError))
@@ -133,7 +133,7 @@ function watchPaths() {
 const generateAssets = parallel(
   styles,
   scripts,
-  
+
   imgCompression
 )
 
