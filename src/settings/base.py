@@ -78,6 +78,7 @@ LOCAL_APPS = [
     "src.apps.trainings.apps.TrainingsConfig",
     "src.apps.distributed_efforts.apps.DistributedEffortsConfig",
     "src.apps.runs.apps.RunsConfig",
+    "src.apps.startposes.apps.StartPosesConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

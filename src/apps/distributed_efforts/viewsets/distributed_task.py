@@ -10,6 +10,7 @@ from src.apps.runs.models import Run
 from src.apps.runs.serializers import RunSerializerForClient
 from src.apps.trainings.models import Network
 from src.apps.trainings.serializers import NetworkSerializerForTasks
+from src.apps.startposes.models import StartPos
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,13 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 }
                 return Response(response_body)
 
+        start_poses = []
+        for rep in range(task_rep_factor):
+            if not current_run.startpos_locked and random.random() < current_run.selfplay_startpos_probability:
+                start_pos = StartPos.objects.select_weighted_random()
+                if start_pos is not None:
+                    start_poses.append(start_pos)
+
         try:
             best_network = Network.objects.select_most_recent(current_run,for_training_games=True)
             if best_network is None:
@@ -103,5 +111,6 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             "run": run_content.data,
             "config": current_run.selfplay_client_config,
             "network": best_network_content.data,
+            "start_poses": start_poses,
         }
         return Response(response_body)
