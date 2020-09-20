@@ -24,6 +24,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "model_file_sha256",
             "model_zip_file",
             "parent_network",
+            "notes",
             "log_gamma",
             "log_gamma_uncertainty",
             "log_gamma_lower_confidence",

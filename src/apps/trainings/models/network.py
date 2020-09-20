@@ -68,6 +68,9 @@ class Network(Model):
     network_size = CharField(
         _("network size"), max_length=32, null=False, blank=False, help_text=_("String describing blocks and channels in network."), db_index=True,
     )
+    notes = CharField(
+        _("notes"), max_length=1024, default="", null=False, blank=True, help_text=_("Special notes or info about this network."), db_index=False,
+    )
     is_random = BooleanField(
         _("random"), default=False, help_text=_("If true, this network represents just random play rather than an actual network"), db_index=True,
     )
