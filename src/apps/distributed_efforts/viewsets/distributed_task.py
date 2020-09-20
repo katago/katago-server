@@ -40,10 +40,41 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 status=400,
             )
 
+        allow_rating_task = True
+        allow_selfplay_task = True
+        if "allow_rating_task" in request.data:
+            allow_rating_task = request.data["allow_rating_task"].lower()
+            if allow_rating_task == "true":
+                allow_rating_task = True
+            elif allow_rating_task == "false":
+                allow_rating_task = False
+            else:
+                return Response({"error": "allow_rating_task was neither 'true' nor 'false'"},status=400)
+        if "allow_selfplay_task" in request.data:
+            allow_selfplay_task = request.data["allow_selfplay_task"].lower()
+            if allow_selfplay_task == "true":
+                allow_selfplay_task = True
+            elif allow_selfplay_task == "false":
+                allow_selfplay_task = False
+            else:
+                return Response({"error": "allow_selfplay_task was neither 'true' nor 'false'"},status=400)
+
+        if not allow_rating_task and not allow_selfplay_task:
+            return Response({"error": "allow_rating_task and allow_selfplay_task are both false"},status=400)
+
+        task_rep_factor = 1
+        if "task_rep_factor" in request.data:
+            try:
+                task_rep_factor = int(request.data["task_rep_factor"])
+            except ValueError:
+                return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
+            if task_rep_factor < 1 || task_rep_factor > 64:
+                return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
+
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         run_content = RunSerializerForClient(current_run, context=serializer_context)
 
-        if random.random() < current_run.rating_game_probability:
+        if not allow_selfplay_task or (allow_rating_task and random.random() < current_run.rating_game_probability):
             pairer = RatingNetworkPairerService(current_run)
             pairing = pairer.generate_pairing()
             if pairing is not None:
