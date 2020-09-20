@@ -68,7 +68,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 task_rep_factor = int(request.data["task_rep_factor"])
             except ValueError:
                 return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
-            if task_rep_factor < 1 || task_rep_factor > 64:
+            if task_rep_factor < 1 or task_rep_factor > 64:
                 return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref

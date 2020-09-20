@@ -1,6 +1,7 @@
 from math import exp, log, sqrt
 import logging
 
+import numpy as np
 import pandas
 
 from src.apps.trainings.services.pandas_utils import PandasUtilsService
