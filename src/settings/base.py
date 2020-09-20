@@ -4,8 +4,8 @@ Base settings to build other settings files upon.
 
 import environ
 
-ROOT_DIR = environ.Path(__file__) - 3  # (katago_server/config/settings/base.py - 3 = katago_server/)
-APPS_DIR = ROOT_DIR.path("katago_server")
+ROOT_DIR = environ.Path(__file__) - 3  # (src/settings/base.py - 3 = src/)
+APPS_DIR = ROOT_DIR.path("src")
 
 env = environ.Env()
 
@@ -44,9 +44,9 @@ DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # URLS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
-ROOT_URLCONF = "config.urls"
+ROOT_URLCONF = "src.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
-WSGI_APPLICATION = "config.wsgi.application"
+WSGI_APPLICATION = "src.wsgi.application"
 
 # APPS
 # ------------------------------------------------------------------------------
@@ -73,11 +73,11 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "katago_server.users.apps.UsersConfig",
-    "katago_server.games.apps.GamesConfig",
-    "katago_server.trainings.apps.TrainingsConfig",
-    "katago_server.distributed_efforts.apps.DistributedEffortsConfig",
-    "katago_server.runs.apps.RunsConfig",
+    "src.apps.users.apps.UsersConfig",
+    "src.apps.games.apps.GamesConfig",
+    "src.apps.trainings.apps.TrainingsConfig",
+    "src.apps.distributed_efforts.apps.DistributedEffortsConfig",
+    "src.apps.runs.apps.RunsConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -85,7 +85,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIGRATIONS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
-MIGRATION_MODULES = {"sites": "katago_server.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "src.contrib.sites.migrations"}
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ STATIC_ROOT = str(ROOT_DIR("staticfiles"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = [str(APPS_DIR.path("static"))]
+STATICFILES_DIRS = [str(APPS_DIR.path("frontend/static"))]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -165,7 +165,7 @@ TEMPLATES = [
         # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
-        "DIRS": [str(APPS_DIR.path("templates"))],
+        "DIRS": [str(APPS_DIR.path("frontend/templates"))],
         "OPTIONS": {
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
             # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
@@ -180,7 +180,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "katago_server.utils.context_processors.settings_context",
+                "src.frontend.utils.context_processors.settings_context",
             ],
         },
     }
@@ -264,7 +264,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_ADAPTER = "katago_server.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "src.apps.users.adapters.AccountAdapter"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
