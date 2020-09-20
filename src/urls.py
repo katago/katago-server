@@ -11,11 +11,11 @@ from rest_framework import routers, permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-from katago_server.distributed_efforts.viewsets import DistributedTaskViewSet
-from katago_server.games.viewsets import TrainingGameViewSet, RatingGameViewSet
-from katago_server.runs.viewsets import RunViewSet
-from katago_server.trainings.viewsets import NetworkViewSet
-from katago_server.users.viewsets import UserViewSet
+from src.apps.distributed_efforts.viewsets import DistributedTaskViewSet
+from src.apps.games.viewsets import TrainingGameViewSet, RatingGameViewSet
+from src.apps.runs.viewsets import RunViewSet
+from src.apps.trainings.viewsets import NetworkViewSet
+from src.apps.users.viewsets import UserViewSet
 
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
@@ -65,12 +65,12 @@ urlpatterns = (
     api_url_pattern
     + [
         path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-        path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about",),
+        path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about", ),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
         # User management
-        path("users/", include("katago_server.users.urls", namespace="users")),
+        path("users/", include("src.apps.users.urls", namespace="users")),
         path("accounts/", include("allauth.urls")),
         # Your stuff: custom urls includes go here
     ]
