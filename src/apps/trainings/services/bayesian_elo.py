@@ -35,10 +35,29 @@ class BayesianRatingService:
         if len(self._network_ratings) <= 1:
             return self._network_ratings
 
+        # Something is wrong if the total number of wins and draws summed across everything is inconsistent with the number of games
+        game_count_times_two_via_results = (
+            2 * np.sum(self._detailed_tournament_results["total_wins_white"]) +
+            2 * np.sum(self._detailed_tournament_results["total_wins_black"]) +
+            np.sum(self._detailed_tournament_results["total_draw_or_no_result_white"]) +
+            np.sum(self._detailed_tournament_results["total_draw_or_no_result_black"])
+        )
+        game_count_times_two_via_games = (
+            np.sum(self._detailed_tournament_results["total_games_white"]) +
+            np.sum(self._detailed_tournament_results["total_games_black"])
+        )
+        if game_count_times_two_via_results != game_count_times_two_via_games:
+            raise Exception("Inconsistent rating games results in Elo calculation: wins != games summed across networks")
+
         # pandas_utils.print_data_frame(self._network_ratings)
         # logger.warning("starting bayeselo iteration")
         self._add_virtual_draws()
         self._simplify_tournament_into_win_loss()
+
+        # Something is wrong if the total number of wins is equal to or greater than the total number of games, for any network.
+        if np.min(self._simplified_tournament_results["nb_games"] - self._simplified_tournament_results["nb_wins"]) <= 0:
+            raise Exception("Inconsistent rating games results in Elo calculation: wins >= games for some network")
+
         self._sort_inplace_network_ratings_by_uncertainty()
         self._calculate_networks_actual_score()
 
