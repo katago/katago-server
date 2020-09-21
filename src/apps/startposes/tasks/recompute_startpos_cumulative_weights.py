@@ -1,5 +1,5 @@
 import numpy as np
-from config import celery_app
+from src import celery_app
 
 from src.apps.runs.models import Run
 from src.apps.startposes.models import StartPos, StartPosCumWeightOnly
