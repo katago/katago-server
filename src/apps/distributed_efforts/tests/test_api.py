@@ -564,6 +564,19 @@ class TestStartPoses:
         assert (str(data) == """{'detail': ErrorDetail(string='You do not have permission to perform this action.', code='permission_denied')}""")
         assert response.status_code == 403
 
+    def test_upload_startpos_invalid(self):
+        StartPos.objects.filter(run=self.r1).delete()
+        client = APIClient()
+        client.login(username="test", password="test")
+
+        self.r1.startpos_locked = False
+        self.r1.selfplay_startpos_probability = 1.0
+        self.r1.save()
+        response = client.post("/api/startposes/", {"data":{"foo":3, "bar":["abc"]}, "weight":2.5},format="json")
+        data = copy.deepcopy(response.data)
+        assert (str(data) == """{'run': [ErrorDetail(string='This field is required.', code='required')]}""")
+        assert response.status_code == 400
+
     def test_upload_startpos_fail(self):
         StartPos.objects.filter(run=self.r1).delete()
         client = APIClient()
@@ -590,7 +603,7 @@ class TestStartPoses:
         assert(data["url"].startswith("http://testserver/api/startposes/"))
         data["url"] = None # Suppress url for test
         data["created_at"] = None # Suppress timestamp for test
-        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}}""")
+        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}, 'notes': ''}""")
         assert response.status_code == 201
 
         response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890"},format="multipart")
@@ -613,7 +626,7 @@ class TestStartPoses:
         assert(data["url"].startswith("http://testserver/api/startposes/"))
         data["url"] = None # Suppress url for test
         data["created_at"] = None # Suppress timestamp for test
-        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}}""")
+        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}, 'notes': ''}""")
         assert response.status_code == 201
 
         assert(StartPos.objects.filter(run=self.r1).first().cumulative_weight == -1.0)
@@ -641,7 +654,7 @@ class TestStartPoses:
         assert(data["url"].startswith("http://testserver/api/startposes/"))
         data["url"] = None # Suppress url for test
         data["created_at"] = None # Suppress timestamp for test
-        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}}""")
+        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}, 'notes': ''}""")
         assert response.status_code == 201
 
         response = client.post("/api/startposes/", {"run":"http://testserver/api/runs/testrun/", "data":{"baz":3, "123":[[(1,2)]]}, "weight":4.0},format="json")
@@ -674,7 +687,7 @@ class TestStartPoses:
         assert(data["url"].startswith("http://testserver/api/startposes/"))
         data["url"] = None # Suppress url for test
         data["created_at"] = None # Suppress timestamp for test
-        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}}""")
+        assert (str(data) == """{'url': None, 'run': 'http://testserver/api/runs/testrun/', 'created_at': None, 'weight': 2.5, 'data': {'foo': 3, 'bar': ['abc']}, 'notes': ''}""")
         assert response.status_code == 201
 
         response = client.post("/api/startposes/", {"run":"http://testserver/api/runs/testrun/", "data":{"baz":3, "123":[[(1,2)]]}, "weight":4.0},format="json")

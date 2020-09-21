@@ -27,4 +27,5 @@ class StartPosAdmin(admin.ModelAdmin):
         (None, {"fields": (("id", "created_at"), "run")}),
         (_("Weight"), {"fields": (("weight", "cumulative_weight"),)},),
         (_("Data"), {"fields": (("data"),)},),
+        (_("Notes"), {"fields": (("notes"),)},),
     )

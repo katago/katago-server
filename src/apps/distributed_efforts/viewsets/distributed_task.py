@@ -1,7 +1,7 @@
 import logging
 import random
 
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -14,6 +14,16 @@ from src.apps.startposes.models import StartPos
 
 logger = logging.getLogger(__name__)
 
+class TaskCreateSerializer(serializers.Serializer):
+    allow_rating_task = serializers.BooleanField(default=True)
+    allow_selfplay_task = serializers.BooleanField(default=True)
+    task_rep_factor = serializers.IntegerField(default=1)
+    git_revision = serializers.CharField(default="", allow_blank=True)
+
+    def validate(self, data):
+        if not data.get('allow_rating_task') and not data.get('allow_selfplay_task'):
+            raise Response({"error": "allow_rating_task and allow_selfplay_task are both false"},status=400)
+        return data
 
 class DistributedTaskViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
@@ -24,11 +34,15 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         if current_run is None:
             return Response({"error": "No active run."}, status=404)
 
+        serializer = TaskCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
         git_revision_hash_whitelist = current_run.git_revision_hash_whitelist
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist.split("\n") if len(s) > 0]
         git_revision_hash_whitelist = [s.split("#")[0].strip().lower() for s in git_revision_hash_whitelist]
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
-        git_revision = str(request.data["git_revision"]).strip().lower() if "git_revision" in request.data else ""
+        git_revision = str(data["git_revision"]).strip().lower()
         # Git revision hashes are at least 40 chars, we can also optionally allow plus revisions and other stuff
         if len(git_revision) < 40:
             return Response(
@@ -41,40 +55,16 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 status=400,
             )
 
-        allow_rating_task = True
-        allow_selfplay_task = True
-        if "allow_rating_task" in request.data:
-            allow_rating_task = str(request.data["allow_rating_task"]).lower()
-            if allow_rating_task == "true":
-                allow_rating_task = True
-            elif allow_rating_task == "false":
-                allow_rating_task = False
-            else:
-                return Response({"error": "allow_rating_task was neither 'true' nor 'false'"},status=400)
-        if "allow_selfplay_task" in request.data:
-            allow_selfplay_task = str(request.data["allow_selfplay_task"]).lower()
-            if allow_selfplay_task == "true":
-                allow_selfplay_task = True
-            elif allow_selfplay_task == "false":
-                allow_selfplay_task = False
-            else:
-                return Response({"error": "allow_selfplay_task was neither 'true' nor 'false'"},status=400)
-
-        if not allow_rating_task and not allow_selfplay_task:
-            return Response({"error": "allow_rating_task and allow_selfplay_task are both false"},status=400)
+        allow_rating_task = data["allow_rating_task"]
+        allow_selfplay_task = data["allow_selfplay_task"]
         if not allow_rating_task and current_run.rating_game_probability >= 1.0:
             return Response({"error": "allow_rating_task is false but this server is only serving rating games right now"},status=400)
         if not allow_selfplay_task and current_run.rating_game_probability <= 0.0:
             return Response({"error": "allow_selfplay_task is false but this server is only serving selfplay games right now"},status=400)
 
-        task_rep_factor = 1
-        if "task_rep_factor" in request.data:
-            try:
-                task_rep_factor = int(request.data["task_rep_factor"])
-            except ValueError:
-                return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
-            if task_rep_factor < 1 or task_rep_factor > 64:
-                return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
+        task_rep_factor = data["task_rep_factor"]
+        if task_rep_factor < 1 or task_rep_factor > 64:
+            return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         run_content = RunSerializerForClient(current_run, context=serializer_context)

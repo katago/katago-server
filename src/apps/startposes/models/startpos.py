@@ -6,6 +6,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
 from django.db.models import (
     Model,
+    CharField,
     DateTimeField,
     FloatField,
     ForeignKey,
@@ -57,13 +58,28 @@ class StartPos(Model):
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True,)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     data = JSONField(
-        _("data"), null=False, blank=False, help_text=_("JSON object describing the position."), db_index=False,
+        _("data"),
+        null=False,
+        blank=False,
+        help_text=_("JSON object describing the position."),
+        db_index=False,
     )
     weight = FloatField(
-        _("weight"), null=False, help_text=_("Weight for random selection."), validators=[validate_weight], db_index=True,
+        _("weight"),
+        null=False,
+        help_text=_("Weight for random selection. Please RERUN celery task to recompute cumulative if changing this!"),
+        validators=[validate_weight],
+        db_index=True,
     )
     cumulative_weight = FloatField(
-        _("cumulative_weight"), default=-1, null=False, help_text=_("Cumulative weight, for efficient random selection."), db_index=True,
+        _("cumulative_weight"),
+        default=-1,
+        null=False,
+        help_text=_("Cumulative weight, for efficient random selection."),
+        db_index=True,
+    )
+    notes = CharField(
+        _("notes"), max_length=1024, default="", null=False, blank=True, help_text=_("Special notes or info about this startpos."), db_index=False,
     )
 
 class StartPosCumWeightOnly(Model):
