@@ -55,7 +55,7 @@ class StartPos(Model):
 
     id = BigAutoField(primary_key=True)
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True,)
-    created_at = DateTimeField(_("creation date"), auto_now_add=True)
+    created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     data = JSONField(
         _("data"), null=False, blank=False, help_text=_("JSON object describing the position."), db_index=False,
     )

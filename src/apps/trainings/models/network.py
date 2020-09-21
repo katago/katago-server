@@ -59,7 +59,7 @@ class Network(Model):
         _("neural network name"), max_length=128, null=False, blank=False, validators=[alphanumeric_and_dashes], db_index=True, unique=True,
     )
     run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True,)
-    created_at = DateTimeField(_("creation date"), auto_now_add=True)
+    created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
 
     parent_network = ForeignKey(
         "self", verbose_name=_("Parent network for BayesElo prior"), null=True, blank=True, related_name="variants", on_delete=PROTECT,
