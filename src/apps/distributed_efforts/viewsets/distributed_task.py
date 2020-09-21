@@ -28,7 +28,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist.split("\n") if len(s) > 0]
         git_revision_hash_whitelist = [s.split("#")[0].strip().lower() for s in git_revision_hash_whitelist]
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
-        git_revision = request.data["git_revision"].strip().lower() if "git_revision" in request.data else ""
+        git_revision = str(request.data["git_revision"]).strip().lower() if "git_revision" in request.data else ""
         # Git revision hashes are at least 40 chars, we can also optionally allow plus revisions and other stuff
         if len(git_revision) < 40:
             return Response(
@@ -44,7 +44,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         allow_rating_task = True
         allow_selfplay_task = True
         if "allow_rating_task" in request.data:
-            allow_rating_task = request.data["allow_rating_task"].lower()
+            allow_rating_task = str(request.data["allow_rating_task"]).lower()
             if allow_rating_task == "true":
                 allow_rating_task = True
             elif allow_rating_task == "false":
@@ -52,7 +52,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             else:
                 return Response({"error": "allow_rating_task was neither 'true' nor 'false'"},status=400)
         if "allow_selfplay_task" in request.data:
-            allow_selfplay_task = request.data["allow_selfplay_task"].lower()
+            allow_selfplay_task = str(request.data["allow_selfplay_task"]).lower()
             if allow_selfplay_task == "true":
                 allow_selfplay_task = True
             elif allow_selfplay_task == "false":
@@ -62,6 +62,10 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         if not allow_rating_task and not allow_selfplay_task:
             return Response({"error": "allow_rating_task and allow_selfplay_task are both false"},status=400)
+        if not allow_rating_task and current_run.rating_game_probability >= 1.0:
+            return Response({"error": "allow_rating_task is false but this server is only serving rating games right now"},status=400)
+        if not allow_selfplay_task and current_run.rating_game_probability <= 0.0:
+            return Response({"error": "allow_selfplay_task is false but this server is only serving selfplay games right now"},status=400)
 
         task_rep_factor = 1
         if "task_rep_factor" in request.data:
@@ -96,7 +100,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             if not current_run.startpos_locked and random.random() < current_run.selfplay_startpos_probability:
                 start_pos = StartPos.objects.select_weighted_random()
                 if start_pos is not None:
-                    start_poses.append(start_pos)
+                    start_poses.append(start_pos.data)
 
         try:
             best_network = Network.objects.select_most_recent(current_run,for_training_games=True)
