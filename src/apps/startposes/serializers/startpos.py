@@ -1,4 +1,5 @@
 from rest_framework.serializers import HyperlinkedModelSerializer
+from django.core.exceptions import ValidationError
 
 from src.apps.startposes.models import StartPos
 
@@ -18,7 +19,6 @@ class StartPosSerializer(HyperlinkedModelSerializer):
             "data",
         ]
         extra_kwargs = {
-            "url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
         }
 
