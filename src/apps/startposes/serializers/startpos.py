@@ -32,6 +32,7 @@ class StartPosSerializer(HyperlinkedModelSerializer):
             "created_at",
             "weight",
             "data",
+            "notes",
         ]
         extra_kwargs = {
             "run": {"lookup_field": "name"},
@@ -40,8 +41,6 @@ class StartPosSerializer(HyperlinkedModelSerializer):
 
 
     def validate(self,data):
-        if not data["run"]:
-            raise ValidationError("Missing 'run' field for startpos")
         if not data["run"].startpos_locked:
             raise ValidationError("Can only upload while run startPoses are locked to prevent startpos races from clients.")
         return data
