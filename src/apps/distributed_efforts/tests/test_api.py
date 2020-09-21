@@ -721,7 +721,7 @@ class TestStartPoses:
         random.seed(1234567)
         results = {}
         num_ret = [0,0,0,0,0]
-        for i in range(250):
+        for i in range(100):
             response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890", "task_rep_factor": 4},format="multipart")
             assert response.status_code == 200
             for data in response.data["start_poses"]:
@@ -730,5 +730,29 @@ class TestStartPoses:
                 results[data] += 1
             num_ret[len(response.data["start_poses"])] += 1
 
-        assert(str(results) == "{'d': 28, 'c': 258, 'a': 131, 'e': 14, 'b': 65}")
-        assert(str(num_ret) == "[22, 57, 88, 69, 14]")
+        assert(str(results) == "{'d': 15, 'c': 99, 'a': 54, 'e': 4, 'b': 25}")
+        assert(str(num_ret) == "[10, 22, 35, 27, 6]")
+
+    def test_bulk_create(self):
+        StartPos.objects.filter(run=self.r1).delete()
+        client = APIClient()
+        client.login(username="test", password="test")
+
+        self.r1.startpos_locked = True
+        self.r1.selfplay_startpos_probability = 0.5
+        self.r1.save()
+        response = client.post(
+            "/api/startposes/",
+            [
+                {"run":"http://testserver/api/runs/testrun/", "data":"a", "weight":1.125},
+                {"run":"http://testserver/api/runs/testrun/", "data":"a", "weight":5.125},
+                {"run":"http://testserver/api/runs/testrun/", "data":"a", "weight":3.125},
+                {"run":"http://testserver/api/runs/testrun/", "data":"a", "weight":8.25},
+            ],
+            format="json"
+        )
+        assert response.status_code == 201
+        recompute_startpos_cumulative_weights()
+        self.r1.refresh_from_db()
+        assert(self.r1.startpos_total_weight == 17.625)
+
