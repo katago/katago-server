@@ -77,8 +77,8 @@ class BayesianRatingService:
             raise BayesEloInconsistentDataError("Inconsistent rating games results in Elo calculation: wins != games summed across networks")
 
     def _assert_simplified_tournament_results_consistency(self):
-        if np.min(self._simplified_tournament_results["nb_games"] - self._simplified_tournament_results["nb_wins"]) <= 0:
-            raise BayesEloInconsistentDataError("Inconsistent rating games results in Elo calculation: simplified wins >= games for some network")
+        if np.min(self._simplified_tournament_results["nb_games"] - self._simplified_tournament_results["nb_wins"]) < 0:
+            raise BayesEloInconsistentDataError("Inconsistent rating games results in Elo calculation: simplified wins > games for some network")
 
     def _get_games_played_by_specific_network(self, network_id):
         """
