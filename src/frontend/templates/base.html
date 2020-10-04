@@ -1,110 +1,126 @@
-{% load static i18n%}<!DOCTYPE html>
+{% load static bulma_tags %}
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{% block title %}katago-server{% endblock title %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock title %}</title>
+  {% block css %}
+    {% font_awesome %}
+    <link rel="stylesheet" href="{% static 'bulma/css/style.min.css' %}">
+    {% block extra_css %}{% endblock extra_css %}
+  {% endblock css %}
+</head>
+<body>
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <![endif]-->
+{% block header %}
+  <div class="container">
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <img src="/static/images/katago.png" alt="Katago: one of the strongest open source Go bots available online"
+               width="110" height="50">
+        </a>
 
-    <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
+        <a class="navbar-item is-hidden-desktop" href="https://github.com/lightvector/KataGo" target="_blank">
+        <span class="icon" style="color: #333;">
+          <i class="fab fa-github"></i>
+        </span>
+        </a>
 
-    {% block css %}
-
-    <!-- Latest compiled and minified Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-
-    <!-- Your stuff: Third-party CSS libraries go here -->
-    <!-- This file stores project-specific CSS -->
-
-    <link href="{% static 'css/project.css' %}" rel="stylesheet">
-
-    {% endblock %}
-
-  </head>
-
-  <body>
-
-    <div class="mb-1">
-      <nav class="navbar navbar-expand-md navbar-light bg-light">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <a class="navbar-brand" href="{% url 'home' %}">katago-server</a>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'about' %}">About</a>
-            </li>
-            {% if request.user.is_authenticated %}
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
-              </li>
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
-              </li>
-            {% else %}
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
-              </li>
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
-              </li>
-            {% endif %}
-          </ul>
+        <div class="navbar-burger burger" data-target="navMenuExample">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-      </nav>
+      </div>
 
-    </div>
+      <div id="navMenuExample" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item is-active" href="/frontend/networks/">
+            Networks
+          </a>
+          <a class="navbar-item is-active" href="/frontend/games/">
+            Games
+          </a>
+          <a class="navbar-item is-active" href="/frontend/contributions/">
+            Contributions
+          </a>
+        </div>
 
-    <div class="container">
+        {% if user.is_authenticated %}
+        {% else %}
+          <div class="navbar-end">
+            {% url 'account_login' as login_url %}
+            {% if login_url %}
+              <a class="navbar-item is-hidden-desktop-only" href="{{ login_url }}">
+                Login
+              </a>
+            {% endif %}
+            {% url 'account_signup' as signup_url %}
+            {% if signup_url %}
+              <a class="navbar-item is-hidden-desktop-only" href="{{ signup_url }}">
+                Signup
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+{% endblock header %}
 
+{% block hero %}{% endblock hero %}
+
+<section class="section">
+  <div class="container">
+    {% block messages %}
       {% if messages %}
-          {% for message in messages %}
-              <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
-          {% endfor %}
+        <div class="messages columns is-desktop">
+          <div class="column is-4 is-offset-4">
+            {% for message in messages %}
+              <div class="message {% if message.tags %}is-{{ message.tags| bulma_message_tag }}{% endif %}">
+                <div class="message-body">{{ message }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
       {% endif %}
+    {% endblock messages %}
 
-      {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
-      {% endblock content %}
+    {% block content_area %}
+      {% block content_title %}{% endblock content_title %}
+      {% block content %}{% endblock content %}
+    {% endblock content_area %}
+  </div>
+</section>
 
-    </div> <!-- /container -->
+{% block modal %}{% endblock modal %}
 
-    {% block modal %}{% endblock modal %}
+{% block footer %}
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <p>
+          <strong>Katago (engine)</strong> by <a href="https://github.com/lightvector">lightvector</a>.
+          <strong>Katago (website)</strong> by <a href="https://github.com/lightvector">lightvector</a> and <a href="https://github.com/tychota">tychota</a>.
+          The source code is licensed <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
+        </p>
+        <p><a href="/about">Discover more about the project here</a></p>
+        <p>
+          <a class="icon" href="https://github.com/lightvector/KataGo">
+            <i class="fab fa-github"></i>
+          </a>
+        </p>
+      </div>
+    </div>
+  </footer>
+{% endblock footer %}
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    {% block javascript %}
-
-      <!-- Bootstrap JS and its dependencies-->
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-      <!-- Your stuff: Third-party javascript libraries go here -->
-
-
-      <!-- place project specific Javascript in this file -->
-      <script src="{% static 'js/project.js' %}"></script>
-
-    {% endblock javascript %}
-  </body>
+{% block javascript %}
+  {% block extra_javascript %}{% endblock extra_javascript %}
+{% endblock javascript %}
+</body>
 </html>
-

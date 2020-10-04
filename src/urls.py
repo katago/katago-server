@@ -71,10 +71,11 @@ urlpatterns = (
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
-        # User management
-        path("users/", include("src.apps.users.urls", namespace="users")),
-        path("accounts/", include("allauth.urls")),
+        path("frontend/accounts/", include("allauth.urls")),
         # Your stuff: custom urls includes go here
+        path("frontend/networks/", TemplateView.as_view(template_name="pages/networks.html"), name="networks", ),
+        path("frontend/games/", TemplateView.as_view(template_name="pages/games.html"), name="games", ),
+        path("frontend/contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions", ),
     ]
     + api_swagger
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

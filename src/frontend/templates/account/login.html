@@ -2,26 +2,25 @@
 
 {% load i18n %}
 {% load account %}
-{% load crispy_forms_tags %}
+{% load bulma_tags %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block title %}{% trans "Sign In" %}{% endblock %}
+{% block content_title %}<h1 class="title">{% trans "Sign In" %}</h1>{% endblock content_title %}
 
-{% block inner %}
+{% block content %}
 
-<h1>{% trans "Sign In" %}</h1>
+  <p class="content">{% blocktrans %}If you have not created an account yet, then please
+    <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
 
-<p>{% blocktrans %}If you have not created an account yet, then please
-<a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
-
-<form class="login" method="POST" action="{% url 'account_login' %}">
-  {% csrf_token %}
-  {{ form|crispy }}
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-  <button class="primaryAction btn btn-primary" type="submit">{% trans "Sign In" %}</button>
-</form>
+  <form class="login" method="POST" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {{ form|bulma }}
+    {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+    {% endif %}
+    <a class="button is-link" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+    <button class="button is-primary" type="submit">{% trans "Sign In" %}</button>
+  </form>
 
 {% endblock %}
 
