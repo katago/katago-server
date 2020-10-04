@@ -8,6 +8,8 @@ from django.db.models import FileField, IntegerField
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
+from django.dispatch import receiver
+from django.db.models.signals import pre_save, post_delete
 
 from src.contrib.validators import FileValidator
 from src.apps.games.models.abstract_game import AbstractGame
@@ -167,3 +169,36 @@ class TrainingGame(AbstractGame):
 
     def clean(self):
         validate_game_npzdata(self.training_data_file,self.run)
+
+
+@receiver(post_delete, sender=TrainingGame)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.sgf_file:
+        if os.path.isfile(instance.sgf_file.path):
+            os.remove(instance.sgf_file.path)
+    if instance.training_data_file:
+        if os.path.isfile(instance.training_data_file.path):
+            os.remove(instance.training_data_file.path)
+
+@receiver(pre_save, sender=TrainingGame)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+
+    try:
+        old_instance = TrainingGame.objects.get(pk=instance.pk)
+        old_sgf_file = old_instance.sgf_file
+        old_data_file = old_instance.training_data_file
+    except TrainingGame.DoesNotExist:
+        return False
+
+    new_sgf_file = instance.sgf_file
+    new_data_file = instance.training_data_file
+    if old_sgf_file != new_sgf_file:
+        if os.path.isfile(old_sgf_file.path):
+            os.remove(old_sgf_file.path)
+    if old_data_file != new_data_file:
+        if os.path.isfile(old_data_file.path):
+            os.remove(old_data_file.path)
+
+
