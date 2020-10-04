@@ -23,6 +23,7 @@ django-redis==4.11.0  # https://github.com/jazzband/django-redis
 docutils==0.16
 uuid==1.30
 python-magic==0.4.18
+django-bulma
 
 # Django REST Framework
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
