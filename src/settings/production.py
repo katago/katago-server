@@ -170,3 +170,7 @@ sentry_sdk.init(
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# Allow for more deletions and creations of things at at time in admin panel
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 50000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2500000
