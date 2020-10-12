@@ -2,7 +2,6 @@ import os
 import numpy as np
 import random
 
-from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
 from django.db.models import (
     Model,
