@@ -1,6 +1,5 @@
 import os
 
-from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
 from django.db.models import (
     Model,
@@ -22,13 +21,11 @@ from src.apps.runs.models import Run
 from src.apps.trainings.managers.network_pandas_manager import NetworkPandasManager
 from src.apps.trainings.managers.network_queryset import NetworkQuerySet
 
-network_data_storage = FileSystemStorage(location="/data/networks", base_url="/media/networks/")
-
 
 def upload_network_to(instance, _filename):
-    return os.path.join(instance.run.name, f"{instance.name}.bin.gz")
+    return os.path.join("networks", instance.run.name, f"{instance.name}.bin.gz")
 def upload_network_zip_to(instance, _filename):
-    return os.path.join(instance.run.name, f"{instance.name}.zip")
+    return os.path.join("networks", instance.run.name, f"{instance.name}.zip")
 
 
 validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=["application/gzip"])
@@ -84,7 +81,6 @@ class Network(Model):
         verbose_name=_("model file url"),
         upload_to=upload_network_to,
         validators=[validate_gzip],
-        storage=network_data_storage,
         max_length=200,
         null=False,
         blank=True,
@@ -98,7 +94,6 @@ class Network(Model):
         verbose_name=_("model zip file url"),
         upload_to=upload_network_zip_to,
         validators=[validate_model_zip],
-        storage=network_data_storage,
         max_length=200,
         null=False,
         blank=True,

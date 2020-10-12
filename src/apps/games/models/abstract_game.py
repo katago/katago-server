@@ -1,7 +1,6 @@
 import os
 
 from django.contrib.postgres.fields import JSONField
-from django.core.files.storage import FileSystemStorage
 from django.db.models import (
     Model,
     CharField,
@@ -25,14 +24,11 @@ from src.apps.users.models import User
 
 __ALL__ = ["TrainingGame", "RatingGame"]
 
-sgf_data_storage = FileSystemStorage(location="/data/games", base_url="/media/games/")
-
-
 def upload_sgf_to(instance, _filename):
     if instance.white_network.name == instance.black_network.name:
-        return os.path.join(instance.run.name, instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.sgf")
+        return os.path.join("games", instance.run.name, instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.sgf")
     else:
-        return os.path.join(instance.run.name, "versus", instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.sgf")
+        return os.path.join("games", instance.run.name, "versus", instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.sgf")
 
 
 validate_sgf = FileValidator(max_size=1024 * 200, magic_types=("Smart Game Format (Go)",))
@@ -127,7 +123,7 @@ class AbstractGame(Model):
         Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True,
     )
 
-    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=[validate_sgf], storage=sgf_data_storage, max_length=200,)
+    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=[validate_sgf], max_length=200,)
     kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True,)
 
     @property

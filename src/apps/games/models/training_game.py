@@ -3,18 +3,17 @@ import numpy as np
 import zipfile
 from io import BytesIO
 
-from django.core.files.storage import FileSystemStorage
 from django.db.models import FileField, IntegerField
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_delete
+from django.core.files.storage import default_storage
 
 from src.contrib.validators import FileValidator
 from src.apps.games.models.abstract_game import AbstractGame
 
-training_data_storage = FileSystemStorage(location="/data/training_npz", base_url="/media/training_npz/")
 validate_zip = FileValidator(max_size=1024 * 500, content_types=["application/zip"])
 
 def validate_game_npzdata(training_data_file,run):
@@ -143,7 +142,7 @@ def validate_num_training_rows(value):
         )
 
 def upload_training_data_to(instance: AbstractGame, _filename):
-    return os.path.join(instance.run.name, instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.npz")
+    return os.path.join("training_npz", instance.run.name, instance.white_network.name, instance.created_at.strftime("%Y-%m-%d"), f"{instance.kg_game_uid}.npz")
 
 
 class TrainingGame(AbstractGame):
@@ -159,7 +158,6 @@ class TrainingGame(AbstractGame):
         _("training data (npz)"),
         upload_to=upload_training_data_to,
         validators=[validate_zip],
-        storage=training_data_storage,
         max_length=200,
         blank=False,
         null=False,
@@ -174,11 +172,9 @@ class TrainingGame(AbstractGame):
 @receiver(post_delete, sender=TrainingGame)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.sgf_file:
-        if os.path.isfile(instance.sgf_file.path):
-            os.remove(instance.sgf_file.path)
+        default_storage.delete(instance.sgf_file.path)
     if instance.training_data_file:
-        if os.path.isfile(instance.training_data_file.path):
-            os.remove(instance.training_data_file.path)
+        default_storage.delete(instance.training_data_file.path)
 
 @receiver(pre_save, sender=TrainingGame)
 def auto_delete_file_on_change(sender, instance, **kwargs):
@@ -195,10 +191,8 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
     new_sgf_file = instance.sgf_file
     new_data_file = instance.training_data_file
     if old_sgf_file != new_sgf_file:
-        if os.path.isfile(old_sgf_file.path):
-            os.remove(old_sgf_file.path)
+        default_storage.delete(old_sgf_file.path)
     if old_data_file != new_data_file:
-        if os.path.isfile(old_data_file.path):
-            os.remove(old_data_file.path)
+        default_storage.delete(old_data_file.path)
 
 

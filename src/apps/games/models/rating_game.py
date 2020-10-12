@@ -1,9 +1,8 @@
-import os
-
 from django.db.models import Manager
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_delete
+from django.core.files.storage import default_storage
 
 from src.apps.games.managers.rating_game_pandas_manager import RatingGamePandasManager
 from src.apps.games.models.abstract_game import AbstractGame
@@ -25,8 +24,7 @@ class RatingGame(AbstractGame):
 @receiver(post_delete, sender=RatingGame)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.sgf_file:
-        if os.path.isfile(instance.sgf_file.path):
-            os.remove(instance.sgf_file.path)
+        default_storage.delete(instance.sgf_file.path)
 
 @receiver(pre_save, sender=RatingGame)
 def auto_delete_file_on_change(sender, instance, **kwargs):
@@ -40,5 +38,5 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
 
     new_file = instance.sgf_file
     if old_file != new_file:
-        if os.path.isfile(old_file.path):
-            os.remove(old_file.path)
+        default_storage.delete(old_file.path)
+
