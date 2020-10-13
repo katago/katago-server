@@ -168,31 +168,3 @@ class TrainingGame(AbstractGame):
     def clean(self):
         validate_game_npzdata(self.training_data_file,self.run)
 
-
-@receiver(post_delete, sender=TrainingGame)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
-    if instance.sgf_file:
-        default_storage.delete(instance.sgf_file.path)
-    if instance.training_data_file:
-        default_storage.delete(instance.training_data_file.path)
-
-@receiver(pre_save, sender=TrainingGame)
-def auto_delete_file_on_change(sender, instance, **kwargs):
-    if not instance.pk:
-        return False
-
-    try:
-        old_instance = TrainingGame.objects.get(pk=instance.pk)
-        old_sgf_file = old_instance.sgf_file
-        old_data_file = old_instance.training_data_file
-    except TrainingGame.DoesNotExist:
-        return False
-
-    new_sgf_file = instance.sgf_file
-    new_data_file = instance.training_data_file
-    if old_sgf_file != new_sgf_file:
-        default_storage.delete(old_sgf_file.path)
-    if old_data_file != new_data_file:
-        default_storage.delete(old_data_file.path)
-
-
