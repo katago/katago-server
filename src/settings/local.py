@@ -64,3 +64,7 @@ INSTALLED_APPS += ["django_extensions"]  # noqa F405
 CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# Installed LAST, as recommended by https://github.com/un1t/django-cleanup
+INSTALLED_APPS += ["django_cleanup.apps.CleanupConfig"]
+

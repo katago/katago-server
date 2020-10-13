@@ -20,23 +20,3 @@ class RatingGame(AbstractGame):
         verbose_name = _("Rating game")
         ordering = ["-created_at"]
 
-
-@receiver(post_delete, sender=RatingGame)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
-    if instance.sgf_file:
-        default_storage.delete(instance.sgf_file.path)
-
-@receiver(pre_save, sender=RatingGame)
-def auto_delete_file_on_change(sender, instance, **kwargs):
-    if not instance.pk:
-        return False
-
-    try:
-        old_file = RatingGame.objects.get(pk=instance.pk).sgf_file
-    except RatingGame.DoesNotExist:
-        return False
-
-    new_file = instance.sgf_file
-    if old_file != new_file:
-        default_storage.delete(old_file.path)
-

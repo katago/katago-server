@@ -9,6 +9,7 @@ sentry-sdk==0.14.4  # https://github.com/getsentry/sentry-python
 # ------------------------------------------------------------------------------
 django-storages[google]==1.9.1  # https://github.com/jschneier/django-storages
 django-anymail[mailgun]==7.1.0  # https://github.com/anymail/django-anymail
+django-cleanup==5.1.0 # https://pypi.org/project/django-cleanup/
 
 # APM
 ddtrace[profile]==0.38.0
