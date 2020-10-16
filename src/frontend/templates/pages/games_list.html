@@ -16,11 +16,11 @@ Games for {{network.name}}
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a href="{% url 'training_games_list' run.name network.name 1 %}">&laquo; First</a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    <a href="{% url 'training_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
     {% else %}
-    &laquo; First
-    Prev
+    <i class="fas fa-angle-double-left"></i> First
+    <i class="fas fa-angle-left"></i> Prev
     {% endif %}
 
     <span class="current">
@@ -28,11 +28,11 @@ Games for {{network.name}}
     </span>
 
     {% if page_obj.has_next %}
-    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
     {% else %}
-    Next
-    Last &raquo;
+    Next <i class="fas fa-angle-right"></i>
+    Last <i class="fas fa-angle-double-right"></i>
     {% endif %}
   </span>
 </div>
@@ -40,11 +40,11 @@ Games for {{network.name}}
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a href="{% url 'rating_games_list' run.name network.name 1 %}">&laquo; First</a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    <a href="{% url 'rating_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
     {% else %}
-    &laquo; First
-    Prev
+    <i class="fas fa-angle-double-left"></i> First
+    <i class="fas fa-angle-left"></i> Prev
     {% endif %}
 
     <span class="current">
@@ -52,17 +52,17 @@ Games for {{network.name}}
     </span>
 
     {% if page_obj.has_next %}
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
     {% else %}
-    Next
-    Last &raquo;
+    Next <i class="fas fa-angle-right"></i>
+    Last <i class="fas fa-angle-double-right"></i>
     {% endif %}
   </span>
 </div>
 {% endif %}
 
-<table>
+<table class="table">
   <tr>
     <th> ID </th>
     <th> Uploaded At </th>
@@ -103,11 +103,11 @@ Games for {{network.name}}
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a href="{% url 'training_games_list' run.name network.name 1 %}">&laquo; First</a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    <a href="{% url 'training_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
     {% else %}
-    &laquo; First
-    Prev
+    <i class="fas fa-angle-double-left"></i> First
+    <i class="fas fa-angle-left"></i> Prev
     {% endif %}
 
     <span class="current">
@@ -115,11 +115,11 @@ Games for {{network.name}}
     </span>
 
     {% if page_obj.has_next %}
-    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
     {% else %}
-    Next
-    Last &raquo;
+    Next <i class="fas fa-angle-right"></i>
+    Last <i class="fas fa-angle-double-right"></i>
     {% endif %}
   </span>
 </div>
@@ -127,11 +127,11 @@ Games for {{network.name}}
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a href="{% url 'rating_games_list' run.name network.name 1 %}">&laquo; First</a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    <a href="{% url 'rating_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
     {% else %}
-    &laquo; First
-    Prev
+    <i class="fas fa-angle-double-left"></i> First
+    <i class="fas fa-angle-left"></i> Prev
     {% endif %}
 
     <span class="current">
@@ -139,11 +139,11 @@ Games for {{network.name}}
     </span>
 
     {% if page_obj.has_next %}
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
     {% else %}
-    Next
-    Last &raquo;
+    Next <i class="fas fa-angle-right"></i>
+    Last <i class="fas fa-angle-double-right"></i>
     {% endif %}
   </span>
 </div>
