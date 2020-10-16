@@ -18,16 +18,16 @@ No currently active run to view games for.
 <h1 class="title">Games for {{run.name}} by Network</h1>
 {% endif %}
 
-{% if run and object_list|length <= 0 %}
+{% if run and network_list|length <= 0 %}
 No games found for this run!
-{% elif run and object_list|length > 0 %}
+{% elif run and network_list|length > 0 %}
 <table class="table">
   <tr>
     <th> Network </th>
     <th> Training Games </th>
     <th> Rating Games </th>
   </tr>
-  {% for network in object_list %}
+  {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
     <td> <a href="{% url 'training_games_list' run.name network.name 1 %}"> Training Games </td>
