@@ -18,7 +18,7 @@ from src.apps.trainings.viewsets import NetworkViewSet
 from src.apps.users.viewsets import UserViewSet
 from src.apps.startposes.viewsets import StartPosViewSet
 
-from src.frontend.views import NetworksView
+from src.frontend.views import NetworksView, GameNetworkGroupsView, GamesListView
 
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
@@ -74,10 +74,58 @@ urlpatterns = (
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
         path("frontend/accounts/", include("allauth.urls")),
-        # Your stuff: custom urls includes go here
-        path("frontend/networks/", NetworksView.as_view(template_name="pages/networks.html"), {"viewing_current_run": True}, name="current_run_networks"),
-        path("frontend/networks/<run>/", NetworksView.as_view(template_name="pages/networks.html"), name="networks"),
-        path("frontend/games/", TemplateView.as_view(template_name="pages/games.html"), name="games"),
+
+        # Networks ------------------------------------------------------------
+        path(
+            "frontend/networks/",
+            NetworksView.as_view(template_name="pages/networks.html"),
+            {"viewing_current_run": True},
+            name="current_run_networks"
+        ),
+        path(
+            "frontend/networks/<run>/",
+            NetworksView.as_view(template_name="pages/networks.html"), name="networks"
+        ),
+
+        # Games ---------------------------------------------------------------
+        path(
+            "frontend/games/",
+            GameNetworkGroupsView.as_view(template_name="pages/game_network_groups.html"),
+            {"viewing_current_run": True},
+            name="current_run_game_network_groups"
+        ),
+        path(
+            "frontend/games/<run>/",
+            GameNetworkGroupsView.as_view(template_name="pages/game_network_groups.html"),
+            name="game_network_groups"
+        ),
+        path(
+            "frontend/training-games/<run>/<network>/",
+            GamesListView.as_view(template_name="pages/games_list.html"),
+            {"kind": "training"},
+            name="training_games_list"
+        ),
+        path(
+            "frontend/training-games/<run>/<network>/<page>/",
+            GamesListView.as_view(template_name="pages/games_list.html"),
+            {"kind": "training"},
+            name="training_games_list"
+        ),
+        path(
+            "frontend/rating-games/<run>/<network>/",
+            GamesListView.as_view(template_name="pages/games_list.html"),
+            {"kind": "rating"},
+            name="rating_games_list"
+        ),
+        path(
+            "frontend/rating-games/<run>/<network>/<page>/",
+            GamesListView.as_view(template_name="pages/games_list.html"),
+            {"kind": "rating"},
+            name="rating_games_list"
+        ),
+
+        # Contributions --------------------------------------------------------
+
         path("frontend/contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions"),
     ]
     + api_swagger

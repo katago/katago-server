@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Games for {{network.name}}
+{% endblock %}
+
+{% block content %}
+
+{% if kind == "training" %}
+<h1 class="title">Training Games for {{network.name}}</h1>
+{% else %}
+<h1 class="title">Rating Games for {{network.name}}</h1>
+{% endif %}
+
+{% if kind == "training" %}
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="{% url 'training_games_list' run.name network.name 1 %}">&laquo; First</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    {% else %}
+    &laquo; First
+    Prev
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    {% else %}
+    Next
+    Last &raquo;
+    {% endif %}
+  </span>
+</div>
+{% else %}
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="{% url 'rating_games_list' run.name network.name 1 %}">&laquo; First</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    {% else %}
+    &laquo; First
+    Prev
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    {% else %}
+    Next
+    Last &raquo;
+    {% endif %}
+  </span>
+</div>
+{% endif %}
+
+<table>
+  <tr>
+    <th> ID </th>
+    <th> Uploaded At </th>
+    <th> Submitted By </th>
+    {% if kind == "rating" %}
+    <th> Black </th>
+    <th> White </th>
+    {% endif %}
+    <th> BoardSizeX </th>
+    <th> BoardSizeY </th>
+    <th> Handicap </th>
+    <th> Komi </th>
+    <th> Length </th>
+    <th> Result </th>
+    <th> SGF </th>
+  </tr>
+{% for game in page_obj %}
+  <tr>
+    <td> {{ game.id }} </td>
+    <td> {{ game.created_at|date:"Y-m-d H-i-s e" }} </td>
+    <td> {{ game.submitted_by }} </td>
+    {% if kind == "rating" %}
+    <th> {{ game.black_network.name }} </th>
+    <th> {{ game.white_network.name }} </th>
+    {% endif %}
+    <td> {{ game.board_size_x }} </td>
+    <td> {{ game.board_size_y }} </td>
+    <td> {{ game.handicap }} </td>
+    <td> {{ game.komi }} </td>
+    <td> {{ game.game_length }} </td>
+    <td> {{ game.result_text }} </td>
+    <td> <a href="{{ game.sgf_file.url }}">[SGF]</a> </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% if kind == "training" %}
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="{% url 'training_games_list' run.name network.name 1 %}">&laquo; First</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    {% else %}
+    &laquo; First
+    Prev
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
+    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    {% else %}
+    Next
+    Last &raquo;
+    {% endif %}
+  </span>
+</div>
+{% else %}
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="{% url 'rating_games_list' run.name network.name 1 %}">&laquo; First</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}">Prev</a>
+    {% else %}
+    &laquo; First
+    Prev
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next</a>
+    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last &raquo;</a>
+    {% else %}
+    Next
+    Last &raquo;
+    {% endif %}
+  </span>
+</div>
+{% endif %}
+
+{% endblock content %}
