@@ -21,11 +21,11 @@ No currently active run to view games for.
 {% if run and object_list|length <= 0 %}
 No games found for this run!
 {% elif run and object_list|length > 0 %}
-<table>
+<table class="table">
   <tr>
     <th> Network </th>
-    <th>  </th>
-    <th>  </th>
+    <th> Training Games </th>
+    <th> Rating Games </th>
   </tr>
   {% for network in object_list %}
   <tr>
