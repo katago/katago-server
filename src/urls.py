@@ -18,6 +18,8 @@ from src.apps.trainings.viewsets import NetworkViewSet
 from src.apps.users.viewsets import UserViewSet
 from src.apps.startposes.viewsets import StartPosViewSet
 
+from src.frontend.views import NetworksView
+
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
 from allauth.account.models import EmailAddress
@@ -67,15 +69,16 @@ urlpatterns = (
     api_url_pattern
     + [
         path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-        path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about", ),
+        path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
         path("frontend/accounts/", include("allauth.urls")),
         # Your stuff: custom urls includes go here
-        path("frontend/networks/", TemplateView.as_view(template_name="pages/networks.html"), name="networks", ),
-        path("frontend/games/", TemplateView.as_view(template_name="pages/games.html"), name="games", ),
-        path("frontend/contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions", ),
+        path("frontend/networks/", NetworksView.as_view(template_name="pages/networks.html"), {"viewing_current_run": True}, name="current_run_networks"),
+        path("frontend/networks/<run>/", NetworksView.as_view(template_name="pages/networks.html"), name="networks"),
+        path("frontend/games/", TemplateView.as_view(template_name="pages/games.html"), name="games"),
+        path("frontend/contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions"),
     ]
     + api_swagger
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
