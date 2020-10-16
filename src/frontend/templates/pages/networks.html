@@ -24,7 +24,7 @@ No networks found for this run!
 <table>
   <tr>
     <th> Name </th>
-    <th> Date </th>
+    <th> Uploaded At </th>
     <th> Approx Elo Rating </th>
     <th> Download </th>
     <th> Extra Notes </th>
@@ -49,10 +49,10 @@ No networks found for this run!
 </table>
 {% endif %}
 
-{% if all_runs_to_show|length > 0 %}
-<h1 class="title"> Networks By Run </h1>
+{% if other_runs_to_show|length > 0 %}
+<h1 class="title"> Networks for Other Runs </h1>
 <ul>
-  {% for run in all_runs_to_show %}
+  {% for run in other_runs_to_show %}
   <li><a href="{% url 'networks' run.name %}"> {{ run.name }}</a></li>
   {% endfor %}
 </ul>

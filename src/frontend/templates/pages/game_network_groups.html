@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if not run %}
+Games
+{% else %}
+Games for {{run.name}}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% if not run %}
+No currently active run to view games for.
+{% elif viewing_current_run %}
+<h1 class="title">Games for Current Run ({{run.name}}) by Network</h1>
+{% else %}
+<h1 class="title">Games for {{run.name}} by Network</h1>
+{% endif %}
+
+{% if run and object_list|length <= 0 %}
+No games found for this run!
+{% elif run and object_list|length > 0 %}
+<table>
+  <tr>
+    <th> Network </th>
+    <th>  </th>
+    <th>  </th>
+  </tr>
+  {% for network in object_list %}
+  <tr>
+    <td> {{ network.name }} </td>
+    <td> <a href="{% url 'training_games_list' run.name network.name 1 %}"> Training Games </td>
+    <td> <a href="{% url 'rating_games_list' run.name network.name 1 %}"> Rating Games </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if other_runs_to_show|length > 0 %}
+<h1 class="title"> Games for Other Runs </h1>
+<ul>
+  {% for run in other_runs_to_show %}
+  <li><a href="{% url 'game_network_groups' run.name %}"> {{ run.name }}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock content %}
