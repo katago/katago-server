@@ -130,13 +130,18 @@ class AbstractGame(Model):
     def result_text(self):
         if self.resigned:
             return f"{self.winner}+R"
-        if self.winner not in [AbstractGame.GamesResult.BLACK, AbstractGame.GamesResult.WHITE]:
-            return self.winner
+        elif self.winner == AbstractGame.GamesResult.DRAW:
+            return _("Draw")
+        elif self.winner == AbstractGame.GamesResult.NO_RESULT:
+            return _("Void")
 
         if self.winner == AbstractGame.GamesResult.BLACK:
             score = -self.score
-        else:
+        elif self.winner == AbstractGame.GamesResult.WHITE:
             score = self.score
+        else:
+            return _("Unknown") # Shouldn't happen
+
         return f"{self.winner}+{score}"
 
     def __str__(self):
