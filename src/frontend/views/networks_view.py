@@ -6,6 +6,7 @@ from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 
 class NetworksView(ListView):
+  context_object_name = "network_list"
 
   def get_queryset(self):
     self.run = None

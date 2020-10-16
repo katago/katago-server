@@ -8,6 +8,8 @@ from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 
 class GameNetworkGroupsView(ListView):
+  # Networks, not games, since we're listing games grouped by network
+  context_object_name = "network_list"
 
   def get_queryset(self):
     self.run = None

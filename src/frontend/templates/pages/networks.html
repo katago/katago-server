@@ -18,9 +18,9 @@ No currently active run to view networks for.
 <h1 class="title">Networks for {{run.name}}</h1>
 {% endif %}
 
-{% if run and object_list|length <= 0 %}
+{% if run and network_list|length <= 0 %}
 No networks found for this run!
-{% elif run and object_list|length > 0 %}
+{% elif run and network_list|length > 0 %}
 <table class="table">
   <tr>
     <th> Name </th>
@@ -29,7 +29,7 @@ No networks found for this run!
     <th> Download </th>
     <th> Extra Notes </th>
   </tr>
-  {% for network in object_list %}
+  {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
     <td> {{ network.created_at|date:"Y-m-d H-i-s e" }} </td>
