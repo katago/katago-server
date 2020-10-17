@@ -18,7 +18,7 @@ from src.apps.trainings.viewsets import NetworkViewSet
 from src.apps.users.viewsets import UserViewSet
 from src.apps.startposes.viewsets import StartPosViewSet
 
-from src.frontend.views import NetworksView, GameNetworkGroupsView, GamesListView
+from src.frontend.views import NetworksView, GameNetworkGroupsView, GamesListView, SgfDetailView
 
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
@@ -122,6 +122,18 @@ urlpatterns = (
             GamesListView.as_view(template_name="pages/games_list.html"),
             {"kind": "rating"},
             name="rating_games_list"
+        ),
+        path(
+            "frontend/sgfplayer/training-games/<id>/",
+            SgfDetailView.as_view(template_name="pages/sgfplayer.html"),
+            {"kind": "training"},
+            name="sgfplayer_training"
+        ),
+        path(
+            "frontend/sgfplayer/rating-games/<id>/",
+            SgfDetailView.as_view(template_name="pages/sgfplayer.html"),
+            {"kind": "rating"},
+            name="sgfplayer_rating"
         ),
 
         # Contributions --------------------------------------------------------

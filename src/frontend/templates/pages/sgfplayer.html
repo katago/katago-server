@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Game ID {{game.id}} (run {{game.run.name}})
+{% endblock %}
+
+{% block content %}
+
+{% if kind == "rating" %}
+<h1 class="title">Rating Game ID {{game.id}} (run {{game.run.name}}) </h1>
+{% else %}
+<h1 class="title">Training Game ID {{game.id}} (run {{game.run.name}}) </h1>
+{% endif %}
+
+<script type="text/javascript" src="/static/js/wgo.min.js"></script>
+<script type="text/javascript" src="/static/js/wgo.player.min.js"></script>
+<link type="text/css" href="/static/css/wgo.player.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/wgo-custom.css" rel="stylesheet" />
+
+<div id="gamePlayer" data-wgo="{{ game.sgf_file.url }}" style="width: 980px" data-wgo-board="background:''"> WGo.js player did not initialize.</div>
+
+<p><a href="{{ game.sgf_file.url }}">Download SGF</a></p>
+
+<ul>
+<li> ID: {{ game.id }} </li>
+<li> Uploaded at: {{ game.created_at|date:"Y-m-d H-i-s e" }} </li>
+<li> Submitted by: {{ game.submitted_by }} </li>
+{% if kind == "rating" %}
+<li> Black: {{ game.black_network.name }} </li>
+<li> White: {{ game.white_network.name }} </li>
+{% else %}
+<li> Network: {{ game.black_network.name }} </li>
+{% endif %}
+<li> BoardSizeX: {{ game.board_size_x }} </li>
+<li> BoardSizeY: {{ game.board_size_y }} </li>
+<li> Handicap: {{ game.handicap }} </li>
+<li> Komi: {{ game.komi }} </li>
+<li> Game Length: {{ game.game_length }} moves </li>
+<li> Result: {{ game.result_text }} </li>
+</ul>
+
+{% endblock content %}

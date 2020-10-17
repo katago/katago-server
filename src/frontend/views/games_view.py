@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.core.paginator import Paginator
@@ -68,10 +68,17 @@ class GamesListView(ListView):
       context["kind"] = self.kwargs["kind"]
       return context
 
-    # paginator = Paginator(games, 100)
-    # page_obj = paginator.get_page(self.kwargs["page"])
-    # return
-    # return render(request, 'list.html', {'page_obj': page_obj})
+class SgfDetailView(DetailView):
+  context_object_name = "game"
 
-    # # We're returning the networks, because we display games organized by network
-    # return Game.objects.filter(run=self.run).order_by("-created_at")
+  def get_object(self, **kwargs):
+    if self.kwargs["kind"] == "training":
+      return get_object_or_404(TrainingGame, id=self.kwargs["id"])
+    else:
+      return get_object_or_404(RatingGame, id=self.kwargs["id"])
+
+  def get_context_data(self, **kwargs):
+      context = super().get_context_data(**kwargs)
+      context["kind"] = self.kwargs["kind"]
+      return context
+
