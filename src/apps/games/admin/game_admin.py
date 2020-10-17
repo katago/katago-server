@@ -13,9 +13,7 @@ class RatingGameAdmin(admin.ModelAdmin):
         "handicap",
         "board_size_x",
         "board_size_y",
-        "white_network",
-        "black_network",
-        "komi",
+        "gametype",
         "submitted_by",
     )
     list_display = (
@@ -35,7 +33,7 @@ class RatingGameAdmin(admin.ModelAdmin):
     ordering = ("pk",)
     fieldsets = (
         (None, {"fields": (("id", "created_at", "kg_game_uid", "run"),)}),
-        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi"), "rules",)},),
+        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi", "gametype"), "rules",)},),
         (_("Result"), {"fields": (("winner", "score", "resigned", "game_length"),)}),
         (_("Networks"), {"fields": (("white_network", "black_network"),)}),
         (_("Other"), {"fields": ("submitted_by",)}),
@@ -80,7 +78,7 @@ class TrainingGameAdmin(admin.ModelAdmin):
     ordering = ("pk",)
     fieldsets = (
         (None, {"fields": (("id", "created_at", "kg_game_uid", "run"),)}),
-        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi"), "rules",)},),
+        (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi", "gametype"), "rules",)},),
         (_("Result"), {"fields": (("winner", "score", "resigned", "game_length"),)}),
         (_("Networks"), {"fields": (("white_network", "black_network"),)}),
         (_("Other"), {"fields": ("submitted_by",)}),
