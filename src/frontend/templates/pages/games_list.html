@@ -78,6 +78,7 @@ Games for {{network.name}}
     <th> Length </th>
     <th> Result </th>
     <th> SGF </th>
+    <th> View </th>
   </tr>
 {% for game in page_obj %}
   <tr>
@@ -85,8 +86,8 @@ Games for {{network.name}}
     <td> {{ game.created_at|date:"Y-m-d H-i-s e" }} </td>
     <td> {{ game.submitted_by }} </td>
     {% if kind == "rating" %}
-    <th> {{ game.black_network.name }} </th>
-    <th> {{ game.white_network.name }} </th>
+    <td> {{ game.black_network.name }} </td>
+    <td> {{ game.white_network.name }} </td>
     {% endif %}
     <td> {{ game.board_size_x }} </td>
     <td> {{ game.board_size_y }} </td>
@@ -95,6 +96,11 @@ Games for {{network.name}}
     <td> {{ game.game_length }} </td>
     <td> {{ game.result_text }} </td>
     <td> <a href="{{ game.sgf_file.url }}">[SGF]</a> </td>
+    {% if kind == "rating" %}
+    <td> <a href="{% url 'sgfplayer_rating' game.id %}">[View]</a> </td>
+    {% else %}
+    <td> <a href="{% url 'sgfplayer_training' game.id %}">[View]</a> </td>
+    {% endif %}
   </tr>
   {% endfor %}
 </table>
