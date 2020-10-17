@@ -104,6 +104,7 @@ class AbstractGame(Model):
     komi = DecimalField(
         _("komi"), max_digits=4, decimal_places=1, null=False, default=7.0, validators=[validate_komi], help_text=_("Number of points added to white's score"), db_index=True,
     )
+    gametype = CharField(_("gametype"), max_length=24, default="", help_text=_("Short string describing properties of the game initialization"), db_index=True,)
     rules = JSONField(
         _("rules"), help_text=_("Rules are described at https://lightvector.github.io/KataGo/rules.html"), default=dict, null=True, blank=True,
     )
