@@ -36,7 +36,7 @@ class RatingGameAdmin(admin.ModelAdmin):
         (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi", "gametype"), "rules",)},),
         (_("Result"), {"fields": (("winner", "score", "resigned", "game_length"),)}),
         (_("Networks"), {"fields": (("white_network", "black_network"),)}),
-        (_("Other"), {"fields": ("submitted_by",)}),
+        (_("Other"), {"fields": ("submitted_by","extra_metadata",)}),
         (_("Download"), {"fields": ("sgf_file",)}),
     )
 
@@ -81,7 +81,7 @@ class TrainingGameAdmin(admin.ModelAdmin):
         (_("Game"), {"fields": (("board_size_x", "board_size_y"), ("handicap", "komi", "gametype"), "rules",)},),
         (_("Result"), {"fields": (("winner", "score", "resigned", "game_length"),)}),
         (_("Networks"), {"fields": (("white_network", "black_network"),)}),
-        (_("Other"), {"fields": ("submitted_by",)}),
+        (_("Other"), {"fields": ("submitted_by","extra_metadata",)}),
         (_("Download"), {"fields": (("sgf_file", "training_data_file", "num_training_rows"),)}),
     )
 
