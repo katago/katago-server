@@ -1,49 +1,59 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
 {% block title %}
 {% if not run %}
-Games
+{% trans "KataGo - Games for Current Run" %}
 {% else %}
-Games for {{run.name}}
+{% blocktrans with run_name=run.name %} KataGo - Games for {{run_name}} {% endblocktrans %}
 {% endif %}
 {% endblock %}
+
 
 {% block content %}
 
 {% if not run %}
-No currently active run to view games for.
+{% trans "No currently active run to view games for." %}
 {% elif viewing_current_run %}
-<h1 class="title">Games for Current Run ({{run.name}}) by Network</h1>
+<h1 class="title">{% blocktrans with run_name=run.name %}Games for Current Run ({{run_name}}) by Network{% endblocktrans %}</h1>
 {% else %}
-<h1 class="title">Games for {{run.name}} by Network</h1>
+<h1 class="title">{% blocktrans with run_name=run.name %}Games for {{run_name}} by Network{% endblocktrans %}</h1>
 {% endif %}
 
 {% if run and network_list|length <= 0 %}
-No games found for this run!
+{% trans "No games found for this run!" %}
 {% elif run and network_list|length > 0 %}
 <table class="table">
   <tr>
-    <th> Network </th>
-    <th> Training Games </th>
-    <th> Rating Games </th>
+    <th> {% trans "Network" %} </th>
+    <th> {% trans "Training Games" %} </th>
+    <th> {% trans "Rating Games" %} </th>
   </tr>
   {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
-    <td> <a href="{% url 'training_games_list' run.name network.name 1 %}"> Training Games </td>
-    <td> <a href="{% url 'rating_games_list' run.name network.name 1 %}"> Rating Games </td>
+    <td> <a href="{% url 'training_games_list' run.name network.name 1 %}"> {% trans "Training Games" %} </td>
+    <td> <a href="{% url 'rating_games_list' run.name network.name 1 %}"> {% trans "Rating Games" %} </td>
   </tr>
   {% endfor %}
 </table>
 {% endif %}
 
 {% if other_runs_to_show|length > 0 %}
-<h1 class="title"> Games for Other Runs </h1>
+<h1 class="title"> {% trans "Games for Other Runs" %} </h1>
 <ul>
+<table class="table">
+  <tr>
+    <th> {% trans "Run Name" %} </th>
+  </tr>
+
   {% for run in other_runs_to_show %}
-  <li><a href="{% url 'game_network_groups' run.name %}"> {{ run.name }}</a></li>
+  <tr>
+    <td><a href="{% url 'game_network_groups' run.name %}"> {{ run.name }}</a></td>
+  </tr>
   {% endfor %}
-</ul>
+</table>
 {% endif %}
 
 {% endblock content %}

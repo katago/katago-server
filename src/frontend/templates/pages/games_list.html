@@ -1,62 +1,44 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
 {% block title %}
-Games for {{network.name}}
+{% if kind == "training" %}
+{% blocktrans with network_name=network.name %} KataGo - Training Games for {{network_name}} {% endblocktrans %}
+{% else %}
+{% blocktrans with network_name=network.name %} KataGo - Rating Games for {{network_name}} {% endblocktrans %}
+{% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if kind == "training" %}
-<h1 class="title">Training Games for {{network.name}}</h1>
+<h1 class="title">{% blocktrans with network_name=network.name %} Training Games for {{network_name}} {% endblocktrans %}</h1>
 {% else %}
-<h1 class="title">Rating Games for {{network.name}}</h1>
+<h1 class="title">{% blocktrans with network_name=network.name %} Rating Games for {{network_name}} {% endblocktrans %}</h1>
 {% endif %}
 
-{% if kind == "training" %}
+{% if page_obj.paginator.num_pages != 1 %}
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a href="{% url 'training_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> {% trans "First" %} </a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> {% trans "Prev" %} </a>
     {% else %}
-    <i class="fas fa-angle-double-left"></i> First
-    <i class="fas fa-angle-left"></i> Prev
+    <span class="mx-1"><i class="fas fa-angle-double-left"></i> {% trans "First" %} </span>
+    <span class="mx-1"><i class="fas fa-angle-left"></i> {% trans "Prev" %} </span>
     {% endif %}
 
-    <span class="current">
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    <span class="current mx-2">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
     </span>
 
     {% if page_obj.has_next %}
-    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name page_obj.next_page_number %}"> {% trans "Next" %} <i class="fas fa-angle-right"></i></a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name page_obj.paginator.num_pages %}"> {% trans "Last" %} <i class="fas fa-angle-double-right"></i></a>
     {% else %}
-    Next <i class="fas fa-angle-right"></i>
-    Last <i class="fas fa-angle-double-right"></i>
-    {% endif %}
-  </span>
-</div>
-{% else %}
-<div class="pagination">
-  <span class="step-links">
-    {% if page_obj.has_previous %}
-    <a href="{% url 'rating_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
-    {% else %}
-    <i class="fas fa-angle-double-left"></i> First
-    <i class="fas fa-angle-left"></i> Prev
-    {% endif %}
-
-    <span class="current">
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-    </span>
-
-    {% if page_obj.has_next %}
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
-    {% else %}
-    Next <i class="fas fa-angle-right"></i>
-    Last <i class="fas fa-angle-double-right"></i>
+    <span class="mx-1"> {% trans "Next" %} <i class="fas fa-angle-right"></i></span>
+    <span class="mx-1"> {% trans "Last" %} <i class="fas fa-angle-double-right"></i></span>
     {% endif %}
   </span>
 </div>
@@ -64,22 +46,22 @@ Games for {{network.name}}
 
 <table class="table">
   <tr>
-    <th> ID </th>
-    <th> Uploaded At </th>
-    <th> Submitted By </th>
+    <th> {% trans "Game ID" %} </th>
+    <th> {% trans "Uploaded At" %} </th>
+    <th> {% trans "Submitted By" %} </th>
     {% if kind == "rating" %}
-    <th> Black </th>
-    <th> White </th>
+    <th> {% trans "Black" %} </th>
+    <th> {% trans "White" %} </th>
     {% endif %}
-    <th> BoardSizeX </th>
-    <th> BoardSizeY </th>
-    <th> Handicap </th>
-    <th> Komi </th>
-    <th> GameType </th>
-    <th> Length </th>
-    <th> Result </th>
-    <th> SGF </th>
-    <th> View </th>
+    <th> {% trans "BoardSizeX" %} </th>
+    <th> {% trans "BoardSizeY" %} </th>
+    <th> {% trans "Handicap" %} </th>
+    <th> {% trans "Komi" %} </th>
+    <th> {% trans "GameType" %} </th>
+    <th> {% trans "Length" %} </th>
+    <th> {% trans "Result" %} </th>
+    <th> {% trans "SGF" %} </th>
+    <th> {% trans "View" %} </th>
   </tr>
 {% for game in page_obj %}
   <tr>
@@ -97,61 +79,33 @@ Games for {{network.name}}
     <td> {{ game.gametype }} </td>
     <td> {{ game.game_length }} </td>
     <td> {{ game.result_text }} </td>
-    <td> <a href="{{ game.sgf_file.url }}">[SGF]</a> </td>
-    {% if kind == "rating" %}
-    <td> <a href="{% url 'sgfplayer_rating' game.id %}">[View]</a> </td>
-    {% else %}
-    <td> <a href="{% url 'sgfplayer_training' game.id %}">[View]</a> </td>
-    {% endif %}
+    <td> <a href="{{ game.sgf_file.url }}">[{% trans "SGF" %}]</a> </td>
+    <td> <a href="{% url sgfplayer_url_name game.id %}">[{% trans "View" %}]</a> </td>
   </tr>
   {% endfor %}
 </table>
 
-{% if kind == "training" %}
+{% if page_obj.paginator.num_pages != 1 %}
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a href="{% url 'training_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> {% trans "First" %} </a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> {% trans "Prev" %} </a>
     {% else %}
-    <i class="fas fa-angle-double-left"></i> First
-    <i class="fas fa-angle-left"></i> Prev
+    <span class="mx-1"><i class="fas fa-angle-double-left"></i> {% trans "First" %} </span>
+    <span class="mx-1"><i class="fas fa-angle-left"></i> {% trans "Prev" %} </span>
     {% endif %}
 
-    <span class="current">
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    <span class="current mx-2">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
     </span>
 
     {% if page_obj.has_next %}
-    <a href="{% url 'training_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
-    <a href="{% url 'training_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name page_obj.next_page_number %}"> {% trans "Next" %} <i class="fas fa-angle-right"></i></a>
+    <a class="mx-1" href="{% url list_url_name run.name network.name page_obj.paginator.num_pages %}"> {% trans "Last" %} <i class="fas fa-angle-double-right"></i></a>
     {% else %}
-    Next <i class="fas fa-angle-right"></i>
-    Last <i class="fas fa-angle-double-right"></i>
-    {% endif %}
-  </span>
-</div>
-{% else %}
-<div class="pagination">
-  <span class="step-links">
-    {% if page_obj.has_previous %}
-    <a href="{% url 'rating_games_list' run.name network.name 1 %}"><i class="fas fa-angle-double-left"></i> First</a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.previous_page_number %}"><i class="fas fa-angle-left"></i> Prev</a>
-    {% else %}
-    <i class="fas fa-angle-double-left"></i> First
-    <i class="fas fa-angle-left"></i> Prev
-    {% endif %}
-
-    <span class="current">
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-    </span>
-
-    {% if page_obj.has_next %}
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.next_page_number %}">Next <i class="fas fa-angle-right"></i></a>
-    <a href="{% url 'rating_games_list' run.name network.name page_obj.paginator.num_pages %}">Last <i class="fas fa-angle-double-right"></i></a>
-    {% else %}
-    Next <i class="fas fa-angle-right"></i>
-    Last <i class="fas fa-angle-double-right"></i>
+    <span class="mx-1"> {% trans "Next" %} <i class="fas fa-angle-right"></i></span>
+    <span class="mx-1"> {% trans "Last" %} <i class="fas fa-angle-double-right"></i></span>
     {% endif %}
   </span>
 </div>

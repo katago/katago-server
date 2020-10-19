@@ -66,6 +66,12 @@ class GamesListView(ListView):
       context["run"] = self.run
       context["network"] = self.network
       context["kind"] = self.kwargs["kind"]
+      if self.kwargs["kind"] == "training":
+        context["list_url_name"] = "training_games_list" # urls.py
+        context["sgfplayer_url_name"] = "sgfplayer_training" # urls.py
+      else:
+        context["list_url_name"] = "rating_games_list" # urls.py
+        context["sgfplayer_url_name"] = "sgfplayer_rating" # urls.py
       return context
 
 class SgfDetailView(DetailView):

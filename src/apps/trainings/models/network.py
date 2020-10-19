@@ -126,7 +126,7 @@ class Network(Model):
 
     @property
     def rating(self):
-        return f"{self.elo} ±{2 * self.elo_uncertainty}"
+        return f"{self.elo} ± {2 * self.elo_uncertainty}"
 
     def save(self, *args, **kwargs):
         # Allow blank file only if random

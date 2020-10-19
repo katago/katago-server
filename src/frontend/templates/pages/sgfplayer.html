@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
 {% block title %}
-Game ID {{game.id}} (run {{game.run.name}})
+{% trans "KataGo - Game ID" %} {{game.id}} (run {{game.run.name}})
 {% endblock %}
 
 {% block content %}
 
 {% if kind == "rating" %}
-<h1 class="title">Rating Game ID {{game.id}} (run {{game.run.name}}) </h1>
+<h1 class="title">{% trans "Rating Game ID" %} {{game.id}} ({% trans "run" %} {{game.run.name}}) </h1>
 {% else %}
-<h1 class="title">Training Game ID {{game.id}} (run {{game.run.name}}) </h1>
+<h1 class="title">{% trans "Training Game ID" %} {{game.id}} ({% trans "run" %} {{game.run.name}}) </h1>
 {% endif %}
 
 <script type="text/javascript" src="/static/js/wgo.min.js"></script>
@@ -17,28 +19,33 @@ Game ID {{game.id}} (run {{game.run.name}})
 <link type="text/css" href="/static/css/wgo.player.css" rel="stylesheet" />
 <link type="text/css" href="/static/css/wgo-custom.css" rel="stylesheet" />
 
-<div id="gamePlayer" data-wgo="{{ game.sgf_file.url }}" style="width: 980px" data-wgo-board="background:''"> WGo.js player did not initialize.</div>
+<div id="gamePlayer" data-wgo="{{ game.sgf_file.url }}" style="width: 980px" data-wgo-board="background:''">
+  {% trans "WGo.js player did not initialize." %}
+</div>
 
-<p><a href="{{ game.sgf_file.url }}">Download SGF</a></p>
+<p class="button my-4"><a href="{{ game.sgf_file.url }}">{% trans "Download SGF" %}</a></p>
 
+<h2 class="title mt-5 is-4"> {% trans "Game Information" %} </h2>
+<div class="content">
 <ul>
-<li> ID: {{ game.id }} </li>
-<li> Uploaded at: {{ game.created_at|date:"Y-m-d H-i-s e" }} </li>
-<li> Submitted by: {{ game.submitted_by }} </li>
+<li> <strong>{% trans "Game ID" %}:</strong> {{ game.id }} </li>
+<li> <strong>{% trans "Uploaded at" %}:</strong> {{ game.created_at|date:"Y-m-d H-i-s e" }} </li>
+<li> <strong>{% trans "Submitted by" %}:</strong> {{ game.submitted_by }} </li>
 {% if kind == "rating" %}
-<li> Black: {{ game.black_network.name }} </li>
-<li> White: {{ game.white_network.name }} </li>
+<li> <strong>{% trans "Black player" %}:</strong> {{ game.black_network.name }} </li>
+<li> <strong>{% trans "White player" %}:</strong> {{ game.white_network.name }} </li>
 {% else %}
-<li> Network: {{ game.black_network.name }} </li>
+<li> <strong>{% trans "Network used" %}:</strong> {{ game.black_network.name }} </li>
 {% endif %}
-<li> BoardSizeX: {{ game.board_size_x }} </li>
-<li> BoardSizeY: {{ game.board_size_y }} </li>
-<li> Handicap: {{ game.handicap }} </li>
-<li> Komi: {{ game.komi }} </li>
-<li> GameType: {{ game.gametype }} </li>
-<li> Game Length: {{ game.game_length }} moves </li>
-<li> Extra Metadata: {{ game.extra_metadata }} </li>
-<li> Result: {{ game.result_text }} </li>
+<li> <strong>{% trans "BoardSizeX" %}:</strong> {{ game.board_size_x }} </li>
+<li> <strong>{% trans "BoardSizeY" %}:</strong> {{ game.board_size_y }} </li>
+<li> <strong>{% trans "Handicap" %}:</strong> {{ game.handicap }} </li>
+<li> <strong>{% trans "Komi" %}:</strong> {{ game.komi }} </li>
+<li> <strong>{% trans "Rules" %}:</strong> {{ game.rules }} </li>
+<li> <strong>{% trans "Game Type" %}:</strong> {{ game.gametype }} </li>
+<li> <strong>{% trans "Game Length (moves)" %}:</strong> {{ game.game_length }} </li>
+<li> <strong>{% trans "Extra Metadata" %}:</strong> {{ game.extra_metadata }} </li>
+<li> <strong>{% trans "Game Outcome" %}:</strong> {{ game.result_text }} </li>
 </ul>
-
+</div>
 {% endblock content %}
