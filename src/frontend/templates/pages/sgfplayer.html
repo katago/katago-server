@@ -2,9 +2,61 @@
 
 {% load i18n %}
 
+{% block extra_html_head_stuff %}
+<script type="text/javascript" src="/static/js/wgo.min.js"></script>
+<script type="text/javascript" src="/static/js/wgo.player.min.js"></script>
+<link type="text/css" href="/static/css/wgo.player.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/wgo-custom.css" rel="stylesheet" />
+
+<script>
+window.addEventListener("load", function() {
+  var gamePlayer = document.getElementById("gamePlayer");
+
+  var dynamicLayout = [
+    {
+      conditions: {
+        minWidth: 650,
+    },
+      layout: WGo.BasicPlayer.layouts["right_top"],
+      className: "wgo-twocols wgo-large",
+    },
+    {
+      conditions: {
+        minWidth: 550,
+        minHeight: 600,
+      },
+      layout: WGo.BasicPlayer.layouts["one_column"],
+      className: "wgo-medium"
+    },
+    {
+      conditions: {
+        minWidth: 350,
+      },
+      layout: WGo.BasicPlayer.layouts["one_column"],
+      className: "wgo-small"
+    },
+    {
+      layout: WGo.BasicPlayer.layouts["one_column"],
+      className: "wgo-xsmall",
+    },
+  ];
+
+  var player = new WGo.BasicPlayer(gamePlayer, {
+    sgfFile: "{{ game.sgf_file.url }}",
+    board: { background: "#E8CF6D" },
+    layout: dynamicLayout,
+  });
+
+});
+</script>
+
+{% endblock extra_html_head_stuff %}
+
+
 {% block title %}
 {% trans "KataGo - Game ID" %} {{game.id}} (run {{game.run.name}})
 {% endblock %}
+
 
 {% block content %}
 
@@ -14,12 +66,7 @@
 <h1 class="title">{% trans "Training Game ID" %} {{game.id}} ({% trans "run" %} {{game.run.name}}) </h1>
 {% endif %}
 
-<script type="text/javascript" src="/static/js/wgo.min.js"></script>
-<script type="text/javascript" src="/static/js/wgo.player.min.js"></script>
-<link type="text/css" href="/static/css/wgo.player.css" rel="stylesheet" />
-<link type="text/css" href="/static/css/wgo-custom.css" rel="stylesheet" />
-
-<div id="gamePlayer" data-wgo="{{ game.sgf_file.url }}" style="width: 980px" data-wgo-board="background:''">
+<div id="gamePlayer">
   {% trans "WGo.js player did not initialize." %}
 </div>
 
