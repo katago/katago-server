@@ -6,11 +6,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% endblock title %}</title>
-  {% block css %}
+  {% block html_head_stuff %}
     {% font_awesome %}
     <link rel="stylesheet" href="{% static 'bulma/css/style.min.css' %}">
-    {% block extra_css %}{% endblock extra_css %}
-  {% endblock css %}
+    {% block extra_html_head_stuff %}{% endblock extra_html_head_stuff %}
+  {% endblock html_head_stuff %}
 </head>
 <body>
 
