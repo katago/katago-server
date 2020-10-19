@@ -8,19 +8,18 @@ from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 
 class GameNetworkGroupsView(ListView):
+  template_name = "pages/game_network_groups.html"
+
   # Networks, not games, since we're listing games grouped by network
   context_object_name = "network_list"
 
   def get_queryset(self):
-    self.run = None
-    self.viewing_current_run = False
-    if "viewing_current_run" in self.kwargs and self.kwargs["viewing_current_run"]:
+    if self.kwargs["run"] is None:
       self.run = Run.objects.select_current()
-      self.viewing_current_run = self.kwargs["viewing_current_run"]
+      self.viewing_current_run = True
     else:
-      if "run" not in self.kwargs:
-        raise Http404("Run not specified")
       self.run = get_object_or_404(Run, name=self.kwargs["run"])
+      self.viewing_current_run = False
 
     if self.run is None:
       return []
@@ -47,6 +46,7 @@ class GameNetworkGroupsView(ListView):
 
 
 class GamesListView(ListView):
+  template_name = "pages/games_list.html"
   paginate_by = 100
 
   def get_queryset(self):
@@ -75,6 +75,7 @@ class GamesListView(ListView):
       return context
 
 class SgfDetailView(DetailView):
+  template_name = "pages/sgfplayer.html"
   context_object_name = "game"
 
   def get_object(self, **kwargs):

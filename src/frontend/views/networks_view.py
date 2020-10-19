@@ -6,18 +6,16 @@ from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 
 class NetworksView(ListView):
+  template_name = "pages/networks.html"
   context_object_name = "network_list"
 
   def get_queryset(self):
-    self.run = None
-    self.viewing_current_run = False
-    if "viewing_current_run" in self.kwargs and self.kwargs["viewing_current_run"]:
+    if self.kwargs["run"] is None:
       self.run = Run.objects.select_current()
-      self.viewing_current_run = self.kwargs["viewing_current_run"]
+      self.viewing_current_run = True
     else:
-      if "run" not in self.kwargs:
-        raise Http404("Run not specified")
       self.run = get_object_or_404(Run, name=self.kwargs["run"])
+      self.viewing_current_run = False
 
     if self.run is None:
       return []

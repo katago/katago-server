@@ -78,60 +78,60 @@ urlpatterns = (
         # Networks ------------------------------------------------------------
         path(
             "frontend/networks/",
-            NetworksView.as_view(template_name="pages/networks.html"),
-            {"viewing_current_run": True},
+            NetworksView.as_view(),
+            {"run": None},
             name="current_run_networks"
         ),
         path(
             "frontend/networks/<run>/",
-            NetworksView.as_view(template_name="pages/networks.html"), name="networks"
+            NetworksView.as_view(), name="networks"
         ),
 
         # Games ---------------------------------------------------------------
         path(
             "frontend/games/",
-            GameNetworkGroupsView.as_view(template_name="pages/game_network_groups.html"),
-            {"viewing_current_run": True},
+            GameNetworkGroupsView.as_view(),
+            {"run": None},
             name="current_run_game_network_groups"
         ),
         path(
             "frontend/games/<run>/",
-            GameNetworkGroupsView.as_view(template_name="pages/game_network_groups.html"),
+            GameNetworkGroupsView.as_view(),
             name="game_network_groups"
         ),
         path(
             "frontend/training-games/<run>/<network>/",
-            GamesListView.as_view(template_name="pages/games_list.html"),
+            GamesListView.as_view(),
             {"kind": "training"},
             name="training_games_list"
         ),
         path(
             "frontend/training-games/<run>/<network>/<page>/",
-            GamesListView.as_view(template_name="pages/games_list.html"),
+            GamesListView.as_view(),
             {"kind": "training"},
             name="training_games_list"
         ),
         path(
             "frontend/rating-games/<run>/<network>/",
-            GamesListView.as_view(template_name="pages/games_list.html"),
+            GamesListView.as_view(),
             {"kind": "rating"},
             name="rating_games_list"
         ),
         path(
             "frontend/rating-games/<run>/<network>/<page>/",
-            GamesListView.as_view(template_name="pages/games_list.html"),
+            GamesListView.as_view(),
             {"kind": "rating"},
             name="rating_games_list"
         ),
         path(
             "frontend/sgfplayer/training-games/<id>/",
-            SgfDetailView.as_view(template_name="pages/sgfplayer.html"),
+            SgfDetailView.as_view(),
             {"kind": "training"},
             name="sgfplayer_training"
         ),
         path(
             "frontend/sgfplayer/rating-games/<id>/",
-            SgfDetailView.as_view(template_name="pages/sgfplayer.html"),
+            SgfDetailView.as_view(),
             {"kind": "rating"},
             name="sgfplayer_rating"
         ),
