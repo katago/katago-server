@@ -41,9 +41,9 @@ def validate_board_size(value):
         )
 
 def validate_handicap(value):
-    if value < 0 or value > 13:
+    if value < 0 or value > 1000:
         raise ValidationError(
-            _('%(value)s must range from 0 to 13'),
+            _('%(value)s must range from 0 to 1000'),
             params={'value': value},
         )
 
