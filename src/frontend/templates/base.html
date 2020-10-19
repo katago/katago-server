@@ -1,4 +1,5 @@
 {% load static bulma_tags %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,13 +41,13 @@
       <div id="navMenuExample" class="navbar-menu">
         <div class="navbar-start">
           <a class="navbar-item is-active" href="{% url 'current_run_networks' %}">
-            Networks
+            {% trans "Networks" %}
           </a>
           <a class="navbar-item is-active" href="{% url 'current_run_game_network_groups' %}">
-            Games
+            {% trans "Games" %}
           </a>
           <a class="navbar-item is-active" href="/frontend/contributions/">
-            Contributions
+            {% trans "Contributions" %}
           </a>
         </div>
 
@@ -104,12 +105,14 @@
     <div class="container">
       <div class="content has-text-centered">
         <p>
+          {% blocktrans %}
           <strong><a href="https://github.com/lightvector/KataGo">Katago engine <i class="fab fa-github"></i></a></strong> by <a href="https://github.com/lightvector">lightvector</a>
           (<a href="https://github.com/lightvector/KataGo/blob/master/LICENSE">engine license</a>).
           <strong><a href="https://github.com/katago/katago-server">Katago server <i class="fab fa-github"></i></a></strong> by <a href="https://github.com/lightvector">lightvector</a> and <a href="https://github.com/tychota">tychota</a>
           (<a href="http://opensource.org/licenses/mit-license.php">server code license</a>).
+          {% endblocktrans %}
         </p>
-        <p><a href="/about">Discover more about the distributed training project here</a></p>
+        <p><a href="/about">{% trans "Discover more about the distributed training project here" %}</a></p>
       </div>
     </div>
   </footer>

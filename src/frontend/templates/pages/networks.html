@@ -1,33 +1,35 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
 {% block title %}
 {% if not run %}
-Networks
+{% trans "KataGo - Networks for Current Run" %}
 {% else %}
-Networks for {{run.name}}
+{% blocktrans with run_name=run.name %} KataGo - Networks for {{run_name}} {% endblocktrans %}
 {% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if not run %}
-No currently active run to view networks for.
+{% trans "No currently active run to view networks for." %}
 {% elif viewing_current_run %}
-<h1 class="title">Networks for Current Run ({{run.name}}) </h1>
+<h1 class="title">{% blocktrans with run_name=run.name %}Networks for Current Run ({{run_name}}){% endblocktrans %}</h1>
 {% else %}
-<h1 class="title">Networks for {{run.name}}</h1>
+<h1 class="title">{% blocktrans with run_name=run.name %}Networks for {{run_name}}{% endblocktrans %}</h1>
 {% endif %}
 
 {% if run and network_list|length <= 0 %}
-No networks found for this run!
+{% trans "No networks found for this run!" %}
 {% elif run and network_list|length > 0 %}
 <table class="table">
   <tr>
-    <th> Name </th>
-    <th> Uploaded At </th>
-    <th> Approx Elo Rating </th>
-    <th> Download </th>
-    <th> Extra Notes </th>
+    <th> {% trans "Name" %} </th>
+    <th> {% trans "Uploaded At" %} </th>
+    <th> {% trans "Approx Elo Rating" %} </th>
+    <th> {% trans "Download" %} </th>
+    <th> {% trans "Extra Notes" %} </th>
   </tr>
   {% for network in network_list %}
   <tr>
@@ -35,13 +37,15 @@ No networks found for this run!
     <td> {{ network.created_at|date:"Y-m-d H-i-s e" }} </td>
     <td> {{ network.rating }} </td>
 
-    {% if network.model_zip_file %}
-    <td> <a href="{{ network.model_zip_file.url }}">[zip]</a> </td>
-    {% elif network.model_file %}
-    <td> <a href="{{ network.model_file.url }}">[bin.gz]</a> </td>
-    {% else %}
-    <td> - </td>
-    {% endif %}
+    <td>
+      {% if network.model_file %}
+      <a href="{{ network.model_file.url }}">[{% trans "For users" %}]</a>
+      {% endif %}
+      {% if network.model_zip_file %}
+      <a href="{{ network.model_zip_file.url }}">[{% trans "For custom training" %}]</a>
+      {% else %}
+      {% endif %}
+    </td>
 
     <td> {{ network.notes }} </td>
   </tr>
@@ -50,12 +54,18 @@ No networks found for this run!
 {% endif %}
 
 {% if other_runs_to_show|length > 0 %}
-<h1 class="title"> Networks for Other Runs </h1>
-<ul>
+<h1 class="title"> {% trans "Networks for Other Runs" %} </h1>
+<table class="table">
+  <tr>
+    <th> {% trans "Run Name" %} </th>
+  </tr>
+
   {% for run in other_runs_to_show %}
-  <li><a href="{% url 'networks' run.name %}"> {{ run.name }}</a></li>
+  <tr>
+    <td><a href="{% url 'networks' run.name %}"> {{ run.name }}</a></td>
+  </tr>
   {% endfor %}
-</ul>
+</table>
 {% endif %}
 
 {% endblock content %}
