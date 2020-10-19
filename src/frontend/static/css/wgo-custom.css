@@ -1,3 +1,48 @@
 .wgo-comment-text p {
+  /* katago debug info comments can have very long strings - make sure to wrap them anyways */
   overflow-wrap:break-word;
+}
+
+.wgo-comments-wrapper .wgo-box-title {
+  /* save space by not showing this */
+  display: none;
+}
+
+/* take advantage of the space from not showing .wgo-comments-wrapper .wgo-box-title
+   by overriding some of the absolute positioning that wgo used */
+.wgo-player-left .wgo-comments-content {
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+.wgo-player-right .wgo-comments-content {
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+.wgo-player-top .wgo-comments-content {
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+.wgo-player-bottom .wgo-comments-content {
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.wgo-player-bottom .wgo-comments-wrapper {
+  /* save more space, override hardcoded wgo height */
+  height:100px;
+}
+
+
+/* Also go ahead and compact a bit of the default stuff we get from bulma, because we want to
+   use more space for the board instead of uselessly on empty space. This is a bit hacky. */
+.section {
+  padding: 1.25rem 1.0rem;
 }
