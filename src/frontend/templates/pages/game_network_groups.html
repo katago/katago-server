@@ -33,8 +33,8 @@
   {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
-    <td> <a href="{% url 'training_games_list' run.name network.name 1 %}"> {% trans "Training Games" %} </td>
-    <td> <a href="{% url 'rating_games_list' run.name network.name 1 %}"> {% trans "Rating Games" %} </td>
+    <td> <a href="{% url 'training_games_list_by_network' run.name network.name 1 %}"> {% trans "Training Games" %} </td>
+    <td> <a href="{% url 'rating_games_list_by_network' run.name network.name 1 %}"> {% trans "Rating Games" %} </td>
   </tr>
   {% endfor %}
 </table>

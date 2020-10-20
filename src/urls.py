@@ -18,7 +18,12 @@ from src.apps.trainings.viewsets import NetworkViewSet
 from src.apps.users.viewsets import UserViewSet
 from src.apps.startposes.viewsets import StartPosViewSet
 
-from src.frontend.views import NetworksView, GameNetworkGroupsView, GamesListView, SgfDetailView
+from src.frontend.views import (
+    NetworksView,
+    GameNetworkGroupsView,
+    GamesListByNetworkView,
+    SgfDetailView
+)
 
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
@@ -100,28 +105,28 @@ urlpatterns = (
             name="game_network_groups"
         ),
         path(
-            "frontend/training-games/<run>/<network>/",
-            GamesListView.as_view(),
+            "frontend/training-games/<run>/by-network/<network>/",
+            GamesListByNetworkView.as_view(),
             {"kind": "training"},
-            name="training_games_list"
+            name="training_games_list_by_network"
         ),
         path(
-            "frontend/training-games/<run>/<network>/<page>/",
-            GamesListView.as_view(),
+            "frontend/training-games/<run>/by-network/<network>/<page>/",
+            GamesListByNetworkView.as_view(),
             {"kind": "training"},
-            name="training_games_list"
+            name="training_games_list_by_network"
         ),
         path(
-            "frontend/rating-games/<run>/<network>/",
-            GamesListView.as_view(),
+            "frontend/rating-games/<run>/by-network/<network>/",
+            GamesListByNetworkView.as_view(),
             {"kind": "rating"},
-            name="rating_games_list"
+            name="rating_games_list_by_network"
         ),
         path(
-            "frontend/rating-games/<run>/<network>/<page>/",
-            GamesListView.as_view(),
+            "frontend/rating-games/<run>/by-network/<network>/<page>/",
+            GamesListByNetworkView.as_view(),
             {"kind": "rating"},
-            name="rating_games_list"
+            name="rating_games_list_by_network"
         ),
         path(
             "frontend/sgfplayer/training-games/<id>/",
