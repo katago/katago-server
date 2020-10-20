@@ -51,23 +51,33 @@
           </a>
         </div>
 
+        <div class="navbar-end">
+          <a class="navbar-item is-active" href="https://github.com/lightvector/KataGo/releases">
+            {% trans "Releases" %}
+          </a>
+          <a class="navbar-item is-active" href="https://github.com/lightvector/KataGo">
+            {% trans "GitHub (KataGo)" %}
+          </a>
+          <a class="navbar-item is-active" href="https://github.com/katago/katago-server">
+            {% trans "GitHub (Webserver)" %}
+          </a>
+
         {% if user.is_authenticated %}
         {% else %}
-          <div class="navbar-end">
-            {% url 'account_login' as login_url %}
-            {% if login_url %}
-              <a class="navbar-item is-hidden-desktop-only" href="{{ login_url }}">
-                Login
-              </a>
-            {% endif %}
-            {% url 'account_signup' as signup_url %}
-            {% if signup_url %}
-              <a class="navbar-item is-hidden-desktop-only" href="{{ signup_url }}">
-                Signup
-              </a>
-            {% endif %}
-          </div>
+          {% url 'account_login' as login_url %}
+          {% if login_url %}
+            <a class="navbar-item is-hidden-desktop-only" href="{{ login_url }}">
+              Login
+            </a>
+          {% endif %}
+          {% url 'account_signup' as signup_url %}
+          {% if signup_url %}
+            <a class="navbar-item is-hidden-desktop-only" href="{{ signup_url }}">
+              Signup
+           </a>
+          {% endif %}
         {% endif %}
+        </div>
       </div>
     </nav>
   </div>
