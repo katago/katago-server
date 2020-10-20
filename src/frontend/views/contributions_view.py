@@ -2,20 +2,20 @@ from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
-from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
+from src.apps.users.models import User
 
 from . import view_utils
 
-class NetworksView(ListView):
-  template_name = "pages/networks.html"
-  context_object_name = "network_list"
+class ContributionsView(ListView):
+  template_name = "pages/contributions.html"
+  context_object_name = "user_list"
 
   def get_queryset(self):
     view_utils.set_current_run_or_run_from_url_for_view_get_queryset(self)
     if self.run is None:
       return []
-    return Network.objects.filter(run=self.run).order_by("-created_at")
+    return User.objects.all()
 
 
   def get_context_data(self, **kwargs):

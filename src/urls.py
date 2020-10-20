@@ -20,8 +20,10 @@ from src.apps.startposes.viewsets import StartPosViewSet
 
 from src.frontend.views import (
     NetworksView,
+    ContributionsView,
     GameNetworkGroupsView,
     GamesListByNetworkView,
+    GamesListByUserView,
     SgfDetailView
 )
 
@@ -105,13 +107,18 @@ urlpatterns = (
             name="game_network_groups"
         ),
         path(
-            "frontend/training-games/<run>/by-network/<network>/",
-            GamesListByNetworkView.as_view(),
-            {"kind": "training"},
-            name="training_games_list_by_network"
+            "frontend/contributions/",
+            ContributionsView.as_view(),
+            {"run": None},
+            name="current_run_contributions"
         ),
         path(
-            "frontend/training-games/<run>/by-network/<network>/<page>/",
+            "frontend/contributions/<run>/",
+            ContributionsView.as_view(),
+            name="contributions"
+        ),
+        path(
+            "frontend/training-games/<run>/by-network/<network>/",
             GamesListByNetworkView.as_view(),
             {"kind": "training"},
             name="training_games_list_by_network"
@@ -123,10 +130,16 @@ urlpatterns = (
             name="rating_games_list_by_network"
         ),
         path(
-            "frontend/rating-games/<run>/by-network/<network>/<page>/",
-            GamesListByNetworkView.as_view(),
+            "frontend/training-games/<run>/by-user/<user>/",
+            GamesListByUserView.as_view(),
+            {"kind": "training"},
+            name="training_games_list_by_user"
+        ),
+        path(
+            "frontend/rating-games/<run>/by-user/<user>/",
+            GamesListByUserView.as_view(),
             {"kind": "rating"},
-            name="rating_games_list_by_network"
+            name="rating_games_list_by_user"
         ),
         path(
             "frontend/sgfplayer/training-games/<id>/",
