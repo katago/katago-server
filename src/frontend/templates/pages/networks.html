@@ -29,6 +29,7 @@
     <th> {% trans "Uploaded At" %} </th>
     <th> {% trans "Approx Elo Rating" %} </th>
     <th> {% trans "Download" %} </th>
+    <th> {% trans "Raw TF Weights" %} </th>
     <th> {% trans "Extra Notes" %} </th>
   </tr>
   {% for network in network_list %}
@@ -39,10 +40,12 @@
 
     <td>
       {% if network.model_file %}
-      <a href="{{ network.model_file.url }}">[{% trans "For users" %}]</a>
+      <a href="{{ network.model_file.url }}">[{% trans "Download" %}]</a>
       {% endif %}
+    </td>
+    <td>
       {% if network.model_zip_file %}
-      <a href="{{ network.model_zip_file.url }}">[{% trans "For custom training" %}]</a>
+      <a href="{{ network.model_zip_file.url }}">[{% trans "Download" %}]</a>
       {% else %}
       {% endif %}
     </td>
