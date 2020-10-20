@@ -1,26 +1,29 @@
 {% load i18n %}
 
-{% if is_paginated %}
-<nav class="pagination is-centered">
-  {% if page_obj.has_previous %}
-    <a class="pagination-previous" href="?page=
-        {{ page_obj.previous_page_number|stringformat:"d" }}{{ getvars }}{{ hashtag }}">{% trans "Previous" %}</a>
-  {% else %}
-    <a class="pagination-previous" disabled>{% trans "Previous" %}</a>
-  {% endif %}
+{% if page_obj.has_previous or page_obj.has_next %}
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a class="mx-1" href="?{{other_get_params}}&page=1"><i class="fas fa-angle-double-left"></i> {% trans "First" %} </a>
+    <a class="mx-1" href="?{{other_get_params}}&page={{ page_obj.previous_page_number }}"><i class="fas fa-angle-left"></i> {% trans "Prev" %} </a>
+    {% else %}
+    <span class="mx-1"><i class="fas fa-angle-double-left"></i> {% trans "First" %} </span>
+    <span class="mx-1"><i class="fas fa-angle-left"></i> {% trans "Prev" %} </span>
+    {% endif %}
 
-  {% if page_obj.has_next %}
-    <a class="pagination-next"
-       href="?page={{ page_obj.next_page_number|stringformat:"d" }}{{ getvars }}{{ hashtag }}">{% trans "Next" %}</a>
-  {% else %}
-    <a class="pagination-next" disabled>{% trans "Next" %}</a>
-  {% endif %}
+    <span class="current mx-2">
+      {% blocktrans with page_number=page_obj.number num_pages=page_obj.paginator.num_pages %}
+      Page {{ page_number }} of {{ num_pages }}
+      {% endblocktrans %}
+    </span>
 
-  <ul class="pagination-list">
-    {% for page in paginator.page_range %}
-      <li><a class="pagination-link{% ifequal page page_obj.number %} is-current{% endifequal %}"
-             href="?page={{ page|stringformat:"d" }}{{ getvars }}{{ hashtag }}">{{ page|stringformat:"d" }}</a></li>
-    {% endfor %}
-  </ul>
-</nav>
+    {% if page_obj.has_next %}
+    <a class="mx-1" href="?{{other_get_params}}&page={{ page_obj.next_page_number }}"> {% trans "Next" %} <i class="fas fa-angle-right"></i></a>
+    <a class="mx-1" href="?{{other_get_params}}&page={{ page_obj.paginator.num_pages }}"> {% trans "Last" %} <i class="fas fa-angle-double-right"></i></a>
+    {% else %}
+    <span class="mx-1"> {% trans "Next" %} <i class="fas fa-angle-right"></i></span>
+    <span class="mx-1"> {% trans "Last" %} <i class="fas fa-angle-double-right"></i></span>
+    {% endif %}
+  </span>
+</div>
 {% endif %}

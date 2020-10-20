@@ -4,18 +4,18 @@
 
 {% block title %}
 {% if kind == "training" %}
-{% blocktrans with network_name=network.name %} KataGo - Training Games for {{network_name}} {% endblocktrans %}
+{% blocktrans with user_name=user.username run_name=run.name %} KataGo - Training Games from {{user_name}} for {{run_name}} {% endblocktrans %}
 {% else %}
-{% blocktrans with network_name=network.name %} KataGo - Rating Games for {{network_name}} {% endblocktrans %}
+{% blocktrans with user_name=user.username run_name=run.name %} KataGo - Rating Games from {{user_name}} for {{run_name}} {% endblocktrans %}
 {% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if kind == "training" %}
-<h1 class="title">{% blocktrans with network_name=network.name %} Training Games for {{network_name}} {% endblocktrans %}</h1>
+<h1 class="title">{% blocktrans with user_name=user.username run_name=run.name %} Training Games from {{user_name}} for {{run_name}} {% endblocktrans %}</h1>
 {% else %}
-<h1 class="title">{% blocktrans with network_name=network.name %} Rating Games for {{network_name}} {% endblocktrans %}</h1>
+<h1 class="title">{% blocktrans with user_name=user.username run_name=run.name %} Rating Games from {{user_name}} for {{run_name}} {% endblocktrans %}</h1>
 {% endif %}
 
 {% include 'pagination.html' with other_get_params='' page_obj=page_obj %}
@@ -24,10 +24,11 @@
   <tr>
     <th> {% trans "Game ID" %} </th>
     <th> {% trans "Uploaded At" %} </th>
-    <th> {% trans "Submitted By" %} </th>
     {% if kind == "rating" %}
     <th> {% trans "Black" %} </th>
     <th> {% trans "White" %} </th>
+    {% else %}
+    <th> {% trans "Network" %} </th>
     {% endif %}
     <th> {% trans "BoardSizeX" %} </th>
     <th> {% trans "BoardSizeY" %} </th>
@@ -43,10 +44,11 @@
   <tr>
     <td> {{ game.id }} </td>
     <td> {{ game.created_at|date:"Y-m-d H-i-s e" }} </td>
-    <td> {{ game.submitted_by }} </td>
     {% if kind == "rating" %}
     <td> {{ game.black_network.name }} </td>
     <td> {{ game.white_network.name }} </td>
+    {% else %}
+    <td> {{ game.black_network.name }} </td>
     {% endif %}
     <td> {{ game.board_size_x }} </td>
     <td> {{ game.board_size_y }} </td>
