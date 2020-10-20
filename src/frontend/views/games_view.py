@@ -45,8 +45,8 @@ class GameNetworkGroupsView(ListView):
       return context
 
 
-class GamesListView(ListView):
-  template_name = "pages/games_list.html"
+class GamesListByNetworkView(ListView):
+  template_name = "pages/games_list_by_network.html"
   paginate_by = 100
 
   def get_queryset(self):
@@ -67,10 +67,10 @@ class GamesListView(ListView):
       context["network"] = self.network
       context["kind"] = self.kwargs["kind"]
       if self.kwargs["kind"] == "training":
-        context["list_url_name"] = "training_games_list" # urls.py
+        context["list_url_name"] = "training_games_list_by_network" # urls.py
         context["sgfplayer_url_name"] = "sgfplayer_training" # urls.py
       else:
-        context["list_url_name"] = "rating_games_list" # urls.py
+        context["list_url_name"] = "rating_games_list_by_network" # urls.py
         context["sgfplayer_url_name"] = "sgfplayer_rating" # urls.py
       return context
 
