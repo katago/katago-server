@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
+{% load custom_time_formatting %}
 
 {% block title %}
 {% if not run %}
@@ -35,21 +36,10 @@
   {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
-    <td> {{ network.created_at|date:"Y-m-d H-i-s e" }} </td>
+    <td> {{ network.created_at|isotimestr }} </td>
     <td> {{ network.rating }} </td>
-
-    <td>
-      {% if network.model_file %}
-      <a href="{{ network.model_file.url }}">[{% trans "Download" %}]</a>
-      {% endif %}
-    </td>
-    <td>
-      {% if network.model_zip_file %}
-      <a href="{{ network.model_zip_file.url }}">[{% trans "Download" %}]</a>
-      {% else %}
-      {% endif %}
-    </td>
-
+    <td> {{ network.download_link_html|safe }} </td>
+    <td> {{ network.zip_download_link_html|safe }} </td>
     <td> {{ network.notes }} </td>
   </tr>
   {% endfor %}

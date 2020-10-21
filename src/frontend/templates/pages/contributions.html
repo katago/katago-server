@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
+{% load custom_url_tags %}
 
 {% block title %}
 {% if not run %}
@@ -33,8 +34,8 @@
   {% for user in user_list %}
   <tr>
     <td> {{ user.username }} </td>
-    <td> <a href="{% url 'training_games_list_by_user' run.name user.username %}"> {% trans "Training Games" %} </td>
-    <td> <a href="{% url 'rating_games_list_by_user' run.name user.username %}"> {% trans "Rating Games" %} </td>
+    <td> <a href="{% training_games_list_by_user run.name user.username %}"> {% trans "Training Games" %} </td>
+    <td> <a href="{% rating_games_list_by_user run.name user.username %}"> {% trans "Rating Games" %} </td>
   </tr>
   {% endfor %}
 </table>

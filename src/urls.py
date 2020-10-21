@@ -117,6 +117,12 @@ urlpatterns = (
             ContributionsView.as_view(),
             name="contributions"
         ),
+
+        # **********************************************************
+        # NOTE: if editing the below, make sure to keep them in sync with
+        # src/frontend/templatehelpers/templatetags/custom_url_tags.py
+        # **********************************************************
+
         path(
             "frontend/training-games/<run>/by-network/<network>/",
             GamesListByNetworkView.as_view(),
