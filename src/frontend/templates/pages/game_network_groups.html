@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
+{% load custom_url_tags %}
 
 {% block title %}
 {% if not run %}
@@ -33,8 +34,8 @@
   {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
-    <td> <a href="{% url 'training_games_list_by_network' run.name network.name %}"> {% trans "Training Games" %} </td>
-    <td> <a href="{% url 'rating_games_list_by_network' run.name network.name %}"> {% trans "Rating Games" %} </td>
+    <td> <a href="{% training_games_list_by_network run.name network.name %}"> {{ training_games_translated }} </td>
+    <td> <a href="{% rating_games_list_by_network run.name network.name %}"> {{ rating_games_translated }} </td>
   </tr>
   {% endfor %}
 </table>

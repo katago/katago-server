@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
+{% load custom_url_tags %}
+{% load custom_time_formatting %}
 
 {% block title %}
 {% if kind == "training" %}
@@ -42,7 +44,7 @@
 {% for game in page_obj %}
   <tr>
     <td> {{ game.id }} </td>
-    <td> {{ game.created_at|date:"Y-m-d H-i-s e" }} </td>
+    <td> {{ game.created_at|isotimestr }} </td>
     <td> {{ game.submitted_by }} </td>
     {% if kind == "rating" %}
     <td> {{ game.black_network.name }} </td>
@@ -56,7 +58,7 @@
     <td> {{ game.game_length }} </td>
     <td> {{ game.result_text }} </td>
     <td> <a href="{{ game.sgf_file.url }}">[{% trans "SGF" %}]</a> </td>
-    <td> <a href="{% url sgfplayer_url_name game.id %}">[{% trans "View" %}]</a> </td>
+    <td> <a href="{% sgfplayer kind game.id %}">[{% trans "View" %}]</a> </td>
   </tr>
   {% endfor %}
 </table>

@@ -8,6 +8,8 @@ from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 from src.apps.users.models import User
 
+from django.utils.translation import gettext
+
 from . import view_utils
 
 class GameNetworkGroupsView(ListView):
@@ -26,6 +28,8 @@ class GameNetworkGroupsView(ListView):
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
+    context["training_games_translated"] = gettext("Training Games")
+    context["rating_games_translated"] = gettext("Rating Games")
     view_utils.add_other_runs_context(self,context)
     return context
 
@@ -39,10 +43,10 @@ class GamesListByNetworkView(ListView):
     self.network = get_object_or_404(Network, name=self.kwargs["network"])
 
     if self.kwargs["kind"] == "training":
-      games = TrainingGame.objects.filter(white_network=self.network).order_by("-created_at")
+      games = TrainingGame.objects.filter(white_network=self.network).order_by("-created_at").prefetch_related("submitted_by")
     else:
-      wgames = RatingGame.objects.filter(white_network=self.network)
-      bgames = RatingGame.objects.filter(black_network=self.network)
+      wgames = RatingGame.objects.filter(white_network=self.network).prefetch_related("submitted_by","black_network","white_network")
+      bgames = RatingGame.objects.filter(black_network=self.network).prefetch_related("submitted_by","black_network","white_network")
       games = wgames.union(bgames).order_by("-created_at")
     return games
 
@@ -53,10 +57,8 @@ class GamesListByNetworkView(ListView):
       context["kind"] = self.kwargs["kind"]
       if self.kwargs["kind"] == "training":
         context["list_url_name"] = "training_games_list_by_network" # urls.py
-        context["sgfplayer_url_name"] = "sgfplayer_training" # urls.py
       else:
         context["list_url_name"] = "rating_games_list_by_network" # urls.py
-        context["sgfplayer_url_name"] = "sgfplayer_rating" # urls.py
       return context
 
 class GamesListByUserView(ListView):
@@ -68,9 +70,17 @@ class GamesListByUserView(ListView):
     self.user = get_object_or_404(User, username=self.kwargs["user"])
 
     if self.kwargs["kind"] == "training":
-      games = TrainingGame.objects.filter(submitted_by=self.user,run=self.run).order_by("-created_at")
+      games = TrainingGame \
+              .objects \
+              .filter(submitted_by=self.user,run=self.run) \
+              .order_by("-created_at") \
+              .prefetch_related("black_network","white_network")
     else:
-      games = RatingGame.objects.filter(submitted_by=self.user,run=self.run).order_by("-created_at")
+      games = RatingGame \
+              .objects \
+              .filter(submitted_by=self.user,run=self.run) \
+              .order_by("-created_at") \
+              .prefetch_related("black_network","white_network")
     return games
 
   def get_context_data(self, **kwargs):
@@ -80,10 +90,8 @@ class GamesListByUserView(ListView):
       context["kind"] = self.kwargs["kind"]
       if self.kwargs["kind"] == "training":
         context["list_url_name"] = "training_games_list_by_user" # urls.py
-        context["sgfplayer_url_name"] = "sgfplayer_training" # urls.py
       else:
         context["list_url_name"] = "rating_games_list_by_user" # urls.py
-        context["sgfplayer_url_name"] = "sgfplayer_rating" # urls.py
       return context
 
 
