@@ -134,7 +134,7 @@ class TestGame:
         self.bad_games.extend(self.create_games_with_defaults(board_size_x=45))
         self.bad_games.extend(self.create_games_with_defaults(board_size_y=2))
         self.bad_games.extend(self.create_games_with_defaults(board_size_y=45))
-        self.bad_games.extend(self.create_games_with_defaults(handicap=25))
+        self.bad_games.extend(self.create_games_with_defaults(handicap=2500))
         self.bad_games.extend(self.create_games_with_defaults(handicap=-1))
         self.good_games.extend(self.create_games_with_defaults(handicap=1))
         self.good_games.extend(self.create_games_with_defaults(handicap=7))
