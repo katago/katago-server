@@ -1,4 +1,5 @@
 from django import template
+from django.utils.translation import gettext_lazy as _
 
 register = template.Library()
 
@@ -25,4 +26,13 @@ def rating_games_list_by_user(run_name, user_name):
 @register.simple_tag
 def sgfplayer(kind,id_number):
     return f"/frontend/sgfplayer/{kind}-games/{id_number}/"
+
+
+download_translated = _("Download")
+
+@register.filter
+def file_download_link_html(uploaded_file_obj):
+    if uploaded_file_obj:
+        return f'<a href="{uploaded_file_obj.url}">[{download_translated}]</a>'
+    return ""
 
