@@ -9,23 +9,23 @@ register = template.Library()
 
 @register.simple_tag
 def training_games_list_by_network(run_name, network_name):
-    return f"/frontend/training-games/{run_name}/by-network/{network_name}/"
+    return f"/training-games/{run_name}/by-network/{network_name}/"
 
 @register.simple_tag
 def rating_games_list_by_network(run_name, network_name):
-    return f"/frontend/rating-games/{run_name}/by-network/{network_name}/"
+    return f"/rating-games/{run_name}/by-network/{network_name}/"
 
 @register.simple_tag
 def training_games_list_by_user(run_name, user_name):
-    return f"/frontend/training-games/{run_name}/by-user/{user_name}/"
+    return f"/training-games/{run_name}/by-user/{user_name}/"
 
 @register.simple_tag
 def rating_games_list_by_user(run_name, user_name):
-    return f"/frontend/rating-games/{run_name}/by-user/{user_name}/"
+    return f"/rating-games/{run_name}/by-user/{user_name}/"
 
 @register.simple_tag
 def sgfplayer(kind,id_number):
-    return f"/frontend/sgfplayer/{kind}-games/{id_number}/"
+    return f"/sgfplayer/{kind}-games/{id_number}/"
 
 
 download_translated = _("Download")

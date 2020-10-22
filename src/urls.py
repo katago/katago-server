@@ -80,81 +80,81 @@ urlpatterns = (
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
-        path("frontend/accounts/", include("allauth.urls")),
+        path("accounts/", include("allauth.urls")),
 
         # Networks ------------------------------------------------------------
         path(
-            "frontend/networks/",
+            "networks/",
             NetworksView.as_view(),
             {"run": None},
             name="current_run_networks"
         ),
         path(
-            "frontend/networks/<run>/",
+            "networks/<run>/",
             NetworksView.as_view(), name="networks"
         ),
 
         # Games ---------------------------------------------------------------
         path(
-            "frontend/games/",
+            "games/",
             GameNetworkGroupsView.as_view(),
             {"run": None},
             name="current_run_game_network_groups"
         ),
         path(
-            "frontend/games/<run>/",
+            "games/<run>/",
             GameNetworkGroupsView.as_view(),
             name="game_network_groups"
         ),
         path(
-            "frontend/contributions/",
+            "contributions/",
             ContributionsView.as_view(),
             {"run": None},
             name="current_run_contributions"
         ),
         path(
-            "frontend/contributions/<run>/",
+            "contributions/<run>/",
             ContributionsView.as_view(),
             name="contributions"
         ),
 
         # **********************************************************
         # NOTE: if editing the below, make sure to keep them in sync with
-        # src/frontend/templatehelpers/templatetags/custom_url_tags.py
+        # src/templatehelpers/templatetags/custom_url_tags.py
         # **********************************************************
 
         path(
-            "frontend/training-games/<run>/by-network/<network>/",
+            "training-games/<run>/by-network/<network>/",
             GamesListByNetworkView.as_view(),
             {"kind": "training"},
             name="training_games_list_by_network"
         ),
         path(
-            "frontend/rating-games/<run>/by-network/<network>/",
+            "rating-games/<run>/by-network/<network>/",
             GamesListByNetworkView.as_view(),
             {"kind": "rating"},
             name="rating_games_list_by_network"
         ),
         path(
-            "frontend/training-games/<run>/by-user/<user>/",
+            "training-games/<run>/by-user/<user>/",
             GamesListByUserView.as_view(),
             {"kind": "training"},
             name="training_games_list_by_user"
         ),
         path(
-            "frontend/rating-games/<run>/by-user/<user>/",
+            "rating-games/<run>/by-user/<user>/",
             GamesListByUserView.as_view(),
             {"kind": "rating"},
             name="rating_games_list_by_user"
         ),
         path(
-            "frontend/sgfplayer/training-games/<id>/",
+            "sgfplayer/training-games/<id>/",
             SgfDetailView.as_view(),
             {"kind": "training"},
             name="sgfplayer_training"
         ),
         path(
-            "frontend/sgfplayer/rating-games/<id>/",
+            "sgfplayer/rating-games/<id>/",
             SgfDetailView.as_view(),
             {"kind": "rating"},
             name="sgfplayer_rating"
@@ -162,7 +162,7 @@ urlpatterns = (
 
         # Contributions --------------------------------------------------------
 
-        path("frontend/contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions"),
+        path("contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions"),
     ]
     + api_swagger
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
