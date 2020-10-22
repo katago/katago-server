@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load custom_time_formatting %}
+{% load custom_url_tags %}
 
 {% block title %}
 {% if not run %}
@@ -31,16 +32,14 @@
     <th> {% trans "Approx Elo Rating" %} </th>
     <th> {% trans "Download" %} </th>
     <th> {% trans "Raw TF Weights" %} </th>
-    <th> {% trans "Extra Notes" %} </th>
   </tr>
   {% for network in network_list %}
   <tr>
     <td> {{ network.name }} </td>
     <td> {{ network.created_at|isotimestr }} </td>
     <td> {{ network.rating }} </td>
-    <td> {{ network.download_link_html|safe }} </td>
-    <td> {{ network.zip_download_link_html|safe }} </td>
-    <td> {{ network.notes }} </td>
+    <td> {{ network.model_file|file_download_link_html|safe }} </td>
+    <td> {{ network.model_zip_file|file_download_link_html|safe }} </td>
   </tr>
   {% endfor %}
 </table>

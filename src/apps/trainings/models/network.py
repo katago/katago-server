@@ -32,7 +32,6 @@ validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=["appli
 validate_model_zip = FileValidator(max_size=1024 * 1024 * 1024 * 3 / 2, content_types=["application/zip"])
 alphanumeric_and_dashes = RegexValidator(r"^[-0-9a-zA-Z]*$", "Only alphanumeric or dash characters are allowed.")
 
-download_translated = _("Download")
 
 class Network(Model):
     """
@@ -128,18 +127,6 @@ class Network(Model):
     @property
     def rating(self):
         return f"{self.elo} ± {2 * self.elo_uncertainty}"
-
-    @property
-    def download_link_html(self):
-        if self.model_file:
-            return f'<a href="{self.model_file.url}">[{download_translated}]</a>'
-        return ""
-    @property
-    def zip_download_link_html(self):
-        if self.model_zip_file:
-            return f'<a href="{self.model_zip_file.url}">[{download_translated}]</a>'
-        return ""
-
 
     def save(self, *args, **kwargs):
         # Allow blank file only if random
