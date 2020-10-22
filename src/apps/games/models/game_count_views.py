@@ -16,49 +16,56 @@ class GameCountByNetwork(pg.MaterializedView):
 
     sql = """
     SELECT
-      trainingcounts.*,
-      ratingcounts.total_num_rating_games as total_num_rating_games,
-      ratingcounts.total_rating_score as total_rating_score,
+      counts.*,
       trainings_network.name as network_name,
       trainings_network.run_id as run_id,
       trainings_network.created_at as network_created_at
-    FROM (
-      SELECT
-      black_network_id as network_id,
-      count(*) as total_num_training_games,
-      sum(num_training_rows) as total_num_training_rows
-      FROM games_traininggame
-      GROUP BY black_network_id
-    ) trainingcounts
-    INNER JOIN
+    FROM
     (
-      SELECT network_id, sum(num_games) as total_num_rating_games, sum(score) as total_rating_score
-      FROM
+      SELECT
+        COALESCE(trainingcounts.network_id, ratingcounts.network_id) as network_id,
+        COALESCE(trainingcounts.total_num_training_games, 0) as total_num_training_games,
+        COALESCE(trainingcounts.total_num_training_rows, 0) as total_num_training_rows,
+        COALESCE(ratingcounts.total_num_rating_games, 0) as total_num_rating_games,
+        COALESCE(ratingcounts.total_rating_score,0.0) as total_rating_score
+      FROM (
+        SELECT
+        black_network_id as network_id,
+        count(*) as total_num_training_games,
+        sum(num_training_rows) as total_num_training_rows
+        FROM games_traininggame
+        GROUP BY black_network_id
+      ) trainingcounts
+      FULL OUTER JOIN
       (
+        SELECT network_id, sum(num_games) as total_num_rating_games, sum(score) as total_rating_score
+        FROM
         (
-          SELECT
-          black_network_id as network_id,
-          count(*) as num_games,
-          sum(case when winner = 'B' then 1 when winner = 'W' then 0 else 0.5 end) as score
-          FROM games_ratinggame
-          GROUP BY black_network_id
-        )
-        UNION ALL
-        (
-          SELECT
-          white_network_id as network_id,
-          count(*) as num_games,
-          sum(case when winner = 'W' then 1 when winner = 'B' then 0 else 0.5 end) as score
-          FROM games_ratinggame
-          GROUP BY white_network_id
-        )
-      ) subquery
-      GROUP BY network_id
-    ) ratingcounts
-    ON trainingcounts.network_id = ratingcounts.network_id
+          (
+            SELECT
+            black_network_id as network_id,
+            count(*) as num_games,
+            sum(case when winner = 'B' then 1 when winner = 'W' then 0 else 0.5 end) as score
+            FROM games_ratinggame
+            GROUP BY black_network_id
+          )
+          UNION ALL
+          (
+            SELECT
+            white_network_id as network_id,
+            count(*) as num_games,
+            sum(case when winner = 'W' then 1 when winner = 'B' then 0 else 0.5 end) as score
+            FROM games_ratinggame
+            GROUP BY white_network_id
+          )
+        ) subquery
+        GROUP BY network_id
+      ) ratingcounts
+      ON trainingcounts.network_id = ratingcounts.network_id
+    ) counts
     INNER JOIN
     trainings_network
-    ON trainingcounts.network_id = trainings_network.id
+    ON counts.network_id = trainings_network.id
     """
 
     network = OneToOneField(Network, primary_key=True, db_index=True, db_constraint=False, on_delete=DO_NOTHING)
@@ -85,36 +92,40 @@ class GameCountByUser(pg.MaterializedView):
 
     sql = """
     SELECT
-      CONCAT(trainingcounts.run_id, '|', trainingcounts.submitted_by_id) as id,
-      trainingcounts.submitted_by_id as user_id,
-      trainingcounts.run_id as run_id,
-      users_user.username as username,
-      trainingcounts.total_num_training_games as total_num_training_games,
-      trainingcounts.total_num_training_rows as total_num_training_rows,
-      ratingcounts.total_num_rating_games as total_num_rating_games
+      counts.*,
+      CONCAT(counts.run_id, '|', counts.user_id) as id,
+      users_user.username as username
     FROM (
       SELECT
-      submitted_by_id,
-      run_id,
-      count(*) as total_num_training_games,
-      sum(num_training_rows) as total_num_training_rows
-      FROM games_traininggame
-      GROUP BY submitted_by_id, run_id
-    ) trainingcounts
-    INNER JOIN
-    (
-      SELECT
-      submitted_by_id,
-      run_id,
-      count(*) as total_num_rating_games
-      FROM games_ratinggame
-      GROUP BY submitted_by_id, run_id
-    ) ratingcounts
-    ON trainingcounts.submitted_by_id = ratingcounts.submitted_by_id
-    AND trainingcounts.run_id = ratingcounts.run_id
+        COALESCE(trainingcounts.submitted_by_id, ratingcounts.submitted_by_id) as user_id,
+        COALESCE(trainingcounts.run_id, ratingcounts.run_id) as run_id,
+        COALESCE(trainingcounts.total_num_training_games, 0) as total_num_training_games,
+        COALESCE(trainingcounts.total_num_training_rows, 0) as total_num_training_rows,
+        COALESCE(ratingcounts.total_num_rating_games, 0) as total_num_rating_games
+      FROM (
+        SELECT
+        submitted_by_id,
+        run_id,
+        count(*) as total_num_training_games,
+        sum(num_training_rows) as total_num_training_rows
+        FROM games_traininggame
+        GROUP BY submitted_by_id, run_id
+      ) trainingcounts
+      FULL OUTER JOIN
+      (
+        SELECT
+        submitted_by_id,
+        run_id,
+        count(*) as total_num_rating_games
+        FROM games_ratinggame
+        GROUP BY submitted_by_id, run_id
+      ) ratingcounts
+      ON trainingcounts.submitted_by_id = ratingcounts.submitted_by_id
+      AND trainingcounts.run_id = ratingcounts.run_id
+    ) counts
     INNER JOIN
     users_user
-    ON trainingcounts.submitted_by_id = users_user.id
+    ON counts.user_id = users_user.id
     """
 
     # Django insists on having a single primary key field. So we smash user and run together
