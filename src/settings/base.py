@@ -70,7 +70,8 @@ THIRD_PARTY_APPS = [
     "solo",
     "django_filters",
     "drf_yasg",
-    "bulma"
+    "bulma",
+    "django_pgviews",
 ]
 
 LOCAL_APPS = [

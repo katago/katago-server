@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load custom_url_tags %}
+{% load custom_translation %}
 
 {% block title %}
 {% if not run %}
@@ -22,20 +23,20 @@
 <h1 class="title">{% blocktrans with run_name=run.name %}Games for {{run_name}} by Network{% endblocktrans %}</h1>
 {% endif %}
 
-{% if run and network_list|length <= 0 %}
+{% if run and group_list|length <= 0 %}
 {% trans "No games found for this run!" %}
-{% elif run and network_list|length > 0 %}
+{% elif run and group_list|length > 0 %}
 <table class="table">
   <tr>
     <th> {% trans "Network" %} </th>
     <th> {% trans "Training Games" %} </th>
     <th> {% trans "Rating Games" %} </th>
   </tr>
-  {% for network in network_list %}
+  {% for group in group_list %}
   <tr>
-    <td> {{ network.name }} </td>
-    <td> <a href="{% training_games_list_by_network run.name network.name %}"> {{ training_games_translated }} </td>
-    <td> <a href="{% rating_games_list_by_network run.name network.name %}"> {{ rating_games_translated }} </td>
+    <td> {{ group.network_name }} </td>
+    <td> <a href="{% training_games_list_by_network run.name group.network_name %}"> {{ group.total_num_training_games|as_n_training_games_str }} </td>
+    <td> <a href="{% rating_games_list_by_network run.name group.network_name %}"> {{ group.total_num_rating_games|as_n_rating_games_str }} </td>
   </tr>
   {% endfor %}
 </table>
