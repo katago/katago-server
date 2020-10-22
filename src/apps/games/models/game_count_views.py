@@ -4,6 +4,7 @@ from django_pgviews import view as pg
 
 from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
+from src.apps.users.models import User
 
 
 class GameCountByNetwork(pg.MaterializedView):
@@ -73,4 +74,62 @@ class GameCountByNetwork(pg.MaterializedView):
     class Meta:
         managed = False
         db_table = "games_gamecountbynetwork"
+
+
+class GameCountByUser(pg.MaterializedView):
+    """
+    A materialized view that serves extremely fast access to slightly-outdated counts of rating and games by user
+    """
+
+    concurrent_index = "id"
+
+    sql = """
+    SELECT
+      CONCAT(trainingcounts.run_id, '|', trainingcounts.submitted_by_id) as id,
+      trainingcounts.submitted_by_id as user_id,
+      trainingcounts.run_id as run_id,
+      users_user.username as username,
+      trainingcounts.total_num_training_games as total_num_training_games,
+      trainingcounts.total_num_training_rows as total_num_training_rows,
+      ratingcounts.total_num_rating_games as total_num_rating_games
+    FROM (
+      SELECT
+      submitted_by_id,
+      run_id,
+      count(*) as total_num_training_games,
+      sum(num_training_rows) as total_num_training_rows
+      FROM games_traininggame
+      GROUP BY submitted_by_id, run_id
+    ) trainingcounts
+    INNER JOIN
+    (
+      SELECT
+      submitted_by_id,
+      run_id,
+      count(*) as total_num_rating_games
+      FROM games_ratinggame
+      GROUP BY submitted_by_id, run_id
+    ) ratingcounts
+    ON trainingcounts.submitted_by_id = ratingcounts.submitted_by_id
+    AND trainingcounts.run_id = ratingcounts.run_id
+    INNER JOIN
+    users_user
+    ON trainingcounts.submitted_by_id = users_user.id
+    """
+
+    # Django insists on having a single primary key field. So we smash user and run together
+    # to make this single field to make django happy
+    id = CharField(max_length=128, primary_key=True, db_index=True)
+
+    user = ForeignKey(User, db_index=True, db_constraint=False, on_delete=DO_NOTHING)
+    run = ForeignKey(Run, db_index=True, db_constraint=False, on_delete=DO_NOTHING)
+    username = CharField(max_length=255, db_index=True)
+
+    total_num_training_games = IntegerField(null=False, db_index=True)
+    total_num_training_rows = IntegerField(null=False)
+    total_num_rating_games = IntegerField(null=False, db_index=True)
+
+    class Meta:
+        managed = False
+        db_table = "games_gamecountbyuser"
 

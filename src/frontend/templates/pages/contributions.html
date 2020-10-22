@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load custom_url_tags %}
+{% load custom_translation %}
 
 {% block title %}
 {% if not run %}
@@ -34,8 +35,8 @@
   {% for user in user_list %}
   <tr>
     <td> {{ user.username }} </td>
-    <td> <a href="{% training_games_list_by_user run.name user.username %}"> {% trans "Training Games" %} </td>
-    <td> <a href="{% rating_games_list_by_user run.name user.username %}"> {% trans "Rating Games" %} </td>
+    <td> <a href="{% training_games_list_by_user run.name user.username %}"> {{ user.total_num_training_games|as_n_training_games_str }} </td>
+    <td> <a href="{% rating_games_list_by_user run.name user.username %}"> {{ user.total_num_rating_games|as_n_rating_games_str }} </td>
   </tr>
   {% endfor %}
 </table>

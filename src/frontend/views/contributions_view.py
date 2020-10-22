@@ -4,6 +4,7 @@ from django.http import Http404
 
 from src.apps.runs.models import Run
 from src.apps.users.models import User
+from src.apps.games.models import GameCountByUser
 
 from . import view_utils
 
@@ -15,7 +16,7 @@ class ContributionsView(ListView):
     view_utils.set_current_run_or_run_from_url_for_view_get_queryset(self)
     if self.run is None:
       return []
-    return User.objects.all()
+    return GameCountByUser.objects.filter(run=self.run).order_by("-total_num_training_games")
 
 
   def get_context_data(self, **kwargs):
