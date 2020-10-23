@@ -1,6 +1,6 @@
 from src import celery_app
 
-from src.apps.games.models import GameCountByNetwork, GameCountByUser
+from src.apps.games.models import GameCountByNetwork, GameCountByUser, RecentGameCountByUser
 
 
 @celery_app.task()
@@ -11,3 +11,4 @@ def refresh_materialized_game_views():
     """
     GameCountByNetwork.refresh(concurrently=True)
     GameCountByUser.refresh(concurrently=True)
+    RecentGameCountByUser.refresh(concurrently=True)
