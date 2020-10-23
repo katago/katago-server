@@ -10,8 +10,12 @@ from django.db import migrations
 def update_site_forward(apps, schema_editor):
     """Set site domain and name."""
     Site = apps.get_model("sites", "Site")
+
+    if not hasattr(settings,"SITE_DOMAIN_FOR_MIGRATION") or not hasattr(settings,"SITE_NAME_FOR_MIGRATION"):
+        raise ValueError("django settings module needs to contain SITE_DOMAIN_FOR_MIGRATION and SITE_NAME_FOR_MIGRATION")
+
     Site.objects.update_or_create(
-        id=settings.SITE_ID, defaults={"domain": "katago.tycoach.me", "name": "katago-server",},
+        id=settings.SITE_ID, defaults={"domain": settings.SITE_DOMAIN_FOR_MIGRATION, "name": settings.SITE_NAME_FOR_MIGRATION,},
     )
 
 

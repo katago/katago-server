@@ -18,7 +18,14 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["katago.tycoach.me"])
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
+
+# "site" domain for cookiecutters migration, which populates the "sites" db on the very first migration after
+# the site is built with these values, which is used in a production setting for full absolute URL building and
+# other such stuff.
+# See src/contrib/sites/migrations/0003_set_site_domain_and_name.py
+SITE_DOMAIN_FOR_MIGRATION=env("DJANGO_SITE_DOMAIN_FOR_MIGRATION")
+SITE_NAME_FOR_MIGRATION=env("DJANGO_SITE_NAME_FOR_MIGRATION")
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -108,7 +115,7 @@ TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa F405
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
-DEFAULT_FROM_EMAIL = env("DJANGO_DEFAULT_FROM_EMAIL", default="katago-server <noreply@katago.tycoach.me>")
+DEFAULT_FROM_EMAIL = env("DJANGO_DEFAULT_FROM_EMAIL")
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
