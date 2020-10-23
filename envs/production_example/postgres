@@ -1,0 +1,9 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=katago_server_db
+POSTGRES_USER=katago_server_user
+
+# Uncomment and make up a long and secure password:
+# POSTGRES_PASSWORD=

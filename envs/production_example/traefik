@@ -1,0 +1,3 @@
+# Uncomment and set this to your domain or subdomain that you will run this site out of
+# like example.com or mysubdomain.example.com
+# TRAEFIK_ROUTER_DOMAIN_NAME=

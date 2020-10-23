@@ -15,8 +15,8 @@ services:
     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
     restart: always
     env_file:
-      - ./.envs/.production/.datadog
-      - ./.envs/.production/.postgres
+      - ./envs/production/datadog
+      - ./envs/production/postgres
 
   django: &django
     build:
@@ -27,8 +27,8 @@ services:
       - postgres
       - redis
     env_file:
-      - ./.envs/.production/.django
-      - ./.envs/.production/.postgres
+      - ./envs/production/django
+      - ./envs/production/postgres
     volumes:
       - ${UPLOADED_DATA_DIRECTORY:-./data}:/data
     command: /start
@@ -43,7 +43,7 @@ services:
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups
     env_file:
-      - ./.envs/.production/.postgres
+      - ./envs/production/postgres
     command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
     labels:
       com.datadoghq.ad.check_names: '["postgres"]'
@@ -65,6 +65,20 @@ services:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
       - "0.0.0.0:5555:5555"
+    command:
+      - "--log.level=INFO"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.flower.address=:5555"
+      - "--certificatesresolvers.letsencrypt=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_LETSENCRYPT_EMAIL:?traefik_letsencrypt_email_env_missing}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--providers.file.filename=/etc/traefik/traefik.toml"
+      - "--providers.file.watch=true"
+    env_file:
+      - ./envs/production/traefik
 
   nginx:
     image: nginx
