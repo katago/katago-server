@@ -1,0 +1,8 @@
+# If you would like the server's uploaded files (sgfs,npzs) to get stored to somewhere other than
+# ./data within this base directory, uncomment and specify the path here
+# UPLOADED_DATA_DIRECTORY=/examplepath/to/dir
+
+# Uncomment and set this to your own email, this is the contact for traefik's ssl stuff
+# It gets sent to letsencrypt as a contact address if something is wrong or whatever.
+# TRAEFIK_LETSENCRYPT_EMAIL=someone@example.com
+

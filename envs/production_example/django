@@ -1,0 +1,70 @@
+
+# General
+# ------------------------------------------------------------------------------
+DJANGO_SETTINGS_MODULE=src.settings.production
+
+# Uncomment and set this to your domain or subdomain that you will run this site out of
+# like example.com or mysubdomain.example.com
+# DJANGO_ALLOWED_HOSTS=example.com
+
+# Uncomment and set this to a very long and unique alphanumeric string
+# DJANGO_SECRET_KEY=
+
+# Controls the relative URL that the admin panel of the website will be accessible through
+DJANGO_ADMIN_URL=admin
+
+
+# Email
+# ------------------------------------------------------------------------------
+
+# Sign up for mailgun and set it up, and when it is working, uncomment and put their API key here
+# and also configure the relevant email addreses and domains here
+# MAILGUN_API_KEY=somelonghexstring-somemorehex-somemorehex
+# DJANGO_SERVER_EMAIL=noreply@mail.example.com
+# DJANGO_DEFAULT_FROM_EMAIL=katago-server <noreply@mail.example.com>
+# MAILGUN_DOMAIN=mail.example.com
+
+
+# django-allauth
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+
+# django-compressor
+# ------------------------------------------------------------------------------
+COMPRESS_ENABLED=
+
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+
+# Uncomment and set this to a larger number probably somewhat larger than the number of cores
+# you have. This is how many parallel handler processes you have for web requests to the server.
+# WEB_CONCURRENCY=1
+
+
+# APM
+# ------------------------------------------------------------------------------
+DD_AGENT_HOST=datadog-agent
+DD_TRACE_AGENT_PORT=8126
+
+
+# Sentry
+# ------------------------------------------------------------------------------
+
+# Sign up for sentry.io and set it up, and when it is working, uncomment and put your DSN here.
+# SENTRY_DSN=https://somelongstring@blahblah.ingest.sentry.io/somenumbers
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=katago_server_user
+
+# Uncomment and make up a long and secure password
+# CELERY_FLOWER_PASSWORD=

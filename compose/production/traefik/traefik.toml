@@ -1,52 +1,37 @@
-[log]
-  level = "INFO"
-
-[entryPoints]
-  [entryPoints.web]
-    address = ":80"
-  [entryPoints.web-secure]
-    address = ":443"
-  [entryPoints.flower]
-    address = ":5555"
-
-[certificatesResolvers]
-  [certificatesResolvers.letsencrypt]
-    [certificatesResolvers.letsencrypt.acme]
-      email = "tychot@bam.tech"
-      storage = "/etc/traefik/acme/acme.json"
-      [certificatesResolvers.letsencrypt.acme.httpChallenge]
-        entryPoint = "web"
+# This is traefik's dynamic configuration ONLY
+# The static configuration for traefik is specified via command line arguments
+# through docker compose.
 
 [tls.options]
   [tls.options.default]
     minVersion = "VersionTLS12"
-    
+
 [http.routers]
   [http.routers.media]
-    rule = "Host(`katago.tycoach.me`) && PathPrefix(`/media`)"
+    rule = "Host(`{{env "TRAEFIK_ROUTER_DOMAIN_NAME"}}`) && PathPrefix(`/media`)"
     entryPoints = ["web"]
     middlewares = ["redirect"]
     service = "nginx"
   [http.routers.media-secure]
-    rule = "Host(`katago.tycoach.me`) && PathPrefix(`/media`)"
+    rule = "Host(`{{env "TRAEFIK_ROUTER_DOMAIN_NAME"}}`) && PathPrefix(`/media`)"
     entryPoints = ["web-secure"]
     service = "nginx"
     [http.routers.media-secure.tls]
       certResolver = "letsencrypt"
   [http.routers.web]
-    rule = "Host(`katago.tycoach.me`)"
+    rule = "Host(`{{env "TRAEFIK_ROUTER_DOMAIN_NAME"}}`)"
     entryPoints = ["web"]
     middlewares = ["redirect", "csrf"]
     service = "django"
   [http.routers.web-secure]
-    rule = "Host(`katago.tycoach.me`)"
+    rule = "Host(`{{env "TRAEFIK_ROUTER_DOMAIN_NAME"}}`)"
     entryPoints = ["web-secure"]
     middlewares = ["csrf"]
     service = "django"
     [http.routers.web-secure.tls]
       certResolver = "letsencrypt"
   [http.routers.flower]
-    rule = "Host(`katago.tycoach.me`)"
+    rule = "Host(`{{env "TRAEFIK_ROUTER_DOMAIN_NAME"}}`)"
     entryPoints = ["flower"]
     service = "flower"
     [http.routers.flower.tls]
@@ -69,8 +54,3 @@
   [http.services.flower.loadBalancer]
     [[http.services.flower.loadBalancer.servers]]
       url = "http://flower:5555"
-
-[providers]
-  [providers.file]    
-    filename = "/etc/traefik/traefik.toml"
-    watch = true
