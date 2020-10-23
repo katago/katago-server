@@ -35,3 +35,9 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# Dummy "site" domain for cookiecutters migration, which populates the "sites" db on the very first migration after
+# the site is built with these values, which is used in a production setting for full absolute URL building and
+# other such stuff
+SITE_DOMAIN_FOR_MIGRATION="example.com"
+SITE_NAME_FOR_MIGRATION="example.com"
