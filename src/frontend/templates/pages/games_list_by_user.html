@@ -6,18 +6,18 @@
 
 {% block title %}
 {% if kind == "training" %}
-{% blocktrans with user_name=user.username run_name=run.name %} KataGo - Training Games from {{user_name}} for {{run_name}} {% endblocktrans %}
+{% blocktrans with user_name=user.username %} KataGo - Training Games from {{user_name}} {% endblocktrans %}
 {% else %}
-{% blocktrans with user_name=user.username run_name=run.name %} KataGo - Rating Games from {{user_name}} for {{run_name}} {% endblocktrans %}
+{% blocktrans with user_name=user.username %} KataGo - Rating Games from {{user_name}} {% endblocktrans %}
 {% endif %}
 {% endblock %}
 
 {% block content %}
 
 {% if kind == "training" %}
-<h1 class="title">{% blocktrans with user_name=user.username run_name=run.name %} Training Games from {{user_name}} for {{run_name}} {% endblocktrans %}</h1>
+<h1 class="title">{% blocktrans with user_name=user.username %} Training Games from {{user_name}} {% endblocktrans %}</h1>
 {% else %}
-<h1 class="title">{% blocktrans with user_name=user.username run_name=run.name %} Rating Games from {{user_name}} for {{run_name}} {% endblocktrans %}</h1>
+<h1 class="title">{% blocktrans with user_name=user.username %} Rating Games from {{user_name}} {% endblocktrans %}</h1>
 {% endif %}
 
 {% include 'pagination.html' with other_get_params='' page_obj=page_obj %}
@@ -26,6 +26,7 @@
   <tr>
     <th> {% trans "Game ID" %} </th>
     <th> {% trans "Uploaded At" %} </th>
+    <th> {% trans "Run" %} </th>
     {% if kind == "rating" %}
     <th> {% trans "Black" %} </th>
     <th> {% trans "White" %} </th>
@@ -46,6 +47,7 @@
   <tr>
     <td> {{ game.id }} </td>
     <td> {{ game.created_at|isotimestr }} </td>
+    <td> {{ game.run.name }} </td>
     {% if kind == "rating" %}
     <td> {{ game.black_network.name }} </td>
     <td> {{ game.white_network.name }} </td>

@@ -5,27 +5,13 @@
 {% load custom_translation %}
 
 {% block title %}
-{% if not run %}
 {% trans "KataGo - Contributors" %}
-{% else %}
-{% blocktrans with run_name=run.name %} KataGo - Contributors for {{run_name}} {% endblocktrans %}
-{% endif %}
 {% endblock %}
-
 
 {% block content %}
 
-{% if not run %}
-{% trans "No currently active run." %}
-{% elif viewing_current_run %}
-<h1 class="title">{% blocktrans with run_name=run.name %}Contributors for Current Run ({{run_name}}){% endblocktrans %}</h1>
-{% else %}
-<h1 class="title">{% blocktrans with run_name=run.name %}Contributors for {{run_name}}{% endblocktrans %}</h1>
-{% endif %}
+<h1 class="title">{% trans "Contributors" %}</h1>
 
-{% if run and user_list|length <= 0 %}
-{% trans "No data found for this run!" %}
-{% elif run and user_list|length > 0 %}
 <table class="table">
   <tr>
     <th> {% trans "User" %} </th>
@@ -35,27 +21,10 @@
   {% for user in user_list %}
   <tr>
     <td> {{ user.username }} </td>
-    <td> <a href="{% training_games_list_by_user run.name user.username %}"> {{ user.total_num_training_games|as_n_training_games_str }} </td>
-    <td> <a href="{% rating_games_list_by_user run.name user.username %}"> {{ user.total_num_rating_games|as_n_rating_games_str }} </td>
+    <td> <a href="{% training_games_list_by_user user.username %}"> {{ user.total_num_training_games|as_n_training_games_str }} </td>
+    <td> <a href="{% rating_games_list_by_user user.username %}"> {{ user.total_num_rating_games|as_n_rating_games_str }} </td>
   </tr>
   {% endfor %}
 </table>
-{% endif %}
-
-{% if other_runs_to_show|length > 0 %}
-<h1 class="title"> {% trans "Contributors for Other Runs" %} </h1>
-<ul>
-<table class="table">
-  <tr>
-    <th> {% trans "Run Name" %} </th>
-  </tr>
-
-  {% for run in other_runs_to_show %}
-  <tr>
-    <td><a href="{% url 'contributions' run.name %}"> {{ run.name }}</a></td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
 
 {% endblock content %}

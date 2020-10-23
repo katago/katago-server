@@ -110,11 +110,6 @@ urlpatterns = (
             "contributions/",
             ContributionsView.as_view(),
             {"run": None},
-            name="current_run_contributions"
-        ),
-        path(
-            "contributions/<run>/",
-            ContributionsView.as_view(),
             name="contributions"
         ),
 
@@ -124,25 +119,25 @@ urlpatterns = (
         # **********************************************************
 
         path(
-            "training-games/<run>/by-network/<network>/",
+            "networks/<run>/<network>/training-games/",
             GamesListByNetworkView.as_view(),
             {"kind": "training"},
             name="training_games_list_by_network"
         ),
         path(
-            "rating-games/<run>/by-network/<network>/",
+            "networks/<run>/<network>/rating-games/",
             GamesListByNetworkView.as_view(),
             {"kind": "rating"},
             name="rating_games_list_by_network"
         ),
         path(
-            "training-games/<run>/by-user/<user>/",
+            "contributions/<user>/training-games/",
             GamesListByUserView.as_view(),
             {"kind": "training"},
             name="training_games_list_by_user"
         ),
         path(
-            "rating-games/<run>/by-user/<user>/",
+            "contributions/<user>/rating-games/",
             GamesListByUserView.as_view(),
             {"kind": "rating"},
             name="rating_games_list_by_user"
@@ -160,9 +155,6 @@ urlpatterns = (
             name="sgfplayer_rating"
         ),
 
-        # Contributions --------------------------------------------------------
-
-        path("contributions/", TemplateView.as_view(template_name="pages/contributions.html"), name="contributions"),
     ]
     + api_swagger
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
