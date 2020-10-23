@@ -9,19 +9,19 @@ register = template.Library()
 
 @register.simple_tag
 def training_games_list_by_network(run_name, network_name):
-    return f"/training-games/{run_name}/by-network/{network_name}/"
+    return f"/networks/{run_name}/{network_name}/training-games/"
 
 @register.simple_tag
 def rating_games_list_by_network(run_name, network_name):
-    return f"/rating-games/{run_name}/by-network/{network_name}/"
+    return f"/networks/{run_name}/{network_name}/rating-games/"
 
 @register.simple_tag
-def training_games_list_by_user(run_name, user_name):
-    return f"/training-games/{run_name}/by-user/{user_name}/"
+def training_games_list_by_user(user_name):
+    return f"/contributions/{user_name}/training-games/"
 
 @register.simple_tag
-def rating_games_list_by_user(run_name, user_name):
-    return f"/rating-games/{run_name}/by-user/{user_name}/"
+def rating_games_list_by_user(user_name):
+    return f"/contributions/{user_name}/rating-games/"
 
 @register.simple_tag
 def sgfplayer(kind,id_number):

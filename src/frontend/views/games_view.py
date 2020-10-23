@@ -59,26 +59,24 @@ class GamesListByUserView(ListView):
   paginate_by = 100
 
   def get_queryset(self):
-    self.run = get_object_or_404(Run, name=self.kwargs["run"])
     self.user = get_object_or_404(User, username=self.kwargs["user"])
 
     if self.kwargs["kind"] == "training":
       games = TrainingGame \
               .objects \
-              .filter(submitted_by=self.user,run=self.run) \
+              .filter(submitted_by=self.user) \
               .order_by("-created_at") \
-              .prefetch_related("black_network","white_network")
+              .prefetch_related("run","black_network","white_network")
     else:
       games = RatingGame \
               .objects \
-              .filter(submitted_by=self.user,run=self.run) \
+              .filter(submitted_by=self.user) \
               .order_by("-created_at") \
-              .prefetch_related("black_network","white_network")
+              .prefetch_related("run","black_network","white_network")
     return games
 
   def get_context_data(self, **kwargs):
       context = super().get_context_data(**kwargs)
-      context["run"] = self.run
       context["user"] = self.user
       context["kind"] = self.kwargs["kind"]
       if self.kwargs["kind"] == "training":
