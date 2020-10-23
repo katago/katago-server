@@ -161,30 +161,30 @@ these steps happen automatically simply when you "up" the server, but for prod, 
 Helpful links
 --------
 
-Docker: https://docs.docker.com/get-started/overview/
-Docker compose: https://docs.docker.com/compose/compose-file/
-Django server settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
-Django model fields for defining models and the backend: https://docs.djangoproject.com/en/3.1/ref/models/fields/
-Django queryset API for accessing db within django: https://docs.djangoproject.com/en/3.1/ref/models/querysets/
-Django template language for frontend: https://docs.djangoproject.com/en/3.1/ref/templates/
-Postgres SQL language reference: https://www.postgresql.org/docs/12/queries.html
-Traefik: https://doc.traefik.io/traefik/getting-started/configuration-overview/
-Django cookiecutter docker: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
-CSS reloading and SASS: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
+* Docker: https://docs.docker.com/get-started/overview/
+* Docker compose: https://docs.docker.com/compose/compose-file/
+* Django server settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
+* Django model fields for defining models and the backend: https://docs.djangoproject.com/en/3.1/ref/models/fields/
+* Django queryset API for accessing db within django: https://docs.djangoproject.com/en/3.1/ref/models/querysets/
+* Django template language for frontend: https://docs.djangoproject.com/en/3.1/ref/templates/
+* Postgres SQL language reference: https://www.postgresql.org/docs/12/queries.html
+* Traefik: https://doc.traefik.io/traefik/getting-started/configuration-overview/
+* Django cookiecutter docker: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
+* CSS reloading and SASS: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
 
 
 Email Server
 ^^^^^^^^^^^^
 lightvector: This bit is leftover from the django cookiecutter readme, I'm not sure how relevant it is with all the docker containers in the way, but it sounds maybe like a useful thing to be able to do when testing, modulo the fact that there's potentially a docker container layer in between that you have to work through?.
 
-In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server `MailHog`_ with a web interface is available as docker container.
+     In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server `MailHog`_ with a web interface is available as docker container.
 
-Container mailhog will start automatically when you will run all docker containers.
-Please check `cookiecutter-django Docker documentation`_ for more details how to start all containers.
+     Container mailhog will start automatically when you will run all docker containers.
+     Please check `cookiecutter-django Docker documentation`_ for more details how to start all containers.
 
-With MailHog running, to view messages that are sent by your application, open your browser and go to ``http://127.0.0.1:8025``
+     With MailHog running, to view messages that are sent by your application, open your browser and go to ``http://127.0.0.1:8025``
 
-.. _mailhog: https://github.com/mailhog/MailHog
+     .. _mailhog: https://github.com/mailhog/MailHog
 
 
 
