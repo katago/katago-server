@@ -25,6 +25,11 @@
 {% if run and network_list|length <= 0 %}
 {% trans "No networks found for this run!" %}
 {% elif run and network_list|length > 0 %}
+
+{% blocktrans with katago_releases_url="https://github.com/lightvector/KataGo/releases" %}
+Stats and download links for all the neural networks from the current run. Downloaded nets can be used directly with <a href="{{katago_releases_url}}">KataGo</a>.
+{% endblocktrans %}
+
 <table class="table">
   <tr>
     <th> {% trans "Name" %} </th>
