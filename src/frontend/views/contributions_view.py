@@ -24,7 +24,7 @@ class ContributionsView(ListView):
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context["recent_user_list"] = (
+    context["top_recent_user_list"] = (
       RecentGameCountByUser \
       .objects \
       .all() \
