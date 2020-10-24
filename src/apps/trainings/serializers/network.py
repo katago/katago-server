@@ -78,3 +78,19 @@ class NetworkSerializerForTasks(HyperlinkedModelSerializer):
             "url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
         }
+
+class NetworkSerializerForElo(HyperlinkedModelSerializer):
+    """
+    Serializer exposing only the fields of a network for plotting the network strength over time
+    """
+
+    class Meta:
+        model = Network
+        fields = [
+            "name",
+            "created_at",
+            "network_size",
+            "total_num_data_rows",
+            "log_gamma",
+            "log_gamma_uncertainty",
+        ]

@@ -14,7 +14,7 @@ from drf_yasg import openapi
 from src.apps.distributed_efforts.viewsets import DistributedTaskViewSet
 from src.apps.games.viewsets import TrainingGameViewSet, RatingGameViewSet
 from src.apps.runs.viewsets import RunViewSet
-from src.apps.trainings.viewsets import NetworkViewSet
+from src.apps.trainings.viewsets import NetworkViewSet, NetworkViewSetForElo
 from src.apps.users.viewsets import UserViewSet
 from src.apps.startposes.viewsets import StartPosViewSet
 
@@ -45,6 +45,7 @@ admin.site.unregister(CrontabSchedule)
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"networks", NetworkViewSet)
+router.register(r"networks-for-elo", NetworkViewSetForElo, basename="networks-for-elo")
 router.register(r"startposes", StartPosViewSet)
 router.register(r"games/training", TrainingGameViewSet)
 router.register(r"games/rating", RatingGameViewSet)

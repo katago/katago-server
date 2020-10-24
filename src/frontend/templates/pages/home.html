@@ -4,12 +4,280 @@
 {% load custom_translation %}
 
 {% block extra_html_head_stuff %}
-<script src="https://d3js.org/d3.v4.js"></script>
+<link type="text/css" href="/static/css/elo-graph.css" rel="stylesheet" />
+
+<script src="https://d3js.org/d3.v6.min.js"></script>
+
+{% if run %}
+{% url 'networks-for-elo-list' as networks_for_elo_list_url %}
 <script>
+var api_url = "{{networks_for_elo_list_url|escapejs}}";
+var run_name = "{{run.name|escapejs}}";
+
+function makeGraph() {
+  d3.json(api_url + "?run__name=" + run_name).then(function(networks) {
+    // Extract unique network sizes
+    var networkSizes = new Set(networks.map(network => network["network_size"]));
+    // Natural numeric sort
+    var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+    var compare = function(a,b) {
+      aIsRandom = a.toLowerCase() == "random";
+      bIsRandom = b.toLowerCase() == "random";
+      if(aIsRandom && bIsRandom)
+        return 0;
+      if(aIsRandom)
+        return -1;
+      if(bIsRandom)
+        return 1;
+      return collator.compare(a,b);
+    };
+    networkSizes = Array.from(networkSizes).sort(compare);
+
+    console.log(networkSizes);
+
+    var eloPerLogGamma = Math.log10(Math.E) * 400.0;
+    for(var i = 0; i<networks.length; i++) {
+      var network = networks[i];
+      network["time"] = new Date(network["created_at"]);
+      network["elo"] = network["log_gamma"] * eloPerLogGamma;
+      network["elostdev"] = network["log_gamma_uncertainty"] * eloPerLogGamma;
+    }
+    var minCreatedAt = d3.min(networks.map(network => network["time"]));
+    var maxCreatedAt = d3.max(networks.map(network => network["time"]));
+
+    var eloGraphDiv = d3.select("#eloGraph");
+
+    // These are internal coordinates to the SVG - the actual size is scaled to whatever
+    // size can fit on the user's browser, through CSS magic.
+    var wholeGraphWidth = 800;
+    var wholeGraphHeight = 540;
+
+    var svg =
+        eloGraphDiv
+        .append("div")
+        .classed("svg-container", true)
+        .append("svg")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 " + wholeGraphWidth + " " + wholeGraphHeight)
+        .classed("svg-content-responsive", true);
+
+    // Set aside space for axes
+    var axisMargin = {top: 10, right: 30, bottom: 30, left: 60};
+    // The space of the graph to plot stuff, after taking out the axes
+    var graphSpace =
+        svg
+        .append("g")
+        .attr("transform","translate(" + axisMargin.left + "," + axisMargin.top + ")");
+    var graphSpaceWidth = wholeGraphWidth - axisMargin.left - axisMargin.right;
+    var graphSpaceHeight = wholeGraphHeight - axisMargin.top - axisMargin.bottom;
+
+    // X axis
+    var timeBuffer = 0.01 * (maxCreatedAt.getTime() - minCreatedAt.getTime());
+    var xDomainMin = new Date(minCreatedAt.getTime()-timeBuffer);
+    var xDomainMax = new Date(maxCreatedAt.getTime()+timeBuffer);
+    var xScale =
+        d3.scaleTime()
+        .domain([xDomainMin, xDomainMax])
+        .range([0, graphSpaceWidth]);
+    var renderXAxis = function(xAxis) {
+      xAxis.call(d3.axisBottom(xScale).tickSize(-graphSpaceHeight*1.0).ticks(10));
+    };
+    var xAxis =
+        graphSpace.append("g")
+        .attr("transform", "translate(0," + graphSpaceHeight + ")");
+    renderXAxis(xAxis);
+
+    // Takes the xDomain and finds a reasonable y elo range to capture all networks that fall within that range of time.
+    var computeYDomainFromXDomain = function(xDomain) {
+      var filtered = networks.filter(network => network["time"] >= xDomain[0] && network["time"] <= xDomain[1]);
+      var minElo = d3.min(filtered.map(network => network["elo"] - Math.min(300, 2.5 * network["elostdev"])));
+      var maxElo = d3.max(filtered.map(network => network["elo"] + Math.min(300, 2.5 * network["elostdev"])));
+      // No elements
+      if(minElo === undefined || maxElo === undefined) {
+        minElo = 0;
+        maxElo = 100;
+      }
+      var eloBuffer = 0.01 * (maxElo - minElo);
+      minElo = minElo - eloBuffer;
+      maxElo = maxElo + eloBuffer;
+      //Also stretch out a little by scale
+      if(maxElo > 0)
+        maxElo *= 1.01;
+      if(minElo > 0)
+        minElo *= 0.99;
+
+      return [minElo, maxElo];
+    };
+
+    // Y axis
+    var yScale =
+        d3.scaleLinear()
+        .domain(computeYDomainFromXDomain(xScale.domain()))
+        .range([graphSpaceHeight, 0]);
+    var renderYAxis = function(yAxis) {
+        yAxis.call(d3.axisLeft(yScale).tickSize(-graphSpaceWidth*1.0).ticks(20));
+    };
+    var yAxis =
+        graphSpace.append("g");
+    renderYAxis(yAxis);
+
+    // Colors
+    var colorScale = d3.scaleSequential(d3.interpolateWarm).domain([0,networkSizes.length-1]);
+    var colorDict = {};
+    for(var i = 0; i<networkSizes.length; i++) {
+      colorDict[networkSizes[i]] = colorScale(i);
+    }
+
+    // Add a clipPath, so that things outside this area won't be drawn.
+    var clip =
+        graphSpace
+        .append("defs")
+        .append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("width", graphSpaceWidth)
+        .attr("height", graphSpaceHeight)
+        .attr("x", 0)
+        .attr("y", 0);
+
+    // Create a subelement that holds the data alone, clipped
+    var dataSpace =
+        graphSpace.append('g')
+        .attr("clip-path", "url(#clip)");
+
+    // Add data points
+    var defaultRadius = 1.5;
+    var largeRadius = 3;
+    var defaultStrokeWidth = 1;
+    var largeStrokeWidth = 2;
+    dataSpace.append('g')
+      .selectAll("circle")
+      .data(networks)
+      .enter()
+      .append("circle")
+      .attr("cx", network => xScale(network["time"]) )
+      .attr("cy", network => yScale(network["elo"]) )
+      .attr("r", defaultRadius)
+      .attr("class", network => "dataPoint " + "dataPoint_" + network["network_size"] )
+      .style("fill", network => colorDict[network["network_size"]] );
+    dataSpace.append('g')
+      .selectAll("line")
+      .data(networks)
+      .enter()
+      .append("line")
+      .attr("x1", network => xScale(network["time"]) )
+      .attr("y1", network => yScale(network["elo"] - 2 * network["elostdev"]) )
+      .attr("x2", network => xScale(network["time"]) )
+      .attr("y2", network => yScale(network["elo"] + 2 * network["elostdev"]) )
+      .attr("class", network => "dataUncertainty " + "dataUncertainty_" + network["network_size"] )
+      .attr("stroke-width", defaultStrokeWidth)
+      .style("stroke", network => colorDict[network["network_size"]] );
+      // .on("mouseover", highlight)
+      // .on("mouseleave", doNotHighlight )
+
+    //Add legend
+    graphSpace
+      .selectAll(".eloLegend")
+      .data(networkSizes)
+      .enter()
+      .append("g")
+      .classed("eloLegend",true)
+      .append("text")
+      .attr("x", graphSpaceWidth * 0.85)
+      .attr("y", function(networkSize,i) { return graphSpaceHeight * 0.80 + i * 20; })
+      .text(networkSize => networkSize)
+      .style("fill", networkSize => colorDict[networkSize])
+      .style("font-size", 15)
+      .on("mouseover", function(mouseEvent,networkSize) {
+        console.log(networkSize);
+        d3.selectAll(".dataPoint_" + networkSize).transition().duration(100).attr("r",largeRadius);
+        d3.selectAll(".dataUncertainty_" + networkSize).transition().duration(100).attr("stroke-width",largeStrokeWidth);
+      })
+      .on("mouseleave", function(mouseEvent,networkSize) {
+        d3.selectAll(".dataPoint_" + networkSize).transition().duration(100).attr("r",defaultRadius);
+        d3.selectAll(".dataUncertainty_" + networkSize).transition().duration(100).attr("stroke-width",defaultStrokeWidth);
+      });
+
+
+    // Handle brushing for zooming
+    var justAfterBrushing = false;
+    var recentlyClicked = false;
+    function noLongerRecentlyClicked() { recentlyClicked = false; }
+
+    var updateChartForBrush = function(event) {
+      if(justAfterBrushing)
+        return false;
+      extent = event.selection;
+      if(!extent) {
+        if(!recentlyClicked) {
+          recentlyClicked = true;
+          setTimeout(noLongerRecentlyClicked, 300);
+          return false;
+        }
+        //Upon a double-click with at most 300ms of tolerance, restore the original zoom
+        var newDomain = [xDomainMin, xDomainMax];
+        xScale.domain(newDomain);
+        yScale.domain(computeYDomainFromXDomain(newDomain));
+      }
+      else {
+        //Do nothing on zero or negative extent
+        if(extent[1] <= extent[0])
+          return false;
+
+        var newDomain = [xScale.invert(extent[0]), xScale.invert(extent[1])];
+        xScale.domain(newDomain);
+        yScale.domain(computeYDomainFromXDomain(newDomain));
+        // Remove the brush instead of letting it continue to display
+        // Also the act of doing this will cause updateChartForBrush to be recursively called
+        // back into, so suppress the effects of this with justAfterBrushing so that the recursive
+        // calls return immediately.
+        justAfterBrushing = true;
+        dataSpace.select(".brush").call(brush.move, null)
+        justAfterBrushing = false;
+      }
+
+      // Update axis and data positions
+      renderXAxis(xAxis.transition().duration(300));
+      renderYAxis(yAxis.transition().duration(300));
+      dataSpace
+        .selectAll("circle")
+        .transition().duration(300)
+        .attr("cx", network => xScale(network["time"]) )
+        .attr("cy", network => yScale(network["elo"]) )
+      dataSpace
+        .selectAll("line")
+        .transition().duration(300)
+        .attr("x1", network => xScale(network["time"]) )
+        .attr("y1", network => yScale(network["elo"] - 2 * network["elostdev"]) )
+        .attr("x2", network => xScale(network["time"]) )
+        .attr("y2", network => yScale(network["elo"] + 2 * network["elostdev"]) )
+    };
+
+    // Add brushing for zooming
+    var brush =
+        d3.brushX()
+        .extent([[0,0],[graphSpaceWidth,graphSpaceHeight]])
+        .on("end", updateChartForBrush);
+    dataSpace
+      .append("g")
+      .attr("class", "brush")
+      .call(brush);
+
+    console.log(networkSizes);
+    console.log([minCreatedAt, maxCreatedAt]);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", makeGraph);
+
 </script>
+{% endif %}
+
 {% endblock extra_html_head_stuff %}
 
+
 {% block title %}{% trans "KataGo Distributed Training" %}{% endblock %}
+
 
 {% block content %}
 
@@ -74,8 +342,10 @@ See <a href="{{ current_run_networks }}">Networks page</a> for older networks.
 <h5 class="is-size-5"> {% trans "Approximate Elo ratings" %} </h3>
 
 {% blocktrans %}
-Approximate Elo ratings of networks this run based on low numbers of playouts (mid-to-high-hundreds), based on {{ num_rating_games_this_run }} rating games,
-relative to 0 = random:
+Approximate Elo ratings of networks this run relative to 0 = random based on small numbers of playouts (mid-to-high-hundreds), computed from
+{{ num_rating_games_this_run }} rating games. The vertical line segments indicates *approximately* a 2-standard deviation (~95%) confidence interval. Nets play a
+wide variety of nearby nets, to avoid rock-paper-scissors issues, and rating games are completely fresh and unbiased by any gating or promotion issues, but
+ratings might still be mildly inflated due to the low playouts and due to only playing other KataGo nets.
 {% endblocktrans %}
 
 <div id="eloGraph"></div>
