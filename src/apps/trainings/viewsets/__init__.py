@@ -1,1 +1,1 @@
-from .network import NetworkViewSet
+from .network import NetworkViewSet, NetworkViewSetForElo
