@@ -19,6 +19,7 @@ from src.apps.users.viewsets import UserViewSet
 from src.apps.startposes.viewsets import StartPosViewSet
 
 from src.frontend.views import (
+    HomeView,
     NetworksView,
     ContributionsView,
     GameNetworkGroupsView,
@@ -75,7 +76,7 @@ api_swagger = [
 urlpatterns = (
     api_url_pattern
     + [
-        path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+        path("", HomeView.as_view(), name="home"),
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
