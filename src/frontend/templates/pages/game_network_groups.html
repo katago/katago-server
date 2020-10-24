@@ -26,17 +26,20 @@
 {% if run and group_list|length <= 0 %}
 {% trans "No games found for this run!" %}
 {% elif run and group_list|length > 0 %}
+
+{% trans "View all the games that a particular network has played in training or in rating matches against other networks:" %}
+
 <table class="table">
   <tr>
     <th> {% trans "Network" %} </th>
-    <th> {% trans "Training Games" %} </th>
-    <th> {% trans "Rating Games" %} </th>
+    <th class="has-text-right"> {% trans "Training Games" %} </th>
+    <th class="has-text-right"> {% trans "Rating Games" %} </th>
   </tr>
   {% for group in group_list %}
   <tr>
     <td> {{ group.network_name }} </td>
-    <td> <a href="{% training_games_list_by_network run.name group.network_name %}"> {{ group.total_num_training_games|as_n_training_games_str }} </td>
-    <td> <a href="{% rating_games_list_by_network run.name group.network_name %}"> {{ group.total_num_rating_games|as_n_rating_games_str }} </td>
+    <td class="has-text-right"> <a href="{% training_games_list_by_network run.name group.network_name %}"> {{ group.total_num_training_games|as_n_training_games_str }} </td>
+    <td class="has-text-right"> <a href="{% rating_games_list_by_network run.name group.network_name %}"> {{ group.total_num_rating_games|as_n_rating_games_str }} </td>
   </tr>
   {% endfor %}
 </table>

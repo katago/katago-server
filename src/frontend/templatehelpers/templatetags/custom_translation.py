@@ -5,7 +5,7 @@ register = template.Library()
 
 n_training_games_format = _("%d training games")
 n_rating_games_format = _("%d rating games")
-n_training_rows_format = _("%d data rows generated")
+n_training_rows_format = _("%d rows generated")
 
 # Peformance hack to avoid calling block translate tons of times in template in a loop
 
