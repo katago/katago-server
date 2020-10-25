@@ -13,6 +13,7 @@ from django.db.models import (
     BigAutoField,
     BooleanField,
 )
+from django.contrib.postgres.fields import JSONField
 from django.utils.translation import gettext_lazy as _
 from math import log10, e
 
@@ -65,6 +66,13 @@ class Network(Model):
     network_size = CharField(
         _("network size"), max_length=32, null=False, blank=False, help_text=_("String describing blocks and channels in network."), db_index=True,
     )
+
+    train_step = BigIntegerField(_("train step"), null=True, blank=False, help_text=_("Number of training steps of network, according to training machine."),)
+    total_num_data_rows = BigIntegerField(_("total num data rows"), null=True, blank=False, help_text=_("Total number of data rows training machine had to train this network."),)
+    extra_stats = JSONField(
+        _("extra stats"), help_text=_("Any extra stats or info automatedly produced by the training machine"), default=dict, null=True, blank=True,
+    )
+
     notes = CharField(
         _("notes"), max_length=1024, default="", null=False, blank=True, help_text=_("Special notes or info about this network."), db_index=False,
     )
