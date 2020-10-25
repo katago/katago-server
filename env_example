@@ -6,3 +6,7 @@
 # It gets sent to letsencrypt as a contact address if something is wrong or whatever.
 # TRAEFIK_LETSENCRYPT_EMAIL=someone@example.com
 
+# Uncomment and set this to your domain or subdomain that you will run this site out of
+# like example.com or mysubdomain.example.com
+# This is used by traefik, which handles all the incoming web request routing for the site.
+# TRAEFIK_ROUTER_DOMAIN_NAME=example.com

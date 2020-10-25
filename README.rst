@@ -169,6 +169,7 @@ Helpful links
 * Django template language for frontend: https://docs.djangoproject.com/en/3.1/ref/templates/
 * Postgres SQL language reference: https://www.postgresql.org/docs/12/queries.html
 * Traefik: https://doc.traefik.io/traefik/getting-started/configuration-overview/
+* Traefik with docker: https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-ubuntu-18-04
 * Django cookiecutter docker: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 * CSS reloading and SASS: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
 
