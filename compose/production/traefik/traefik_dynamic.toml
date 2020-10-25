@@ -1,0 +1,6 @@
+
+# These parameters are not possible to specify using docker labels, so we have a file here
+# https://github.com/traefik/traefik/issues/5507
+[tls.options]
+  [tls.options.default]
+    minVersion = "VersionTLS12"

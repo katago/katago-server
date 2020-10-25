@@ -6,6 +6,7 @@ volumes:
   production_traefik: {}
 
 services:
+      
   datadog:
     image: datadog/agent:latest
     container_name: datadog-agent
@@ -18,6 +19,7 @@ services:
       - ./envs/production/datadog
       - ./envs/production/postgres
 
+  # The main webserver for katago website
   django: &django
     build:
       context: .
@@ -32,7 +34,22 @@ services:
     volumes:
       - ${UPLOADED_DATA_DIRECTORY:-./data}:/data
     command: /start
+    labels:
+      traefik.enable: "true"
+      # Incoming http to our domain name via websecure entrypoint gets routed to django, modulo priority
+      traefik.http.routers.djangoroute.rule: "Host(`${TRAEFIK_ROUTER_DOMAIN_NAME:?traefik_router_domain_name_missing}`)"
+      traefik.http.routers.djangoroute.entrypoints: "websecure"
+      traefik.http.routers.djangoroute.tls.certresolver: "letsencrypt"
+      traefik.http.routers.djangoroute.priority: 10
+      # Django internally listens on port 5000 by default - presumably we could configure django to listen on port 80 or 443,
+      # but we can also just tell traefik to listen here.
+      traefik.http.services.djangoroute.loadbalancer.server.port: 5000
+      # Define the "csrf" middleware and make djangoroute use it
+      traefik.http.middlewares.csrf.headers.hostsProxyHeaders: "X-CSRFToken"
+      traefik.http.routers.djangoroute.middlewares: "csrf"
 
+
+  # The database server for the website
   postgres:
     build:
       context: .
@@ -51,6 +68,7 @@ services:
       com.datadoghq.ad.instances: '[{"host":"%%host%%", "port":"5432", "username":"%%env_POSTGRES_USER%%", "password":"%%env_POSTGRES_PASSWORD%%", "dbname": "%%env_POSTGRES_DB%%"}]'
       com.datadoghq.ad.logs: '[{"source": "postgresql", "service": "postgresql"}]'
 
+  # Performs incoming request URL routing for the website
   traefik:
     build:
       context: .
@@ -61,25 +79,48 @@ services:
       - nginx
     volumes:
       - production_traefik:/etc/traefik/acme
+      # Map the docker socket on the real machine read-only to the inside of the container
+      # so that traefik can query the real docker for all the containers that exist
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
+      # Listen to these ports from the outside world and map them to these ports inside the container
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
       - "0.0.0.0:5555:5555"
+      # Map this port if using the API for debugging
+      # - "0.0.0.0:8080:8080"
     command:
-      - "--log.level=INFO"
+      - "--log=true"
+      - "--log.level=DEBUG"
+      # Define "web" entrypoint as anything that comes in on port 80, and redirect it to websecure
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      # TLS certificates must be specified in a file, boooooooo
+      - "--providers.file.filename=/etc/traefik/traefik_dynamic.toml"
+      # Define "websecure" entrypoint as anything that comes in on port 443
       - "--entrypoints.websecure.address=:443"
+      # Define "flower" entrypoint as anything that comes in on port 5555
       - "--entrypoints.flower.address=:5555"
       - "--certificatesresolvers.letsencrypt=true"
       - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_LETSENCRYPT_EMAIL:?traefik_letsencrypt_email_env_missing}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--providers.file.filename=/etc/traefik/traefik.toml"
-      - "--providers.file.watch=true"
-    env_file:
-      - ./envs/production/traefik
+      # Tell traefik to look at the docker socket and set up routing automatically based on all the labels
+      # of the various containers
+      - "--providers.docker=true"
+      # Containers must explicitly opt in to being mapped by traefik by specifying label traefik.enable: "true"
+      - "--providers.docker.exposedbydefault=false"
+      # Uncomment these to enable the API for debugging. This is insecure though and could allow anyone to do stuff on
+      # to the site routing however!
+      # - "--api=true"
+      # - "--api.insecure=true"
+      # - "--api.dashboard=true"
 
+
+  # Serves uploaded sgfs and npz files
   nginx:
     image: nginx
     depends_on:
@@ -87,6 +128,20 @@ services:
     volumes:
       - ./compose/production/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ${UPLOADED_DATA_DIRECTORY:-./data}/:/data
+    labels:
+      traefik.enable: "true"
+      # Incoming http to our domain name via websecure entrypoint asking for stuff under /media gets routed to nginx.
+      # Higher priority to djangoroute, so takes precedence.
+      # In our server setup, nginx directly serves files under /media (namely, SGFs and NPZs), without going through django.
+      traefik.http.routers.nginxroute.rule: "Host(`${TRAEFIK_ROUTER_DOMAIN_NAME:?traefik_router_domain_name_missing}`) && PathPrefix(`/media`)"
+      traefik.http.routers.nginxroute.entrypoints: "websecure"
+      traefik.http.routers.nginxroute.tls.certresolver: "letsencrypt"
+      traefik.http.routers.nginxroute.priority: 20
+      traefik.http.services.nginxroute.loadbalancer.server.port: 80
+      # Define the "csrf" middleware and make nginxroute use it
+      traefik.http.middlewares.csrf.headers.hostsProxyHeaders: "X-CSRFToken"
+      traefik.http.routers.nginxroute.middlewares: "csrf"
+
 
   redis:
     image: redis:5.0
@@ -106,15 +161,29 @@ services:
     <<: *django
     image: katago_server_production_celeryworker
     command: /start-celeryworker
+    labels:
+      # Make sure to override traefik.enable: "true" from django
+      traefik.enable: "false"
 
   celerybeat:
     <<: *django
     image: katago_server_production_celerybeat
     command: /start-celerybeat
+    labels:
+      # Make sure to override traefik.enable: "true" from django
+      traefik.enable: "false"
 
   flower:
     <<: *django
     image: katago_server_production_flower
     command: /start-flower
+    labels:
+      traefik.enable: "true"
+      # Incoming stuff to our domain name via flower entrypoint gets routed to flower.
+      traefik.http.routers.flowerroute.rule: "Host(`${TRAEFIK_ROUTER_DOMAIN_NAME:?traefik_router_domain_name_missing}`)"
+      traefik.http.routers.flowerroute.entrypoints: "flower"
+      traefik.http.routers.flowerroute.tls.certresolver: "letsencrypt"
+      traefik.http.routers.flowerroute.priority: 10
+      traefik.http.services.flowerroute.loadbalancer.server.port: 5555
 
 
