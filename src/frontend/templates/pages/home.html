@@ -458,19 +458,19 @@ document.addEventListener("DOMContentLoaded", makeGraph);
 
 TODO :)
 
-<h2 class="is-size-2"> {% trans "Stats" %} </h2>
+<h2 class="is-size-2 mt-4"> {% trans "Stats" %} </h2>
 
 <h3 class="is-size-3"> {% trans "Data" %} </h3>
 
 {% blocktrans %}
 <p>
-In total, users have uploaded {{ total_num_training_rows }} rows of training data and {{ total_num_games }} games so far.
-<p>
-Within the last week, a total {{ num_recent_contributors }} different users uploaded
+Across all time, {{ num_total_contributors }} distinct users have uploaded {{ total_num_training_rows }} rows of training data and {{ total_num_games }} games.
+<p class="mt-1">
+Within the last week, {{ num_recent_contributors }} distinct users have uploaded
 {{ num_recent_training_rows }} rows of training data and {{ num_recent_games }} new games.
 {% endblocktrans %}
 
-<h5 class="is-size-5"> {% trans "Top contributors in the last week:" %} </h5>
+<h5 class="is-size-5 mt-3"> {% trans "Top contributors in the last week:" %} </h5>
 
 <table class="table">
   <tr>
@@ -510,14 +510,16 @@ See <a href="{{ current_run_networks }}">Networks page</a> for older networks.
 
 {% endif %}
 
-<h5 class="is-size-5"> {% trans "Approximate Elo Ratings Graph" %} </h3>
+<h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
 
 {% blocktrans %}
-Approximate relative Elo ratings of networks this run with mid to high hundreds of playouts, based on
-{{ num_rating_games_this_run }} rating games. Vertical line segments indicate *approximately* a 95% confidence interval. Nets play a
-variety of nearby nets to avoid rock-paper-scissors issues, but
-ratings might still be mildly inflated due to the low playouts and due to only playing other KataGo nets.
+Graph is based on {{ num_rating_games_this_run }} rating games using mid to high hundreds of playouts.
 <p>
+Vertical bars indicate approximately a 95% confidence interval.
+<p>
+Nets play a variety of nearby nets to avoid rock-paper-scissors issues, but
+ratings might still be mildly inflated due to only playing other KataGo nets.
+<p class="mt-1">
 Click and drag to zoom. Double-click to reset zoom.
 {% endblocktrans %}
 

@@ -2,7 +2,7 @@
 
 {% load i18n %}
 {% load custom_url_tags %}
-{% load custom_time_formatting %}
+{% load custom_formatting %}
 
 {% block title %}
 {% if kind == "training" %}
@@ -31,8 +31,8 @@
     <th> {% trans "Black" %} </th>
     <th> {% trans "White" %} </th>
     {% endif %}
-    <th> {% trans "BoardSizeX" %} </th>
-    <th> {% trans "BoardSizeY" %} </th>
+    <th> {% trans "BSizeX" %} </th>
+    <th> {% trans "BSizeY" %} </th>
     <th> {% trans "Handicap" %} </th>
     <th> {% trans "Komi" %} </th>
     <th> {% trans "GameType" %} </th>
@@ -54,7 +54,7 @@
     <td> {{ game.board_size_y }} </td>
     <td> {{ game.handicap }} </td>
     <td> {{ game.komi }} </td>
-    <td> {{ game.gametype }} </td>
+    <td> {{ game.gametype|underscores_to_spaces }} </td>
     <td> {{ game.game_length }} </td>
     <td> {{ game.result_text }} </td>
     <td> <a href="{{ game.sgf_file.url }}">[{% trans "SGF" %}]</a> </td>

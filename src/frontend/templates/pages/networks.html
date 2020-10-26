@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
-{% load custom_time_formatting %}
+{% load custom_formatting %}
 {% load custom_url_tags %}
 
 {% block title %}
@@ -30,7 +30,7 @@
 Stats and download links for all the neural networks from the current run. Downloaded nets can be used directly with <a href="{{katago_releases_url}}">KataGo</a>.
 {% endblocktrans %}
 
-<table class="table">
+<table class="table mt-3">
   <tr>
     <th> {% trans "Name" %} </th>
     <th> {% trans "Uploaded At" %} </th>
