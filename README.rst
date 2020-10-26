@@ -172,7 +172,10 @@ Helpful links
 * Traefik with docker: https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-ubuntu-18-04
 * Django cookiecutter docker: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 * CSS reloading and SASS: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
+* Bulma Summary: https://devhints.io/bulma
+* WGO.js SGF API: http://wgo.waltheri.net/documentation
+* d3 API: https://github.com/d3/d3/blob/master/API.md
+* SVG trick: https://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js
 
 Email Server
 ^^^^^^^^^^^^
