@@ -41,6 +41,7 @@ class NetworkAdmin(admin.ModelAdmin):
         (_("Model Zip Extras"), {"fields": (("model_zip_file"),)},),
         (_("Strength"), {"fields": (("log_gamma", "log_gamma_uncertainty"), ("log_gamma_lower_confidence","log_gamma_upper_confidence"),)},),
         (_("Network architecture"), {"fields": (("network_size", "is_random"),)}),
+        (_("Stats"), {"fields": (("train_step", "total_num_data_rows","extra_stats"),)}),
         (_("Enable/Disable"), {"fields": (("training_games_enabled", "rating_games_enabled"),)}),
         (_("Notes"), {"fields": (("notes"),)},),
     )
