@@ -1,4 +1,8 @@
 
+The majority of the content in this repo is covered under the license below:
+
+-------------------------------------------------------------
+
 The MIT License (MIT)
 Copyright (c) 2019, Tycho Tatistcheff, David J Wu
 
@@ -7,4 +11,16 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-------------------------------------------------------------
+
+With the exceptions of certain libraries and dependencies that are covered by other licenses:
+
+Bulma (src/frontend/static/bulma): https://github.com/jgthms/bulma/blob/master/LICENSE
+wgo.js (src/frontend/static/{css,js}/wgo*): http://wgo.waltheri.net/download/
+d3 (src/frontend/static/js/d3*.js): https://github.com/d3/d3/blob/master/LICENSE
+
+Additionally, this project was initially bootstrapped from django-cookiecutter:
+https://github.com/pydanny/cookiecutter-django
+
 
