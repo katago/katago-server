@@ -23,7 +23,7 @@ class HomeView(TemplateView):
         total_num_rating_games=Sum("total_num_rating_games"),
       )
       .order_by("-total_num_training_rows")
-      .all()[:20]
+      .all()[:15]
     )
 
     all_games_stats = (
@@ -35,6 +35,13 @@ class HomeView(TemplateView):
         total_num_training_games=Sum("total_num_training_games"),
         total_num_rating_games=Sum("total_num_rating_games"),
       )
+    )
+
+    context["num_total_contributors"] = (
+      GameCountByUser
+      .objects
+      .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+      .values("username").distinct().count()
     )
 
     context["total_num_training_rows"] = all_games_stats["total_num_training_rows"]

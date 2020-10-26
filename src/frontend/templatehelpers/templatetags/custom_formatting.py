@@ -16,3 +16,8 @@ def isotimestr(value):
     value.tzname()
   )
 
+# Replace underscores with spaces - used to make it more natural to wordbreak a column
+# and get better css flow
+@register.filter()
+def underscores_to_spaces(value):
+  return value.replace("_"," ")
