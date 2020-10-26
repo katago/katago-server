@@ -40,7 +40,12 @@ Stats and download links for all the neural networks from the current run. Downl
   </tr>
   {% for network in network_list %}
   <tr>
-    <td> {{ network.name }} </td>
+    <td>
+      {{ network.name }}
+      {% if network.notes %}
+      <i class="fas fa-info-circle" title="{{network.notes}}"></i>
+      {% endif %}
+    </td>
     <td> {{ network.created_at|isotimestr }} </td>
     <td> {{ network.rating }} </td>
     <td> {{ network.model_file|file_download_link_html|safe }} </td>
