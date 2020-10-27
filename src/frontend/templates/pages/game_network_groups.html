@@ -46,16 +46,16 @@
 {% endif %}
 
 {% if other_runs_to_show|length > 0 %}
-<h1 class="title"> {% trans "Games for Other Runs" %} </h1>
+<h1 class="title"> {% trans "Games for Older Runs" %} </h1>
 <ul>
 <table class="table">
   <tr>
     <th> {% trans "Run Name" %} </th>
   </tr>
 
-  {% for run in other_runs_to_show %}
+  {% for other_run in other_runs_to_show %}
   <tr>
-    <td><a href="{% url 'game_network_groups' run.name %}"> {{ run.name }}</a></td>
+    <td><a href="{% url 'game_network_groups' other_run.name %}"> {{ other_run.name }}</a></td>
   </tr>
   {% endfor %}
 </table>

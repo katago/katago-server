@@ -1,41 +1,143 @@
+import math
 
+from django.db.models import Sum, Count, Q
 from django.shortcuts import get_object_or_404
+
+from src.apps.games.models import GameCountByNetwork, GameCountByUser, RecentGameCountByUser
+from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 
 def set_current_run_or_run_from_url_for_view_get_queryset(view):
   """Helper for implementing get_queryset in a view that cares about the run.
 
+  Sets view.current_run to the current active or latest run, if any.
+
   Sets view.run to:
     * The run specified by the url (from view.kwargs)
-    * Or else, the current run if there is a current active run
+    * Or else, the current run.
     * Or else, None
 
-  Sets view.viewing_current_run to False if the run was in the url, else True.
+  Sets view.run_specified_in_url to True if the run was in the url, else False.
   """
+  view.current_run = Run.objects.select_current_or_latest()
   if view.kwargs["run"] is None:
-    view.run = Run.objects.select_current()
-    view.viewing_current_run = True
+    view.run = view.current_run
+    view.run_specified_in_url = False
   else:
     view.run = get_object_or_404(Run, name=view.kwargs["run"])
-    view.viewing_current_run = False
+    view.run_specified_in_url = True
 
 
 def add_other_runs_context(view,context):
   """Helper for implementing get_context_data in a view that cares about the run.
   Sets fields within context for use for rendering within a template for the view:
   "run" - view.run, the current run to display data for.
-  "viewing_current_run" - whether it was specified in the url or not.
+  "run_specified_in_url" - whether it was specified in the url or not.
   "other_runs_to_show" - list of additional runs to provide links to the data for
   """
   context["run"] = view.run
-  context["viewing_current_run"] = view.viewing_current_run
+  context["run_specified_in_url"] = view.run_specified_in_url
   context["other_runs_to_show"] = []
   run_count = Run.objects.count()
-  show_other_runs = (
-    (view.viewing_current_run and run_count > 1) or
-    (view.viewing_current_run and run_count == 1 and view.run is None)
-  )
+  show_other_runs = (not view.run_specified_in_url and run_count > 1)
   if show_other_runs:
-    context["other_runs_to_show"] = list(Run.objects.order_by("-created_at"))
-    if view.run is not None:
-      context["other_runs_to_show"] = [run for run in context["other_runs_to_show"] if run.name != view.run.name]
+    context["other_runs_to_show"] = [ run for run in list(Run.objects.order_by("-created_at")) if run.name != view.run.name ]
+
+
+
+def add_run_stats_context(run, context):
+  """Add all the detailed summary stats about a run and its networks and games.
+  For use on homepage or run detail view."""
+
+  context["run"] = run
+
+  context["top_recent_user_list"] = (
+    RecentGameCountByUser
+    .objects
+    .filter(run=run)
+    .values("username")
+    .annotate(
+      total_num_training_rows=Sum("total_num_training_rows"),
+      total_num_training_games=Sum("total_num_training_games"),
+      total_num_rating_games=Sum("total_num_rating_games"),
+    )
+    .order_by("-total_num_training_rows")
+    .all()[:15]
+  )
+  context["top_total_user_list"] = (
+    GameCountByUser
+    .objects
+    .filter(run=run)
+    .values("username")
+    .annotate(
+      total_num_training_rows=Sum("total_num_training_rows"),
+      total_num_training_games=Sum("total_num_training_games"),
+      total_num_rating_games=Sum("total_num_rating_games"),
+    )
+    .order_by("-total_num_training_rows")
+    .all()[:15]
+  )
+
+  all_games_stats = (
+    GameCountByNetwork
+    .objects
+    .filter(run=run)
+    .aggregate(
+      total_num_training_rows=Sum("total_num_training_rows"),
+      total_num_training_games=Sum("total_num_training_games"),
+      total_num_rating_games=Sum("total_num_rating_games"),
+    )
+  )
+
+  context["num_total_contributors_this_run"] = (
+    GameCountByUser
+    .objects
+    .filter(run=run)
+    .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+    .values("username").distinct().count()
+  )
+
+  context["total_num_training_rows_this_run"] = all_games_stats["total_num_training_rows"]
+  context["total_num_training_games_this_run"] = all_games_stats["total_num_training_games"]
+  context["total_num_rating_games_this_run"] = all_games_stats["total_num_rating_games"]
+
+  recent_games_stats = (
+    RecentGameCountByUser
+    .objects
+    .filter(run=run)
+    .aggregate(
+      total_num_training_rows=Sum("total_num_training_rows"),
+      total_num_training_games=Sum("total_num_training_games"),
+      total_num_rating_games=Sum("total_num_rating_games"),
+    )
+  )
+
+  context["num_recent_contributors_this_run"] = (
+    RecentGameCountByUser
+    .objects
+    .filter(run=run)
+    .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+    .values("username").distinct().count()
+  )
+
+  context["num_recent_training_rows_this_run"] = recent_games_stats["total_num_training_rows"]
+  context["num_recent_training_games_this_run"] = recent_games_stats["total_num_training_games"]
+  context["num_recent_rating_games_this_run"] = recent_games_stats["total_num_rating_games"]
+
+  context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run,is_random=False).count()
+  context["num_rating_games_this_run"] = (
+    GameCountByNetwork
+    .objects
+    .filter(run=run)
+    .aggregate(total_num_rating_games=Sum("total_num_rating_games"))
+    ["total_num_rating_games"]
+  )
+  context["latest_network"] = Network.objects.filter(run=run).order_by("-created_at").first()
+  # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
+  max_uncertainty_elo = 100
+  context["strongest_confident_network"] = (
+    Network
+    .objects
+    .filter(run=run, log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e))))
+    .order_by("-log_gamma_lower_confidence").first()
+  )

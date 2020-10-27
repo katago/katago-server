@@ -1,0 +1,129 @@
+{% load i18n %}
+{% load custom_translation %}
+
+{% with run_name=run.name %}
+
+<h3 class="is-size-3 mt-3"> {% trans "Data Generation" %} </h3>
+
+{% blocktrans %}
+For this run:
+{% endblocktrans %}
+<p class="mt-1">
+{% blocktrans %}
+Across all time, {{ num_total_contributors_this_run }} distinct users have uploaded {{ total_num_training_rows_this_run }} rows of training data, {{ total_num_training_games_this_run }} training games, and {{ total_num_rating_games_this_run }} rating games.
+{% endblocktrans %}
+
+{% if num_recent_contributors_this_run > 0 %}
+<p>
+{% blocktrans %}
+In the last week, {{ num_recent_contributors_this_run }} distinct users have uploaded {{ num_recent_training_rows_this_run }} rows of training data, {{ num_recent_training_games_this_run }} new training games, and {{ num_recent_rating_games_this_run }} new rating games.
+{% endblocktrans %}
+{% endif %}
+
+
+
+<h3 class="is-size-3 mt-3"> {% trans "Networks" %} </h3>
+
+{% url 'networks' run_name as networks_url %}
+{% blocktrans %}
+A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_random }} networks</a> have been produced for {{ run_name }}.
+{% endblocktrans %}
+
+<p class="mt-1">
+{% if latest_network %}
+{% trans "Latest network" %}: <a href="{{ latest_network.model_file.url }}">{{ latest_network.name }}</a>
+{% endif %}
+<p>
+{% if strongest_confident_network %}
+{% trans "Strongest confidently-rated network" %}: <a href="{{ strongest_confident_network.model_file.url }}">{{ strongest_confident_network.name }}</a>
+{% endif %}
+
+<h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
+
+{% blocktrans %}
+Graph is based on {{ num_rating_games_this_run }} rating games using mid to high hundreds of playouts.
+<p>
+Vertical bars indicate approximately a 95% confidence interval.
+<p>
+Nets play a variety of nearby nets to avoid rock-paper-scissors issues, but
+ratings might still be mildly inflated due to only playing other KataGo nets.
+<p class="mt-1">
+Click and drag to zoom. Double-click or click on a button to reset zoom.
+{% endblocktrans %}
+
+<div id="eloGraphButtons" class="mt-2">
+{% blocktrans %}
+<button id="eloGraphTimeButton" class="button">Graph By Time</button>
+<button id="eloGraphDataRowsButton" class="button">Graph By Data Rows (linear)</button>
+<button id="eloGraphDataRowsLogButton" class="button">Graph By Data Rows (log)</button>
+{% endblocktrans %}
+</div>
+
+<div id="eloGraph"></div>
+
+
+{% if num_recent_contributors_this_run > 0 %}
+
+<h3 class="is-size-3 mt-3"> {% blocktrans %} Top Contributors in the Last Week {% endblocktrans %} </h3>
+
+<table class="table">
+  <tr>
+    <th> {% trans "User" %} </th>
+    <th class="has-text-right">
+      {% trans "Training Rows" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Data rows that KataGo learns from, each is a position sampled from training games, weighted towards more interesting positions."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Training Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games that KataGo plays against itself to generate training rows."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Rating Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games between different networks to measure strength and compute Elo ratings."></i>
+    </th>
+  </tr>
+  {% for user in top_recent_user_list %}
+  <tr>
+    <td> {{ user.username }} </td>
+    <td class="has-text-right"> {{ user.total_num_training_rows|as_n_training_rows_str }} </td>
+    <td class="has-text-right"> {{ user.total_num_training_games|as_n_training_games_str }} </td>
+    <td class="has-text-right"> {{ user.total_num_rating_games|as_n_rating_games_str }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endif %}
+
+
+<h3 class="is-size-3 mt-3"> {% blocktrans %} Top Contributors Overall {% endblocktrans %} </h3>
+
+<table class="table">
+  <tr>
+    <th> {% trans "User" %} </th>
+    <th class="has-text-right">
+      {% trans "Training Rows" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Data rows that KataGo learns from, each is a position sampled from training games, weighted towards more interesting positions."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Training Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games that KataGo plays against itself to generate training rows."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Rating Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games between different networks to measure strength and compute Elo ratings."></i>
+    </th>
+  </tr>
+  {% for user in top_total_user_list %}
+  <tr>
+    <td> {{ user.username }} </td>
+    <td class="has-text-right"> {{ user.total_num_training_rows|as_n_training_rows_str }} </td>
+    <td class="has-text-right"> {{ user.total_num_training_games|as_n_training_games_str }} </td>
+    <td class="has-text-right"> {{ user.total_num_rating_games|as_n_rating_games_str }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+
+{% endwith %}
+
