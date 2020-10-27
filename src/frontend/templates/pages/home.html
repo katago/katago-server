@@ -5,6 +5,7 @@
 
 {% block extra_html_head_stuff %}
 <link type="text/css" href="/static/css/elo-graph.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/tooltips.css" rel="stylesheet" />
 
 <script type="text/javascript" src="/static/js/d3.v6.min.js"></script>
 
@@ -458,7 +459,12 @@ document.addEventListener("DOMContentLoaded", makeGraph);
 
 TODO :)
 
+
+
 <h2 class="is-size-2 mt-4"> {% trans "Stats" %} </h2>
+
+
+
 
 <h3 class="is-size-3"> {% trans "Data" %} </h3>
 
@@ -470,14 +476,25 @@ Within the last week, {{ num_recent_contributors }} distinct users have uploaded
 {{ num_recent_training_rows }} rows of training data and {{ num_recent_games }} new games.
 {% endblocktrans %}
 
-<h5 class="is-size-5 mt-3"> {% trans "Top contributors in the last week:" %} </h5>
+
+
+<h3 class="is-size-3 mt-3"> {% trans "Top Contributors in the Last Week:" %} </h3>
 
 <table class="table">
   <tr>
     <th> {% trans "User" %} </th>
-    <th class="has-text-right"> {% trans "Training Rows Generated" %} </th>
-    <th class="has-text-right"> {% trans "Training Games" %} </th>
-    <th class="has-text-right"> {% trans "Rating Games" %} </th>
+    <th class="has-text-right">
+      {% trans "Training Rows" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Data rows that KataGo learns from, each is a position sampled from training games, weighted towards more interesting positions."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Training Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games that KataGo plays against itself to generate training rows."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Rating Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games between different networks to measure strength and compute Elo ratings."></i>
+    </th>
   </tr>
   {% for user in top_recent_user_list %}
   <tr>
@@ -533,5 +550,8 @@ Click and drag to zoom. Double-click to reset zoom.
 
 <div id="eloGraph"></div>
 {% endif %}
+
+
+
 
 {% endblock content %}
