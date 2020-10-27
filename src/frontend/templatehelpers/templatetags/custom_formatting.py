@@ -21,3 +21,9 @@ def isotimestr(value):
 @register.filter()
 def underscores_to_spaces(value):
   return value.replace("_"," ")
+
+@register.filter()
+def chop_network_run_name(value,run_name):
+  if value.startswith(run_name + "-"):
+    return value[len(run_name)+1:]
+  return value
