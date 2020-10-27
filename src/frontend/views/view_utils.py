@@ -28,23 +28,6 @@ def set_current_run_or_run_from_url_for_view_get_queryset(view):
     view.run_specified_in_url = True
 
 
-def add_other_runs_context(view,context):
-  """Helper for implementing get_context_data in a view that cares about the run.
-  Sets fields within context for use for rendering within a template for the view:
-  "run" - view.run, the current run to display data for.
-  "run_specified_in_url" - whether it was specified in the url or not.
-  "other_runs_to_show" - list of additional runs to provide links to the data for
-  """
-  context["run"] = view.run
-  context["run_specified_in_url"] = view.run_specified_in_url
-  context["other_runs_to_show"] = []
-  run_count = Run.objects.count()
-  show_other_runs = (not view.run_specified_in_url and run_count > 1)
-  if show_other_runs:
-    context["other_runs_to_show"] = [ run for run in list(Run.objects.order_by("-created_at")) if run.name != view.run.name ]
-
-
-
 def add_run_stats_context(run, context):
   """Add all the detailed summary stats about a run and its networks and games.
   For use on homepage or run detail view."""

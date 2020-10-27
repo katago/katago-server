@@ -16,6 +16,11 @@ In the last week, {{ num_recent_contributors_this_run }} distinct users have upl
 {% endblocktrans %}
 {% endif %}
 
+<p>
+{% url 'game_network_groups' run_name as games_url %}
+{% blocktrans %}
+Look up and view games for this run <a href="{{ games_url }}">here</a>.
+{% endblocktrans %}
 
 
 <h3 class="is-size-3 mt-3"> {% trans "Networks" %} </h3>
@@ -53,9 +58,15 @@ Click and drag to zoom. Double-click or click on a button to reset zoom.
 <div id="eloGraph"></div>
 
 
-{% if num_recent_contributors_this_run > 0 %}
+<h3 class="is-size-3 mt-3"> {% blocktrans %} Top Contributors {% endblocktrans %} </h3>
 
-<h3 class="is-size-3 mt-3"> {% blocktrans %} Top Contributors in the Last Week {% endblocktrans %} </h3>
+{% url 'contributions' run_name as contributions_url %}
+{% blocktrans %}
+See <a href="{{ contributions_url }}">here</a> for a full list of contributors for {{ run_name }}.
+{% endblocktrans %}
+
+{% if num_recent_contributors_this_run > 0 %}
+<h4 class="is-size-4 mt-4"> {% blocktrans %} In The Last Week {% endblocktrans %} </h4>
 
 <table class="table">
   <tr>
@@ -86,7 +97,7 @@ Click and drag to zoom. Double-click or click on a button to reset zoom.
 {% endif %}
 
 
-<h3 class="is-size-3 mt-3"> {% blocktrans %} Top Contributors Overall {% endblocktrans %} </h3>
+<h4 class="is-size-4 mt-4"> {% blocktrans %} Overall {% endblocktrans %} </h4>
 
 <table class="table">
   <tr>

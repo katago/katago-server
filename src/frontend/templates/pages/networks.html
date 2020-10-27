@@ -11,30 +11,26 @@
 
 {% block title %}
 {% if not run %}
-{% trans "KataGo - Networks for Current Run" %}
+{% trans "KataGo - Networks" %}
 {% else %}
 {% blocktrans with run_name=run.name %} KataGo - Networks for {{run_name}} {% endblocktrans %}
 {% endif %}
 {% endblock %}
 
 {% block content %}
+{% if run %}
 
-{% if not run %}
-{% trans "No currently active run to view networks for." %}
-{% elif viewing_current_run %}
-<h1 class="title">{% blocktrans with run_name=run.name %}Networks for Current Run ({{run_name}}){% endblocktrans %}</h1>
-{% else %}
 <h1 class="title">{% blocktrans with run_name=run.name %}Networks for {{run_name}}{% endblocktrans %}</h1>
-{% endif %}
 
-{% if run and network_list|length <= 0 %}
-{% trans "No networks found for this run!" %}
-{% elif run and network_list|length > 0 %}
+{% url 'networks' current_run.name as current_url %}
+{% url 'runs' as older_url %}
+{% include 'handle_multiple_runs.html' %}
 
 {% blocktrans with katago_releases_url="https://github.com/lightvector/KataGo/releases" %}
-Stats and download links for all the neural networks from the current run.
 <p>
-If you are a casual user and want to download a net, you want "Network File" - you can directly use this .bin.gz file with <a href="{{katago_releases_url}}">KataGo</a>.
+Here are stats and download links for all the neural networks from this run.
+<p>
+If you are a casual user, you want "Network File" - you can directly use this .bin.gz file with <a href="{{katago_releases_url}}">KataGo</a>.
 <p>
 Elo ratings are approximate and are *not* necessarily comparable to the Elos from any other bot or run.
 {% endblocktrans %}
@@ -62,21 +58,6 @@ Elo ratings are approximate and are *not* necessarily comparable to the Elos fro
   </tr>
   {% endfor %}
 </table>
+
 {% endif %}
-
-{% if other_runs_to_show|length > 0 %}
-<h1 class="title"> {% trans "Networks for Older Runs" %} </h1>
-<table class="table">
-  <tr>
-    <th> {% trans "Run Name" %} </th>
-  </tr>
-
-  {% for other_run in other_runs_to_show %}
-  <tr>
-    <td><a href="{% url 'networks' other_run.name %}"> {{ other_run.name }}</a></td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
 {% endblock content %}

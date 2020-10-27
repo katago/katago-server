@@ -30,27 +30,16 @@ TODO :)
 {% blocktrans with run_name=run.name run_created_at=run.created_at|isotimestr %}
 The current ongoing run is named {{run_name}} and began on {{ run_created_at }}.
 {% endblocktrans %}
-
 {% include 'run_stats.html' %}
 {% endif %}
 
 
-{% if other_runs_to_show|length > 0 %}
+{% if show_older_runs %}
 <h2 class="is-size-2 mt-4"> {% trans "Older Runs" %} </h2>
-{% trans "These are some some other older or prior runs that KataGo has done on this site." %}
-
-<table class="table">
-  <tr>
-    <th> {% trans "Run Name" %} </th>
-  </tr>
-
-  {% for other_run in other_runs_to_show %}
-  <tr>
-    <td><a href="{% url 'runs' other_run.name %}"> {{ other_run.name }}</a></td>
-  </tr>
-  {% endfor %}
-</table>
+{% url 'runs' as runs_url %}
+{% blocktrans %}
+For older or prior runs that KataGo has done on this site, see <a href="{{ runs_url }}">here</a>.
+{% endblocktrans %}
 {% endif %}
-
 
 {% endblock content %}

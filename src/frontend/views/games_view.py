@@ -23,7 +23,10 @@ class GameNetworkGroupsView(ListView):
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    view_utils.add_other_runs_context(self,context)
+    context["run"] = self.run
+    context["current_run"] = self.current_run
+    context["is_older_run"] = self.run != self.current_run
+    context["show_older_runs"] = Run.objects.count() > 1
     return context
 
 
