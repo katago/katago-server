@@ -4,6 +4,11 @@
 {% load custom_formatting %}
 {% load custom_url_tags %}
 
+{% block extra_html_head_stuff %}
+<link type="text/css" href="/static/css/tooltips.css" rel="stylesheet" />
+{% endblock extra_html_head_stuff %}
+
+
 {% block title %}
 {% if not run %}
 {% trans "KataGo - Networks for Current Run" %}
@@ -43,7 +48,7 @@ Stats and download links for all the neural networks from the current run. Downl
     <td>
       {{ network.name }}
       {% if network.notes %}
-      <i class="fas fa-info-circle" title="{{network.notes}}"></i>
+      <i class="fas fa-info-circle" tabindex="-1" title="{{network.notes}}"></i>
       {% endif %}
     </td>
     <td> {{ network.created_at|isotimestr }} </td>
