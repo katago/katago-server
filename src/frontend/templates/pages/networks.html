@@ -61,15 +61,15 @@ Stats and download links for all the neural networks from the current run. Downl
 {% endif %}
 
 {% if other_runs_to_show|length > 0 %}
-<h1 class="title"> {% trans "Networks for Other Runs" %} </h1>
+<h1 class="title"> {% trans "Networks for Older Runs" %} </h1>
 <table class="table">
   <tr>
     <th> {% trans "Run Name" %} </th>
   </tr>
 
-  {% for run in other_runs_to_show %}
+  {% for other_run in other_runs_to_show %}
   <tr>
-    <td><a href="{% url 'networks' run.name %}"> {{ run.name }}</a></td>
+    <td><a href="{% url 'networks' other_run.name %}"> {{ other_run.name }}</a></td>
   </tr>
   {% endfor %}
 </table>

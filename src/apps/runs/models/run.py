@@ -19,11 +19,21 @@ from django.core.exceptions import ValidationError
 class RunQuerySet(QuerySet):
     def select_current(self):
         """
-        Select the last active run and return it
+        Select the last active run and return it, or else None
 
         :return: the current run
         """
         return self.filter(status=Run.RunStatus.ACTIVE).order_by("-created_at").first()
+
+    def select_current_or_latest(self):
+        """
+        Select the last active run and return it, or else the most recent, run, or else None.
+        Only returns None if there are no runs at all.
+        """
+        run = self.filter(status=Run.RunStatus.ACTIVE).order_by("-created_at").first()
+        if run:
+            return run
+        return self.order_by("-created_at").first()
 
 
 alphanumeric = RegexValidator(r"^[0-9a-zA-Z]*$", "Only alphanumeric characters are allowed.")

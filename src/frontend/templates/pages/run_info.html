@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load custom_formatting %}
+{% load custom_translation %}
+
+{% block extra_html_head_stuff %}
+<link type="text/css" href="/static/css/tooltips.css" rel="stylesheet" />
+
+{% if run %}
+{% include 'run_stats_head.html' %}
+{% endif %}
+
+{% endblock extra_html_head_stuff %}
+
+{% block title %}
+{% blocktrans with run_name=run.name %} KataGo - {{run_name}} {% endblocktrans %}
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="title">{{run.name}}</h1>
+
+{% if is_older_run %}
+{% url 'home' as current_url %}
+{% blocktrans %} This is is an older run of KataGo. For the current run, see <a href="{{current_url}}">here</a>. {% endblocktrans %}
+{% endif %}
+
+<p>
+{% blocktrans with run_name=run.name run_created_at=run.created_at|isotimestr last_network_at=latest_network.created_at|isotimestr %}
+The run {{run_name}} began on {{ run_created_at }} and its last network was uploaded {{ last_network_at }}. {% endblocktrans %}
+
+{% include 'run_stats.html' %}
+
+{% endblock content %}

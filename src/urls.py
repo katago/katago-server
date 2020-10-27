@@ -20,6 +20,7 @@ from src.apps.startposes.viewsets import StartPosViewSet
 
 from src.frontend.views import (
     HomeView,
+    RunInfoView,
     NetworksView,
     ContributionsView,
     GameNetworkGroupsView,
@@ -82,6 +83,13 @@ urlpatterns = (
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
         path("accounts/", include("allauth.urls")),
+
+        # Runs ------------------------------------------------------------
+        path(
+            "runs/<run>/",
+            RunInfoView.as_view(),
+            name="runs"
+        ),
 
         # Networks ------------------------------------------------------------
         path(
