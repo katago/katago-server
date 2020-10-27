@@ -6,7 +6,7 @@
 
 {% block title %}
 {% if not run %}
-{% trans "KataGo - Games for Current Run" %}
+{% trans "KataGo - Games" %}
 {% else %}
 {% blocktrans with run_name=run.name %} KataGo - Games for {{run_name}} {% endblocktrans %}
 {% endif %}
@@ -14,20 +14,19 @@
 
 
 {% block content %}
+{% if run %}
 
-{% if not run %}
-{% trans "No currently active run to view games for." %}
-{% elif viewing_current_run %}
-<h1 class="title">{% blocktrans with run_name=run.name %}Games for Current Run ({{run_name}}) by Network{% endblocktrans %}</h1>
-{% else %}
 <h1 class="title">{% blocktrans with run_name=run.name %}Games for {{run_name}} by Network{% endblocktrans %}</h1>
-{% endif %}
 
-{% if run and group_list|length <= 0 %}
-{% trans "No games found for this run!" %}
-{% elif run and group_list|length > 0 %}
+{% url 'networks' current_run.name as current_url %}
+{% url 'runs' as older_url %}
+{% include 'handle_multiple_runs.html' %}
 
-{% trans "View all the games that a particular network has played in training or in rating matches against other networks:" %}
+{% blocktrans %}
+<p>
+View the games that a particular network has played in training or in rating matches against other networks:
+{% endblocktrans %}
+
 
 <table class="table mt-3">
   <tr>
@@ -43,22 +42,7 @@
   </tr>
   {% endfor %}
 </table>
+
+
 {% endif %}
-
-{% if other_runs_to_show|length > 0 %}
-<h1 class="title"> {% trans "Games for Older Runs" %} </h1>
-<ul>
-<table class="table">
-  <tr>
-    <th> {% trans "Run Name" %} </th>
-  </tr>
-
-  {% for other_run in other_runs_to_show %}
-  <tr>
-    <td><a href="{% url 'game_network_groups' other_run.name %}"> {{ other_run.name }}</a></td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
 {% endblock content %}

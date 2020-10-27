@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load custom_formatting %}
+{% load custom_url_tags %}
+
+{% block title %}
+{% trans "KataGo - Runs" %}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="title">{% trans "Runs" %}</h1>
+
+{% if run_list|length <= 0 %}
+{% trans "No runs have been started yet on this site!" %}
+{% else %}
+
+{% blocktrans %}
+Here is an index of all the runs that KataGo has conducted on this particular website.
+{% endblocktrans %}
+
+<table class="table mt-3">
+  {% for run in run_list %}
+  <tr>
+    <td> {{ run.name }} {% if run.id == current_run.id %} ({% trans "CURRENT"%}) {% endif %} </td>
+    <td> <a href="{% url 'run_info' run.name %}"> {% trans "Main Page" %} </a> </td>
+    <td> <a href="{% url 'networks' run.name %}"> {% trans "Networks" %} </a> </td>
+    <td> <a href="{% url 'game_network_groups' run.name %}"> {% trans "Games" %} </a> </td>
+    <td> <a href="{% url 'contributions' run.name %}"> {% trans "Contributions" %} </a> </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% endblock content %}

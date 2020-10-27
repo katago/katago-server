@@ -15,8 +15,5 @@ class HomeView(TemplateView):
     if run:
       view_utils.add_run_stats_context(run,context)
 
-    self.run = run
-    self.run_specified_in_url = False
-    view_utils.add_other_runs_context(self,context)
-
+    context["show_older_runs"] = Run.objects.count() > 1
     return context

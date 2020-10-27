@@ -1,0 +1,14 @@
+{% load i18n %}
+
+{% if is_older_run %}
+<p>
+{% blocktrans %}
+This is is an older run of KataGo. For the current run, see <a href="{{ current_url }}">here</a>.
+{% endblocktrans %}
+{% elif show_older_runs %}
+<p>
+{% blocktrans %}
+This is the current run of KataGo. For older runs, see <a href="{{ older_url }}"> here</a>.
+{% endblocktrans %}
+{% endif %}
+

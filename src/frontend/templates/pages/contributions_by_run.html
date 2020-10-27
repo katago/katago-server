@@ -5,24 +5,23 @@
 {% load custom_translation %}
 
 {% block title %}
+{% if not run %}
 {% trans "KataGo - Contributors" %}
+{% else %}
+{% blocktrans with run_name=run.name %} KataGo - Contributors for {{run_name}} {% endblocktrans %}
+{% endif %}
 {% endblock %}
 
 {% block content %}
 
-<h1 class="title">{% trans "Contributors" %}</h1>
+<h1 class="title">{% blocktrans with run_name=run.name %}Contributors for {{run_name}}{% endblocktrans %}</h1>
 
-{% if has_multiple_runs %}
-{% url 'runs' as runs_url %}
-{% blocktrans %}
-Recent and total contributions to KataGo distributed training, summed
-across <strong>all</strong> runs. For contributions and other stats for individual
-runs, see <a href="{{runs_url}}">here</a>.
-{% endblocktrans %}
-{% endif %}
+{% url 'contributions' current_run.name as current_url %}
+{% url 'runs' as older_url %}
+{% include 'handle_multiple_runs.html' %}
 
 {% if top_recent_user_list|length > 0 %}
-<h5 class="is-size-5 mt-4"> {% trans "Top contributors for KataGo distributed training in the last week:" %} </h5>
+<h5 class="is-size-5 mt-4"> {% trans "Top contributors this run in the last week:" %} </h5>
 
 <table class="table mt-2">
   <tr>
@@ -42,7 +41,7 @@ runs, see <a href="{{runs_url}}">here</a>.
 </table>
 {% endif %}
 
-<h5 class="is-size-5 mt-4"> {% trans "All contributors for KataGo distributed training across all time:" %} </h5>
+<h5 class="is-size-5 mt-4"> {% trans "All contributors this run across all time:" %} </h5>
 
 <table class="table mt-2">
   <tr>

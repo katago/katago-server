@@ -20,9 +20,11 @@ from src.apps.startposes.viewsets import StartPosViewSet
 
 from src.frontend.views import (
     HomeView,
+    RunsListView,
     RunInfoView,
     NetworksView,
     ContributionsView,
+    ContributionsByRunView,
     GameNetworkGroupsView,
     GamesListByNetworkView,
     GamesListByUserView,
@@ -86,9 +88,14 @@ urlpatterns = (
 
         # Runs ------------------------------------------------------------
         path(
+            "runs/",
+            RunsListView.as_view(),
+            name="runs"
+        ),
+        path(
             "runs/<run>/",
             RunInfoView.as_view(),
-            name="runs"
+            name="run_info"
         ),
 
         # Networks ------------------------------------------------------------
@@ -115,10 +122,16 @@ urlpatterns = (
             GameNetworkGroupsView.as_view(),
             name="game_network_groups"
         ),
+
+        # Contributions ---------------------------------------------------------------
         path(
             "contributions/",
             ContributionsView.as_view(),
-            {"run": None},
+            name="overall_contributions"
+        ),
+        path(
+            "contributions/<run>/",
+            ContributionsByRunView.as_view(),
             name="contributions"
         ),
 
