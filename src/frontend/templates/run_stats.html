@@ -6,10 +6,6 @@
 <h3 class="is-size-3 mt-3"> {% trans "Data Generation" %} </h3>
 
 {% blocktrans %}
-For this run:
-{% endblocktrans %}
-<p class="mt-1">
-{% blocktrans %}
 Across all time, {{ num_total_contributors_this_run }} distinct users have uploaded {{ total_num_training_rows_this_run }} rows of training data, {{ total_num_training_games_this_run }} training games, and {{ total_num_rating_games_this_run }} rating games.
 {% endblocktrans %}
 
@@ -29,7 +25,7 @@ In the last week, {{ num_recent_contributors_this_run }} distinct users have upl
 A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_random }} networks</a> have been produced for {{ run_name }}.
 {% endblocktrans %}
 
-<p class="mt-1">
+<p>
 {% if latest_network %}
 {% trans "Latest network" %}: <a href="{{ latest_network.model_file.url }}">{{ latest_network.name }}</a>
 {% endif %}
@@ -41,13 +37,8 @@ A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_rando
 <h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
 
 {% blocktrans %}
-Graph is based on {{ num_rating_games_this_run }} rating games using mid to high hundreds of playouts.
-<p>
-Vertical bars indicate approximately a 95% confidence interval.
-<p>
-Nets play a variety of nearby nets to avoid rock-paper-scissors issues, but
-ratings might still be mildly inflated due to only playing other KataGo nets.
-<p class="mt-1">
+Graph is based on {{ num_rating_games_this_run }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets. Vertical bars indicate approximately a 95% confidence interval.
+<p class="mt-2">
 Click and drag to zoom. Double-click or click on a button to reset zoom.
 {% endblocktrans %}
 

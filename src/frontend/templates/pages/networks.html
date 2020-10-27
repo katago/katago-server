@@ -32,15 +32,19 @@
 {% elif run and network_list|length > 0 %}
 
 {% blocktrans with katago_releases_url="https://github.com/lightvector/KataGo/releases" %}
-Stats and download links for all the neural networks from the current run. Downloaded nets can be used directly with <a href="{{katago_releases_url}}">KataGo</a>.
+Stats and download links for all the neural networks from the current run.
+<p>
+If you are a casual user and want to download a net, you want "Network File" - you can directly use this .bin.gz file with <a href="{{katago_releases_url}}">KataGo</a>.
+<p>
+Elo ratings are approximate and are *not* necessarily comparable to the Elos from any other bot or run.
 {% endblocktrans %}
 
 <table class="table mt-3">
   <tr>
     <th> {% trans "Name" %} </th>
     <th> {% trans "Uploaded At" %} </th>
-    <th> {% trans "Approx Elo Rating" %} </th>
-    <th> {% trans "Download" %} </th>
+    <th> {% trans "Elo Rating" %} </th>
+    <th> {% trans "Network File" %} </th>
     <th> {% trans "Raw TF Weights" %} </th>
   </tr>
   {% for network in network_list %}
