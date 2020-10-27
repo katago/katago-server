@@ -45,7 +45,8 @@ class HomeView(TemplateView):
     )
 
     context["total_num_training_rows"] = all_games_stats["total_num_training_rows"]
-    context["total_num_games"] = all_games_stats["total_num_training_games"] + all_games_stats["total_num_rating_games"]
+    context["total_num_training_games"] = all_games_stats["total_num_training_games"]
+    context["total_num_rating_games"] = all_games_stats["total_num_rating_games"]
 
     context["num_recent_contributors"] = (
       RecentGameCountByUser
@@ -65,7 +66,8 @@ class HomeView(TemplateView):
       )
     )
     context["num_recent_training_rows"] = recent_games_stats["total_num_training_rows"]
-    context["num_recent_games"] = recent_games_stats["total_num_training_games"] + recent_games_stats["total_num_rating_games"]
+    context["num_recent_training_games"] = recent_games_stats["total_num_training_games"]
+    context["num_recent_rating_games"] = recent_games_stats["total_num_rating_games"]
 
     run = Run.objects.select_current()
     context["run"] = run
