@@ -29,8 +29,6 @@ function makeGraph() {
     };
     networkSizes = Array.from(networkSizes).sort(compare);
 
-    console.log(networkSizes);
-
     var eloPerLogGamma = Math.log10(Math.E) * 400.0;
     for(var i = 0; i<networks.length; i++) {
       var network = networks[i];
@@ -421,7 +419,6 @@ function makeGraph() {
       .style("fill", networkSize => colorDict[networkSize])
       .style("font-size", 15)
       .on("mouseover", function(mouseEvent,networkSize) {
-        console.log(networkSize);
         d3.selectAll(".dataUncertainty_" + networkSize).attr("stroke-width",curStrokeWidth + largeStrokeWidthBonus);
         d3.selectAll(".dataPoint_" + networkSize).attr("r",curDataRadius + largeRadiusBonus);
       })
@@ -430,8 +427,6 @@ function makeGraph() {
         d3.selectAll(".dataPoint_" + networkSize).attr("r",curDataRadius);
       });
 
-    console.log(networkSizes);
-    console.log([minCreatedAt, maxCreatedAt]);
   });
 }
 
