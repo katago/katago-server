@@ -26,6 +26,7 @@ pre-commit==2.4.0  # https://github.com/pre-commit/pre-commit
 # ------------------------------------------------------------------------------
 factory-boy==2.12.0  # https://github.com/FactoryBoy/factory_boy
 
+django-storages[google]==1.10.1  # https://github.com/jschneier/django-storages
 django-debug-toolbar==2.2  # https://github.com/jazzband/django-debug-toolbar
 django-debug-toolbar-template-profiler==2.0.1 # https://pypi.org/project/django-debug-toolbar-template-profiler/
 django-extensions==2.2.9  # https://github.com/django-extensions/django-extensions

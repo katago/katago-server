@@ -18,9 +18,14 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from src.contrib.validators import FileValidator
+from src.contrib.variable_storage_file_field import VariableStorageFileField
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
 from src.apps.users.models import User
+
+from django.conf import settings
+from django.core.files.storage import get_storage_class
+sgf_filestorage_class = get_storage_class(settings.SGF_FILE_STORAGE)
 
 __ALL__ = ["TrainingGame", "RatingGame"]
 
@@ -124,7 +129,7 @@ class AbstractGame(Model):
         Network, verbose_name=_("black player network"), on_delete=PROTECT, related_name="%(class)s_games_as_black", db_index=True,
     )
 
-    sgf_file = FileField(_("SGF file"), upload_to=upload_sgf_to, validators=[validate_sgf], max_length=200,)
+    sgf_file = VariableStorageFileField(_("SGF file"), upload_to=upload_sgf_to, validators=[validate_sgf], max_length=200, storage=sgf_filestorage_class(),)
     kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True,)
 
     @property
