@@ -77,7 +77,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA STORAGE
 # ------------------------------------------------------------------------------
 
-if env("NETWORK_USE_GOOGLE_CLOUD_STORAGE") or env("SGF_USE_GOOGLE_CLOUD_STORAGE") or env("NPZ_USE_GOOGLE_CLOUD_STORAGE"):
+if env.bool("NETWORK_USE_GOOGLE_CLOUD_STORAGE", default=False) or \
+   env.bool("SGF_USE_GOOGLE_CLOUD_STORAGE", default=False) or \
+   env.bool("NPZ_USE_GOOGLE_CLOUD_STORAGE", default=False):
     GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
     GS_DEFAULT_ACL = "publicRead"
     GS_FILE_OVERWRITE = False
