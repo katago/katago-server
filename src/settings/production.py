@@ -70,40 +70,37 @@ SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool("DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True)
 
-# STORAGES
-# ------------------------------------------------------------------------------
-# https://django-storages.readthedocs.io/en/latest/#installation
-# INSTALLED_APPS += ["storages"]  # noqa F405
-# GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
-# GS_DEFAULT_ACL = "publicRead"
-
-# STATIC
+# STATIC STORAGE
 # ------------------------
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# MEDIA
+# MEDIA STORAGE
 # ------------------------------------------------------------------------------
 
-# TODO: reactivate when we move to cloud
-# from storages.backends.gcloud import GoogleCloudStorage  # noqa E402
-#
-#
-# class StaticRootGoogleCloudStorage(GoogleCloudStorage):
-#     location = "static"
-#     default_acl = "publicRead"
-#
-#
-# class MediaRootGoogleCloudStorage(GoogleCloudStorage):
-#     location = "media"
-#     file_overwrite = False
-#
-#
-# DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootGoogleCloudStorage"
-# MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
+if env("NETWORK_USE_GOOGLE_CLOUD_STORAGE") or env("SGF_USE_GOOGLE_CLOUD_STORAGE") or env("NPZ_USE_GOOGLE_CLOUD_STORAGE"):
+    GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
+    GS_DEFAULT_ACL = "publicRead"
+    GS_FILE_OVERWRITE = False
+    GS_BLOB_CHUNK_SIZE = 1024 * 1024 * 5   # 5 MB
+    GS_CACHE_CONTROL = "no-cache"
+    GS_LOCATION = "uploaded/"
+
+NETWORK_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+if env.bool("NETWORK_USE_GOOGLE_CLOUD_STORAGE", default=False):
+    NETWORK_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+
+SGF_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+if env.bool("SGF_USE_GOOGLE_CLOUD_STORAGE", default=False):
+    SGF_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+
+NPZ_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+if env.bool("NPZ_USE_GOOGLE_CLOUD_STORAGE", default=False):
+    NPZ_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 
 DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 MEDIA_ROOT = "/data"
 MEDIA_URL = "/media/"
+
 
 # TEMPLATES
 # ------------------------------------------------------------------------------

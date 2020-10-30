@@ -12,7 +12,12 @@ from django.db.models.signals import pre_save, post_delete
 from django.core.files.storage import default_storage
 
 from src.contrib.validators import FileValidator
+from src.contrib.variable_storage_file_field import VariableStorageFileField
 from src.apps.games.models.abstract_game import AbstractGame
+
+from django.conf import settings
+from django.core.files.storage import get_storage_class
+npz_filestorage_class = get_storage_class(settings.NPZ_FILE_STORAGE)
 
 validate_zip = FileValidator(max_size=1024 * 500, content_types=["application/zip"])
 
@@ -154,13 +159,14 @@ class TrainingGame(AbstractGame):
         verbose_name = _("Training game")
         ordering = ["-created_at"]
 
-    training_data_file = FileField(
+    training_data_file = VariableStorageFileField(
         _("training data (npz)"),
         upload_to=upload_training_data_to,
         validators=[validate_zip],
         max_length=200,
         blank=False,
         null=False,
+        storage=npz_filestorage_class(),
     )
 
     num_training_rows = IntegerField(_("num training rows"), null=False, default=32, validators=[validate_num_training_rows], help_text=_("Number of training rows in data file"), db_index=True,)

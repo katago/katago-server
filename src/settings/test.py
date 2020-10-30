@@ -33,6 +33,13 @@ TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa F405
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
+# MEDIA
+# ------------------------------------------------------------------------------
+NETWORK_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+SGF_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+NPZ_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+
 # Your stuff...
 # ------------------------------------------------------------------------------
 

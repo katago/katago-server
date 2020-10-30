@@ -18,10 +18,14 @@ from django.utils.translation import gettext_lazy as _
 from math import log10, e
 
 from src.contrib.validators import FileValidator
+from src.contrib.variable_storage_file_field import VariableStorageFileField
 from src.apps.runs.models import Run
 from src.apps.trainings.managers.network_pandas_manager import NetworkPandasManager
 from src.apps.trainings.managers.network_queryset import NetworkQuerySet
 
+from django.conf import settings
+from django.core.files.storage import get_storage_class
+network_filestorage_class = get_storage_class(settings.NETWORK_FILE_STORAGE)
 
 def upload_network_to(instance, _filename):
     return os.path.join("networks", instance.run.name, f"{instance.name}.bin.gz")
@@ -85,7 +89,7 @@ class Network(Model):
     rating_games_enabled = BooleanField(
         _("rating games enabled"), default=True, help_text=_("If true, this network can be used for rating games"), db_index=True,
     )
-    model_file = FileField(
+    model_file = VariableStorageFileField(
         verbose_name=_("model file url"),
         upload_to=upload_network_to,
         validators=[validate_gzip],
@@ -93,12 +97,13 @@ class Network(Model):
         null=False,
         blank=True,
         help_text=_("Url to download network model file."),
+        storage=network_filestorage_class(),
     )
     model_file_bytes = BigIntegerField(_("model file bytes"), null=False, blank=False, help_text=_("Number of bytes in network model file."),)
     model_file_sha256 = CharField(
         _("model file SHA256"), max_length=64, null=False, blank=False, help_text=_("SHA256 hash of network model file for integrity verification."),
     )
-    model_zip_file = FileField(
+    model_zip_file = VariableStorageFileField(
         verbose_name=_("model zip file url"),
         upload_to=upload_network_zip_to,
         validators=[validate_model_zip],
@@ -106,6 +111,7 @@ class Network(Model):
         null=False,
         blank=True,
         help_text=_("Url to download zipped network model file with also tensorflow weights."),
+        storage=network_filestorage_class(),
     )
 
     log_gamma = FloatField(_("log gamma"), default=0, help_text=_("Estimated BayesElo strength of network."), db_index=True,)

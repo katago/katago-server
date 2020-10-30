@@ -68,3 +68,23 @@ CELERY_FLOWER_USER=katago_server_user
 
 # Uncomment and make up a long and secure password
 # CELERY_FLOWER_PASSWORD=
+
+
+# Storage
+# ------------------------------------------------------------------------------
+
+# By default server will use local disk, saving stuff to UPLOADED_DATA_DIRECTORY as specified in
+# .env (see env_example in the root of the github repo).
+# If you want to use google cloud buckets, then obtain a credentials from a service account and
+# put the key in <github repo root>/.credentials/gcs.json, and uncomment the below line.
+# Upon build of the server your file will get copied into the docker image and made available to
+# the container at this root location. And then uncomment this line.
+# GOOGLE_APPLICATION_CREDENTIALS=/.credentials/gcs.json
+
+# And also specify the bucket name here:
+# DJANGO_GCP_STORAGE_BUCKET_NAME=katago-test-bucket
+
+# And also uncomment one or more of these and set them to True for which ones you want to use.
+# NETWORK_USE_GOOGLE_CLOUD_STORAGE=False
+# SGF_USE_GOOGLE_CLOUD_STORAGE=False
+# NPZ_USE_GOOGLE_CLOUD_STORAGE=False
