@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: django-nginx-ingress
+  annotations: []
+spec:
+  tls:
+  - hosts:
+    - {{.Values.global.domainName}}
+    secretName: tls-secrets
+  rules:
+  - host: {{.Values.global.domainName}}
+    http:
+      paths:
+      - path: /media
+        backend:
+          serviceName: nginx-service
+          servicePort: {{.Values.nginx.servicePort}}
+      - path: /
+        backend:
+          serviceName: django-service
+          servicePort: {{.Values.django.servicePort}}

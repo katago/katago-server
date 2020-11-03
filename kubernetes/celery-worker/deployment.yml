@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker-deployment
+  labels:
+    app: celery-worker
+spec:
+  replicas: {{.Values.celeryWorker.replicaCount}}
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      containers:
+      - name: celery-worker
+        image: {{.Values.django.image.repo}}:{{.Values.django.image.tag}}
+        command: [ "/entrypoint", "/start-celeryworker"]
+        envFrom:
+        - secretRef:
+            name: django-env-secrets
+        - secretRef:
+            # POSTGRES_USER and POSTGRES_PASSWORD
+            name: postgres-env-secrets
+        env:
+        - name: POSTGRES_HOST
+          value: {{.Values.database.dbIpAddressWithinContainer}}
+        - name: POSTGRES_DB
+          value: {{.Values.database.dbName}}
+        - name: POSTGRES_PORT
+          value: {{.Values.database.dbPort}}
+        volumeMounts:
+        - name: django-fileserver-storage
+          mountPath: /data
+      - name: cloud-sql-proxy
+        image: {{.Values.database.cloudsqlimage}}
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "--instances={{.Values.database.instanceConnectionName}}=tcp:{{.Values.database.dbPort}}"
+        securityContext:
+          runAsNonRoot: true
+      volumes:
+      - name: django-fileserver-storage
+        persistentVolumeClaim:
+          claimName: fileserver-claim
+      serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
