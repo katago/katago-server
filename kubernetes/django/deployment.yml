@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    app: django
+spec:
+  replicas: {{.Values.django.replicaCount}}
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+      - name: django
+        image: {{.Values.django.image.repo}}:{{.Values.django.image.tag}}
+        ports:
+        - name: django-port
+          containerPort: {{.Values.django.containerPort}}
+          protocol: TCP
+        command: [ "/entrypoint", "/start"]
+        envFrom:
+        - secretRef:
+            name: django-env-secrets
+        - secretRef:
+            # POSTGRES_USER and POSTGRES_PASSWORD
+            name: postgres-env-secrets
+        env:
+        - name: POSTGRES_HOST
+          value: {{.Values.database.dbIpAddressWithinContainer}}
+        - name: POSTGRES_DB
+          value: {{.Values.database.dbName}}
+        - name: POSTGRES_PORT
+          value: {{.Values.database.dbPort}}
+        readinessProbe:
+          httpGet:
+            path: {{.Values.django.readinessPath}}
+            port: django-port
+          initialDelaySeconds: 10
+          periodSeconds: 6
+          timeoutSeconds: 3
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: {{.Values.django.livenessPath}}
+            port: django-port
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 5
+        volumeMounts:
+        - name: django-fileserver-storage
+          mountPath: /data
+      - name: cloud-sql-proxy
+        image: {{.Values.database.cloudsqlimage}}
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "--instances={{.Values.database.instanceConnectionName}}=tcp:{{.Values.database.dbPort}}"
+        securityContext:
+          runAsNonRoot: true
+      volumes:
+      - name: django-fileserver-storage
+        persistentVolumeClaim:
+          claimName: fileserver-claim
+      serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}

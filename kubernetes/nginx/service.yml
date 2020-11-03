@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels: []
+spec:
+  selector:
+    app: nginx
+  ports:
+  - name: nginx-service-port
+    protocol: TCP
+    port: {{.Values.nginx.servicePort}}
+    targetPort: nginx-port
+

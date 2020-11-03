@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: {{.Values.nginx.replicaCount}}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: {{.Values.nginx.image.repo}}:{{.Values.nginx.image.tag}}
+        ports:
+        - name: nginx-port
+          containerPort: {{.Values.nginx.containerPort}}
+          protocol: TCP
+        command: [ "/docker-entrypoint.sh", "/nginx", "-g", "daemon off;"]
+        readinessProbe:
+          tcpSocket:
+            port: nginx-port
+          initialDelaySeconds: 5
+          periodSeconds: 6
+          timeoutSeconds: 2
+          failureThreshold: 2
+        livenessProbe:
+          tcpSocket:
+            port: nginx-port
+          initialDelaySeconds: 5
+          periodSeconds: 20
+          timeoutSeconds: 3
+          failureThreshold: 5
+        volumeMounts:
+        - name: nginx-fileserver-storage
+          mountPath: /data
+      volumes:
+      - name: nginx-fileserver-storage
+        persistentVolumeClaim:
+          claimName: fileserver-claim
