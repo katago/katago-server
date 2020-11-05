@@ -3,10 +3,12 @@ kind: Service
 metadata:
   name: django-service
   namespace: serverspace
-  labels: []
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   selector:
     app: django
+    {{- include "katago-server.selectorLabels" . | nindent 4 }}
   ports:
   - name: django-service-port
     protocol: TCP

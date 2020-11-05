@@ -5,15 +5,18 @@ metadata:
   namespace: serverspace
   labels:
     app: nginx
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   replicas: {{.Values.nginx.replicaCount}}
   selector:
     matchLabels:
       app: nginx
+      {{- include "katago-server.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: nginx
+        {{- include "katago-server.selectorLabels" . | nindent 8 }}
     spec:
       containers:
       - name: nginx

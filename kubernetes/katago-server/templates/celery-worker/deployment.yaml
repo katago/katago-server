@@ -5,15 +5,18 @@ metadata:
   namespace: serverspace
   labels:
     app: celery-worker
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   replicas: {{.Values.celeryWorker.replicaCount}}
   selector:
     matchLabels:
       app: celery-worker
+      {{- include "katago-server.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: celery-worker
+        {{- include "katago-server.selectorLabels" . | nindent 8 }}
     spec:
       containers:
       - name: celery-worker

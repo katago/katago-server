@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: fileserver-claim
   namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   accessModes:
   - ReadWriteMany
