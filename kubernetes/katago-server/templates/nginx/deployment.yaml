@@ -43,6 +43,7 @@ spec:
         volumeMounts:
         - name: nginx-fileserver-storage
           mountPath: /data
+          subPath: {{.Values.fileserver.subPath}}
       volumes:
       - name: nginx-fileserver-storage
         persistentVolumeClaim:

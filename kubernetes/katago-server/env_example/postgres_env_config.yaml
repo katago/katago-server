@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-env-config
+  namespace: serverspace
+data:
+  # ip address or hostname
+  POSTGRES_HOST: TODO
+  # Name of database inside the postgres db instance
+  POSTGRES_DB: TODO
+  # Port number for accessing database
+  POSTGRES_PORT: TODO
+
+

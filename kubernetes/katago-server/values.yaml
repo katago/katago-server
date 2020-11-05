@@ -33,6 +33,8 @@ fileserver:
   fileShareName: katago_fileshare
   fileShareIpAddress: 10.81.4.178
   storageAmount: 500Gi
+  # Folder name within fileserver to use
+  subPath: "serverdata"
 
 # https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine
 database:

@@ -351,3 +351,5 @@ envs/*
 /venv/
 celerybeat.pid
 
+# Secrets will go in here
+kubernetes/katago-server/templates/env
