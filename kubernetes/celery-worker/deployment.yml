@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: celery-worker-deployment
+  namespace: serverspace
   labels:
     app: celery-worker
 spec:
