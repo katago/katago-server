@@ -17,6 +17,10 @@ spec:
       labels:
         app: celery-worker
         {{- include "katago-server.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/django_env_secrets: {{ include (print $.Template.BasePath "/env/django_env_secrets.yaml") . | sha256sum }}
+        checksum/postgres_env_secrets: {{ include (print $.Template.BasePath "/env/postgres_env_secrets.yaml") . | sha256sum }}
+        checksum/postgres_env_config: {{ include (print $.Template.BasePath "/env/postgres_env_config.yaml") . | sha256sum }}
     spec:
       containers:
       - name: celery-worker
@@ -48,6 +52,7 @@ spec:
         volumeMounts:
         - name: django-fileserver-storage
           mountPath: /data
+          subPath: {{.Values.fileserver.subPath}}
       - name: cloud-sql-proxy
         image: {{.Values.database.cloudsqlimage}}
         command:
