@@ -32,6 +32,20 @@ spec:
           value: {{.Values.database.dbName}}
         - name: POSTGRES_PORT
           value: {{.Values.database.dbPort}}
+        livenessProbe:
+          exec:
+            command:
+            - "/entrypoint"
+            - "/bin/bash"
+            - "-c"
+            - "celery inspect ping -A src.celery_app -d celery@$HOSTNAME"
+          # celery inspect ping is actually quite expensive due to costly celery and python initialization!
+          # Also maybe the worker is completely occupied by some task. So be very lenient - if the worker is
+          # unresponsive then even this lenient config will eventually detect it.
+          initialDelaySeconds: 60
+          periodSeconds: 180
+          timeoutSeconds: 20
+          failureThreshold: 5
         volumeMounts:
         - name: django-fileserver-storage
           mountPath: /data
