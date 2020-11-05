@@ -37,10 +37,6 @@ fileserver:
 # https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine
 database:
   cloudsqlimage: gcr.io/cloudsql-docker/gce-proxy:1.17
-  instanceConnectionName: katago-server-database
-  dbPort: 5432
-  dbIpAddressWithinContainer: 127.0.0.1
-  dbName: django-data
 
 serviceAccounts:
   cloudSqlStorage: cloud-sql-storage-service-account

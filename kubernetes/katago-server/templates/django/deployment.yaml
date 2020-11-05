@@ -32,13 +32,9 @@ spec:
         - secretRef:
             # POSTGRES_USER and POSTGRES_PASSWORD
             name: postgres-env-secrets
-        env:
-        - name: POSTGRES_HOST
-          value: {{.Values.database.dbIpAddressWithinContainer}}
-        - name: POSTGRES_DB
-          value: {{.Values.database.dbName}}
-        - name: POSTGRES_PORT
-          value: {{.Values.database.dbPort}}
+        - configMapRef:
+            # POSTGRES_HOST, POSTGRES_DB, POSTGRES_PORT
+            name: postgres-env-config
         readinessProbe:
           httpGet:
             path: {{.Values.django.readinessPath}}
@@ -63,7 +59,11 @@ spec:
         command:
         - "/cloud_sql_proxy"
         - "-ip_address_types=PRIVATE"
-        - "--instances={{.Values.database.instanceConnectionName}}=tcp:{{.Values.database.dbPort}}"
+        - "--instances=$(GCP_DATABASE_INSTANCE)=tcp:$(POSTGRES_PORT)"
+        envFrom:
+        - configMapRef:
+            # GCP_DATABASE_INSTANCE and POSTGRES_PORT
+            name: postgres-env-config
         securityContext:
           runAsNonRoot: true
       volumes:
