@@ -8,6 +8,9 @@ metadata:
 spec:
   replicas: {{.Values.celeryBeat.replicaCount}}
   strategy:
+    # mimic https://github.com/itswcg/django-helm/blob/master/templates/celery-beat/deployment.yaml
+    # Presumably due to not wanting a chance of having multiple celery beats at a time
+    # Celery continuous uptime is not essential in our server right now so also recreate is ok.
     type: Recreate
   selector:
     matchLabels:
@@ -34,6 +37,10 @@ spec:
           value: {{.Values.database.dbName}}
         - name: POSTGRES_PORT
           value: {{.Values.database.dbPort}}
+        # Unlike workers, celerybeat has no trivial liveness probe that we can tell, we just hope that if
+        # it fails then the process itself will exit so the container will die, since container death
+        # will always be noticed.
+        # livenessProbe:
         volumeMounts:
         - name: django-fileserver-storage
           mountPath: /data
