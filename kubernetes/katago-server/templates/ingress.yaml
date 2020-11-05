@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: django-nginx-ingress
   namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
   annotations: {}
 spec:
   tls:

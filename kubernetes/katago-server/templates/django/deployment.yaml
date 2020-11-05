@@ -5,15 +5,18 @@ metadata:
   namespace: serverspace
   labels:
     app: django
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   replicas: {{.Values.django.replicaCount}}
   selector:
     matchLabels:
       app: django
+      {{- include "katago-server.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: django
+        {{- include "katago-server.selectorLabels" . | nindent 8 }}
     spec:
       containers:
       - name: django
