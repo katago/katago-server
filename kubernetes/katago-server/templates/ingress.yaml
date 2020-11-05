@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: django-nginx-ingress
   namespace: serverspace
-  annotations: []
+  annotations: {}
 spec:
   tls:
   - hosts:
