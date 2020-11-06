@@ -1,8 +1,4 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-env-config
-  namespace: serverspace
+{{- define "katago-server.postgres-env-config-data" -}}
 data:
   # ip address or hostname
   POSTGRES_HOST: TODO
@@ -10,5 +6,26 @@ data:
   POSTGRES_DB: TODO
   # Port number for accessing database
   POSTGRES_PORT: TODO
-
-
+{{- end -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-env-config
+  namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
+{{ include "katago-server.postgres-env-config-data" . }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-env-config-for-hooks
+  namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-20"
+    "helm.sh/hook-delete-policy": hook-succeeded
+{{ include "katago-server.postgres-env-config-data" . }}

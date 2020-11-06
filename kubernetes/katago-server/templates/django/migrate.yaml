@@ -5,6 +5,10 @@ metadata:
   labels:
     app.kubernetes.io/component: migrate-job
     {{- include "katago-server.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   backoffLimit: 2
   ttlSecondsAfterFinished: 900
@@ -17,20 +21,13 @@ spec:
         command: [ "/entrypoint", "python", "manage.py", "migrate"]
         envFrom:
         - secretRef:
-            name: django-env-secrets
+            name: django-env-secrets-for-hooks
         - secretRef:
             # POSTGRES_USER and POSTGRES_PASSWORD
-            name: postgres-env-secrets
+            name: postgres-env-secrets-for-hooks
         - configMapRef:
             # POSTGRES_HOST, POSTGRES_DB, POSTGRES_PORT
-            name: postgres-env-config
-        # Migration job probably doesn't need these, but it shouldn't hurt to have them
-        # just to keep the configuration of this django instance as close as possible to
-        # the django configuration
-        volumeMounts:
-        - name: django-fileserver-storage
-          mountPath: /data
-          subPath: {{.Values.fileserver.subPath}}
+            name: postgres-env-config-for-hooks
       - name: cloud-sql-proxy
         image: {{.Values.database.cloudsqlimage}}
         command:
@@ -40,11 +37,7 @@ spec:
         envFrom:
         - configMapRef:
             # GCP_DATABASE_INSTANCE and POSTGRES_PORT
-            name: postgres-env-config
+            name: postgres-env-config-for-hooks
         securityContext:
           runAsNonRoot: true
-      volumes:
-      - name: django-fileserver-storage
-        persistentVolumeClaim:
-          claimName: fileserver-claim
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
