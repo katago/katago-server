@@ -6,18 +6,6 @@ volumes:
   production_traefik: {}
 
 services:
-      
-  datadog:
-    image: datadog/agent:latest
-    container_name: datadog-agent
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    - /proc/:/host/proc/:ro
-    - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-    restart: always
-    env_file:
-      - ./envs/production/datadog
-      - ./envs/production/postgres
 
   # The main webserver for katago website
   django: &django
@@ -62,11 +50,6 @@ services:
     env_file:
       - ./envs/production/postgres
     command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
-    labels:
-      com.datadoghq.ad.check_names: '["postgres"]'
-      com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"host":"%%host%%", "port":"5432", "username":"%%env_POSTGRES_USER%%", "password":"%%env_POSTGRES_PASSWORD%%", "dbname": "%%env_POSTGRES_DB%%"}]'
-      com.datadoghq.ad.logs: '[{"source": "postgresql", "service": "postgresql"}]'
 
   # Performs incoming request URL routing for the website
   traefik:
@@ -152,10 +135,6 @@ services:
         hard: 46677
     sysctls:
       net.core.somaxconn: '511'
-    labels:
-      com.datadoghq.ad.check_names: '["redisdb"]'
-      com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"host": "%%host%%","port":"6379"}]'
 
   celeryworker:
     <<: *django
