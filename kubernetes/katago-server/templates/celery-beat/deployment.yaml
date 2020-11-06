@@ -5,6 +5,7 @@ metadata:
   namespace: serverspace
   labels:
     app: celery-beat
+    app.kubernetes.io/component: celery-beat
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   replicas: {{.Values.celeryBeat.replicaCount}}

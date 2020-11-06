@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: django-migrate-job
   labels:
+    app.kubernetes.io/component: migrate-job
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   backoffLimit: 2

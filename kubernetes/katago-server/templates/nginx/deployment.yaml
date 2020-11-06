@@ -5,6 +5,7 @@ metadata:
   namespace: serverspace
   labels:
     app: nginx
+    app.kubernetes.io/component: nginx
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   replicas: {{.Values.nginx.replicaCount}}
