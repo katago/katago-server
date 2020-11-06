@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: celery-flower-service
+  namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: celery-flower
+    {{- include "katago-server.selectorLabels" . | nindent 4 }}
+  ports:
+  - name: celery-flower-service-port
+    protocol: TCP
+    port: {{.Values.celeryFlower.servicePort}}
+    targetPort: celery-flower-port
+

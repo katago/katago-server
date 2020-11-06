@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-flower-deployment
+  namespace: serverspace
+  labels:
+    app: celery-flower
+    {{- include "katago-server.labels" . | nindent 4 }}
+spec:
+  replicas: {{.Values.celeryFlower.replicaCount}}
+  selector:
+    matchLabels:
+      app: celery-flower
+      {{- include "katago-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: celery-flower
+        {{- include "katago-server.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/django_env_secrets: {{ include (print $.Template.BasePath "/env/django_env_secrets.yaml") . | sha256sum }}
+        checksum/postgres_env_secrets: {{ include (print $.Template.BasePath "/env/postgres_env_secrets.yaml") . | sha256sum }}
+        checksum/postgres_env_config: {{ include (print $.Template.BasePath "/env/postgres_env_config.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: celery-flower
+        image: {{.Values.django.image.repo}}:{{.Values.django.image.tag}}
+        ports:
+        - name: celery-flower-port
+          containerPort: {{.Values.celeryFlower.containerPort}}
+          protocol: TCP
+        command: [ "/entrypoint", "/start-flower"]
+        envFrom:
+        - secretRef:
+            name: django-env-secrets
+        - secretRef:
+            # POSTGRES_USER and POSTGRES_PASSWORD
+            name: postgres-env-secrets
+        - configMapRef:
+            # POSTGRES_HOST, POSTGRES_DB, POSTGRES_PORT
+            name: postgres-env-config
+        readinessProbe:
+          tcpSocket:
+            port: celery-flower-port
+          initialDelaySeconds: 15
+          periodSeconds: 6
+          timeoutSeconds: 2
+          failureThreshold: 2
+        livenessProbe:
+          tcpSocket:
+            port: celery-flower-port
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          timeoutSeconds: 3
+          failureThreshold: 5
+        resources:
+          limits:
+            cpu: 100m
+        volumeMounts:
+        - name: django-fileserver-storage
+          mountPath: /data
+          subPath: {{.Values.fileserver.subPath}}
+      - name: cloud-sql-proxy
+        image: {{.Values.database.cloudsqlimage}}
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "--instances=$(GCP_DATABASE_INSTANCE)=tcp:$(POSTGRES_PORT)"
+        envFrom:
+        - configMapRef:
+            # GCP_DATABASE_INSTANCE and POSTGRES_PORT
+            name: postgres-env-config
+        securityContext:
+          runAsNonRoot: true
+      volumes:
+      - name: django-fileserver-storage
+        persistentVolumeClaim:
+          claimName: fileserver-claim
+      serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
