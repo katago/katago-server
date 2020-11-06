@@ -11,7 +11,6 @@ from .base import *  # noqa
 from .base import env
 
 # noinspection PyUnresolvedReferences
-# import ddtrace.profile.auto
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -151,17 +150,11 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
         "django.db.backends": {"level": "ERROR", "handlers": ["console"], "propagate": False},
-        "ddtrace": {"level": "WARNING", "handlers": ["console"]},
         # Errors logged by the SDK itself
         "sentry_sdk": {"level": "ERROR", "handlers": ["console"], "propagate": False},
         "django.security.DisallowedHost": {"level": "ERROR", "handlers": ["console"], "propagate": False},
     },
 }
-
-# APM
-# ------------------------------------------------------------------------------
-INSTALLED_APPS += ["ddtrace.contrib.django"]
-
 
 # Sentry
 # ------------------------------------------------------------------------------
