@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migrate-job
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 900
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: django-migrate
+        image: {{.Values.django.image.repo}}:{{.Values.django.image.tag}}
+        command: [ "/entrypoint", "python", "manage.py", "migrate"]
+        envFrom:
+        - secretRef:
+            name: django-env-secrets
+        - secretRef:
+            # POSTGRES_USER and POSTGRES_PASSWORD
+            name: postgres-env-secrets
+        - configMapRef:
+            # POSTGRES_HOST, POSTGRES_DB, POSTGRES_PORT
+            name: postgres-env-config
+        # Migration job probably doesn't need these, but it shouldn't hurt to have them
+        # just to keep the configuration of this django instance as close as possible to
+        # the django configuration
+        volumeMounts:
+        - name: django-fileserver-storage
+          mountPath: /data
+          subPath: {{.Values.fileserver.subPath}}
+      - name: cloud-sql-proxy
+        image: {{.Values.database.cloudsqlimage}}
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "--instances=$(GCP_DATABASE_INSTANCE)=tcp:$(POSTGRES_PORT)"
+        envFrom:
+        - configMapRef:
+            # GCP_DATABASE_INSTANCE and POSTGRES_PORT
+            name: postgres-env-config
+        securityContext:
+          runAsNonRoot: true
+      volumes:
+      - name: django-fileserver-storage
+        persistentVolumeClaim:
+          claimName: fileserver-claim
+      serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
