@@ -4,6 +4,9 @@
 
 global:
   domainName: katagotraining.org
+  flowerDomainName: flower.katagotraining.org
+  managedCertName: TODO
+  externalIpAddressName: TODO
 
 django:
   replicaCount: 2
