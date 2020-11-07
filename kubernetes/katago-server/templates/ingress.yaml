@@ -5,12 +5,11 @@ metadata:
   namespace: serverspace
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
-  annotations: {}
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: {{.Values.global.externalIpAddressName}}
+    networking.gke.io/managed-certificates: {{.Values.global.managedCertName}}
+
 spec:
-  tls:
-  - hosts:
-    - {{.Values.global.domainName}}
-    secretName: tls-secrets
   rules:
   - host: {{.Values.global.domainName}}
     http:
@@ -23,6 +22,9 @@ spec:
         backend:
           serviceName: django-service
           servicePort: {{.Values.django.servicePort}}
+  - host: {{.Values.global.flowerDomainName}}
+    http:
+      paths:
       - path: /
         backend:
           serviceName: celery-flower-service
