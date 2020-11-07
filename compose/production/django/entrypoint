@@ -9,7 +9,7 @@ set -o nounset
 # N.B. If only .env files supported variable expansion...
 export CELERY_BROKER_URL="${REDIS_URL}"
 
-if [ -n "${POSTGRES_HOST}" ]
+if [ -n "${POSTGRES_HOST:-}" ]
 then
     if [ -z "${POSTGRES_USER}" ]
     then
