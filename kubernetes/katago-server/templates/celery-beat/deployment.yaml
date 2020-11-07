@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: celery-beat-deployment
-  namespace: serverspace
+  namespace: {{.Values.global.namespace}}
   labels:
     app: celery-beat
     app.kubernetes.io/component: celery-beat

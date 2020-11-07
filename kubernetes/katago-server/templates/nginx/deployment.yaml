@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
-  namespace: serverspace
+  namespace: {{.Values.global.namespace}}
   labels:
     app: nginx
     app.kubernetes.io/component: nginx
