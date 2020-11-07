@@ -34,12 +34,6 @@ spec:
         envFrom:
         - secretRef:
             name: django-env-secrets
-        - secretRef:
-            # POSTGRES_USER and POSTGRES_PASSWORD
-            name: postgres-env-secrets
-        - configMapRef:
-            # POSTGRES_HOST, POSTGRES_DB, POSTGRES_PORT
-            name: postgres-env-config
         readinessProbe:
           tcpSocket:
             port: celery-flower-port
@@ -57,24 +51,3 @@ spec:
         resources:
           limits:
             cpu: 100m
-        volumeMounts:
-        - name: django-fileserver-storage
-          mountPath: /data
-          subPath: {{.Values.fileserver.subPath}}
-      - name: cloud-sql-proxy
-        image: {{.Values.database.cloudsqlimage}}
-        command:
-        - "/cloud_sql_proxy"
-        - "-ip_address_types=PRIVATE"
-        - "--instances=$(GCP_DATABASE_INSTANCE)=tcp:$(POSTGRES_PORT)"
-        envFrom:
-        - configMapRef:
-            # GCP_DATABASE_INSTANCE and POSTGRES_PORT
-            name: postgres-env-config
-        securityContext:
-          runAsNonRoot: true
-      volumes:
-      - name: django-fileserver-storage
-        persistentVolumeClaim:
-          claimName: fileserver-claim
-      serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}

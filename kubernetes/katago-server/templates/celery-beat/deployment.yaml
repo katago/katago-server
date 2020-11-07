@@ -45,10 +45,6 @@ spec:
         # it fails then the process itself will exit so the container will die, since container death
         # will always be noticed.
         # livenessProbe:
-        volumeMounts:
-        - name: django-fileserver-storage
-          mountPath: /data
-          subPath: {{.Values.fileserver.subPath}}
       - name: cloud-sql-proxy
         image: {{.Values.database.cloudsqlimage}}
         command:
@@ -61,8 +57,4 @@ spec:
             name: postgres-env-config
         securityContext:
           runAsNonRoot: true
-      volumes:
-      - name: django-fileserver-storage
-        persistentVolumeClaim:
-          claimName: fileserver-claim
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
