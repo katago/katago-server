@@ -8,6 +8,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: {{.Values.global.externalIpAddressName}}
     networking.gke.io/managed-certificates: {{.Values.global.managedCertName}}
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/v1beta1.FrontendConfig: "katago-server-frontend-config"
 
 spec:
   rules:
