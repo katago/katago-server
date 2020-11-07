@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
+data:
+  nginxConfig: |
+{{ .Files.Get "nginx.conf" | indent 4 }}
