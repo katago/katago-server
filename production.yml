@@ -148,6 +148,8 @@ services:
     <<: *django
     image: katago_server_production_celerybeat
     command: /start-celerybeat
+    # Celery beat does not need access to django storage volume
+    volumes: []
     labels:
       # Make sure to override traefik.enable: "true" from django
       traefik.enable: "false"
@@ -155,6 +157,14 @@ services:
   flower:
     <<: *django
     image: katago_server_production_flower
+    # Flower does not need access to postgres so override that from django
+    depends_on:
+      - redis
+    # Flower does not need access to postgres so override that from django
+    env_file:
+      - ./envs/production/django
+    # Flower does not need access to django storage volume
+    volumes: []
     command: /start-flower
     labels:
       traefik.enable: "true"
