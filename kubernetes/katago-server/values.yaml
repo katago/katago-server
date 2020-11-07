@@ -5,6 +5,7 @@
 global:
   domainName: katagotraining.org
   flowerDomainName: flower.katagotraining.org
+  namespace: TODO
   managedCertName: TODO
   externalIpAddressName: TODO
 

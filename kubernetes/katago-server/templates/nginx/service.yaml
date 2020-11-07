@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Service
 metadata:
   name: nginx-service
-  namespace: serverspace
+  namespace: {{.Values.global.namespace}}
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: celery-worker-deployment
-  namespace: serverspace
+  namespace: {{.Values.global.namespace}}
   labels:
     app: celery-worker
     app.kubernetes.io/component: celery-worker

@@ -12,7 +12,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-env-config
-  namespace: serverspace
+  namespace: {{.Values.global.namespace}}
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
 {{ include "katago-server.postgres-env-config-data" . }}
@@ -21,7 +21,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-env-config-for-hooks
-  namespace: serverspace
+  namespace: {{.Values.global.namespace}}
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
   annotations:
