@@ -2,6 +2,9 @@ apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: {{.Values.global.managedCertName}}
+  namespace: serverspace
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   domains:
     - {{.Values.global.domainName}}
