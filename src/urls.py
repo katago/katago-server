@@ -31,20 +31,6 @@ from src.frontend.views import (
     SgfDetailView
 )
 
-from django.contrib.auth.models import Group
-from rest_framework.authtoken.models import Token
-from allauth.account.models import EmailAddress
-from django.contrib.sites.models import Site
-from django_celery_beat.models import SolarSchedule, CrontabSchedule, ClockedSchedule
-
-admin.site.unregister(Group)
-admin.site.unregister(Token)
-admin.site.unregister(EmailAddress)
-admin.site.unregister(Site)
-admin.site.unregister(SolarSchedule)
-admin.site.unregister(ClockedSchedule)
-admin.site.unregister(CrontabSchedule)
-
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"networks", NetworkViewSet)
