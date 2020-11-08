@@ -86,6 +86,10 @@ urlpatterns = (
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
         path("accounts/", include("allauth.urls")),
 
+        # Health check
+        path("healthz/", include("health_check.urls")),
+
+
         # Runs ------------------------------------------------------------
         path(
             "runs/",

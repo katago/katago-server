@@ -72,6 +72,7 @@ THIRD_PARTY_APPS = [
     "drf_yasg",
     "bulma",
     "django_pgviews",
+    "health_check",
 ]
 
 LOCAL_APPS = [
