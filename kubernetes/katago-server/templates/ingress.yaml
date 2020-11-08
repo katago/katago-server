@@ -16,20 +16,18 @@ spec:
   - host: {{.Values.global.domainName}}
     http:
       paths:
-      - path: /media
-        pathType: Prefix
+      - path: /media/*
         backend:
           serviceName: nginx-service
           servicePort: {{.Values.nginx.servicePort}}
-      - path: /
-        pathType: Prefix
+      - path: /*
         backend:
           serviceName: django-service
           servicePort: {{.Values.django.servicePort}}
   - host: {{.Values.global.flowerDomainName}}
     http:
       paths:
-      - path: /
+      - path: /*
         backend:
           serviceName: celery-flower-service
           servicePort: {{.Values.celeryFlower.servicePort}}
