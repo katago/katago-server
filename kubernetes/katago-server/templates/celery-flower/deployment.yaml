@@ -27,7 +27,7 @@ spec:
       - name: celery-flower
         image: {{.Values.django.image.repo}}:{{.Values.django.image.tag}}
         ports:
-        - name: celery-flower-port
+        - name: flower-port
           containerPort: {{.Values.celeryFlower.containerPort}}
           protocol: TCP
         command: [ "/entrypoint", "/start-flower"]
@@ -36,14 +36,14 @@ spec:
             name: django-env-secrets
         readinessProbe:
           tcpSocket:
-            port: celery-flower-port
+            port: flower-port
           initialDelaySeconds: 15
           periodSeconds: 6
           timeoutSeconds: 2
           failureThreshold: 2
         livenessProbe:
           tcpSocket:
-            port: celery-flower-port
+            port: flower-port
           initialDelaySeconds: 15
           periodSeconds: 20
           timeoutSeconds: 3

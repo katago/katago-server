@@ -6,7 +6,7 @@ data:
   POSTGRES_DB: TODO
   # Port number for accessing database
   POSTGRES_PORT: TODO
-  # Database instance name from cloud sql
+  # {Project}:{Region}:{Database instance name from cloud sql}
   GCP_DATABASE_INSTANCE: TODO
 {{- end -}}
 ---
