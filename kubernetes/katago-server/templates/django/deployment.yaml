@@ -60,18 +60,6 @@ spec:
         - name: django-fileserver-storage
           mountPath: /data
           subPath: {{.Values.fileserver.subPath}}
-      - name: cloud-sql-proxy
-        image: {{.Values.database.cloudsqlimage}}
-        command:
-        - "/cloud_sql_proxy"
-        - "-ip_address_types=PRIVATE"
-        - "--instances=$(GCP_DATABASE_INSTANCE)=tcp:$(POSTGRES_PORT)"
-        envFrom:
-        - configMapRef:
-            # GCP_DATABASE_INSTANCE and POSTGRES_PORT
-            name: postgres-env-config
-        securityContext:
-          runAsNonRoot: true
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:
