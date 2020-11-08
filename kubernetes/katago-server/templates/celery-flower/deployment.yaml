@@ -35,14 +35,16 @@ spec:
         - secretRef:
             name: django-env-secrets
         readinessProbe:
-          tcpSocket:
+          httpGet:
+            path: {{.Values.celeryFlower.readinessPath}}
             port: {{.Values.celeryFlower.containerPort}}
           initialDelaySeconds: 15
           periodSeconds: 6
           timeoutSeconds: 2
           failureThreshold: 2
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: {{.Values.celeryFlower.readinessPath}}
             port: {{.Values.celeryFlower.containerPort}}
           initialDelaySeconds: 15
           periodSeconds: 20
