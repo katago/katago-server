@@ -16,10 +16,10 @@ gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
 
 # Django
 # ------------------------------------------------------------------------------
-django==3.0.6  # pyup: < 3.0  # https://www.djangoproject.com/
+django==3.0.11  # pyup: < 3.1  # https://www.djangoproject.com/
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==4.0.0  # https://github.com/jazzband/django-model-utils
-django-allauth==0.42.0  # https://github.com/pennersr/django-allauth
+django-allauth==0.43.0  # https://github.com/pennersr/django-allauth
 django-crispy-forms==1.9.2  # https://github.com/django-crispy-forms/django-crispy-forms
 django-redis==4.12.1  # https://github.com/jazzband/django-redis
 django-pgviews==0.5.7  # https://pypi.org/project/django-pgviews/
