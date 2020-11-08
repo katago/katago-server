@@ -17,10 +17,12 @@ spec:
     http:
       paths:
       - path: /media
+        pathType: Prefix
         backend:
           serviceName: nginx-service
           servicePort: {{.Values.nginx.servicePort}}
       - path: /
+        pathType: Prefix
         backend:
           serviceName: django-service
           servicePort: {{.Values.django.servicePort}}
