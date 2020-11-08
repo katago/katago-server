@@ -138,6 +138,7 @@ MIDDLEWARE = [
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",  # use by the admindocs
+    "allow_cidr.middleware.AllowCIDRMiddleware",
 ]
 
 # STATIC
