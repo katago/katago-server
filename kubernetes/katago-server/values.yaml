@@ -26,8 +26,8 @@ celeryBeat:
 celeryFlower:
   replicaCount: 1
   containerPort: 5555
-  readinessPath: metrics/
-  livenessPath: metrics/
+  readinessPath: healthcheck/
+  livenessPath: healthcheck/
   servicePort: 5555
 
 nginx:
@@ -43,7 +43,7 @@ nginx:
 # https://cloud.google.com/filestore/docs/accessing-fileshares
 fileserver:
   fileShareName: katago_fileshare
-  fileShareIpAddress: 10.81.4.178
+  fileShareIpAddress: TODO
   storageAmount: 500Gi
   # Folder name within fileserver to use
   subPath: "serverdata"
