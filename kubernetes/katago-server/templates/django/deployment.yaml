@@ -43,7 +43,7 @@ spec:
         readinessProbe:
           httpGet:
             path: {{.Values.django.readinessPath}}
-            port: django-port
+            port: {{.Values.django.containerPort}}
           initialDelaySeconds: 10
           periodSeconds: 6
           timeoutSeconds: 3
@@ -51,7 +51,7 @@ spec:
         livenessProbe:
           httpGet:
             path: {{.Values.django.livenessPath}}
-            port: django-port
+            port: {{.Values.django.containerPort}}
           initialDelaySeconds: 10
           periodSeconds: 20
           timeoutSeconds: 5

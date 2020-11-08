@@ -31,14 +31,14 @@ spec:
         command: [ "/docker-entrypoint.sh", "nginx", "-g", "daemon off;"]
         readinessProbe:
           tcpSocket:
-            port: nginx-port
+            port: {{.Values.nginx.containerPort}}
           initialDelaySeconds: 5
           periodSeconds: 6
           timeoutSeconds: 2
           failureThreshold: 2
         livenessProbe:
           tcpSocket:
-            port: nginx-port
+            port: {{.Values.nginx.containerPort}}
           initialDelaySeconds: 5
           periodSeconds: 20
           timeoutSeconds: 3
