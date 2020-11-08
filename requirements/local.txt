@@ -1,36 +1,36 @@
 -r ./base.txt
 
 Werkzeug==1.0.1 # https://github.com/pallets/werkzeug
-ipdb==0.13.2  # https://github.com/gotcha/ipdb
-Sphinx==3.0.4  # https://github.com/sphinx-doc/sphinx
-psycopg2==2.8.5 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
+ipdb==0.13.4  # https://github.com/gotcha/ipdb
+Sphinx==3.3.0  # https://github.com/sphinx-doc/sphinx
+psycopg2==2.8.6 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
 watchgod==0.6  # https://github.com/samuelcolvin/watchgod
 
 # Testing
 # ------------------------------------------------------------------------------
-mypy==0.770  # https://github.com/python/mypy
-django-stubs==1.5.0  # https://github.com/typeddjango/django-stubs
-pytest==5.4.2  # https://github.com/pytest-dev/pytest
-pytest-sugar==0.9.3 # https://github.com/Frozenball/pytest-sugar
+mypy==0.790  # https://github.com/python/mypy
+django-stubs==1.7.0  # https://github.com/typeddjango/django-stubs
+pytest==6.1.2  # https://github.com/pytest-dev/pytest
+pytest-sugar==0.9.4 # https://github.com/Frozenball/pytest-sugar
 
 # Code quality
 # ------------------------------------------------------------------------------
-flake8==3.8.2  # https://github.com/PyCQA/flake8
-coverage==5.1  # https://github.com/nedbat/coveragepy
-black==19.10b0  # https://github.com/ambv/black
-pylint-django==2.0.15  # https://github.com/PyCQA/pylint-django
+flake8==3.8.4  # https://github.com/PyCQA/flake8
+coverage==5.3  # https://github.com/nedbat/coveragepy
+black==20.8b1  # https://github.com/ambv/black
+pylint-django==2.3.0  # https://github.com/PyCQA/pylint-django
 pylint-celery==0.3  # https://github.com/PyCQA/pylint-celery
-pre-commit==2.4.0  # https://github.com/pre-commit/pre-commit
+pre-commit==2.8.2  # https://github.com/pre-commit/pre-commit
 
 # Django
 # ------------------------------------------------------------------------------
-factory-boy==2.12.0  # https://github.com/FactoryBoy/factory_boy
+factory-boy==3.0.1  # https://github.com/FactoryBoy/factory_boy
 
 django-storages[google]==1.10.1  # https://github.com/jschneier/django-storages
-django-debug-toolbar==2.2  # https://github.com/jazzband/django-debug-toolbar
+django-debug-toolbar==3.1.1  # https://github.com/jazzband/django-debug-toolbar
 django-debug-toolbar-template-profiler==2.0.1 # https://pypi.org/project/django-debug-toolbar-template-profiler/
-django-extensions==2.2.9  # https://github.com/django-extensions/django-extensions
+django-extensions==3.0.9  # https://github.com/django-extensions/django-extensions
 django-coverage-plugin==1.8.0  # https://github.com/nedbat/django_coverage_plugin
-pytest-django==3.9.0  # https://github.com/pytest-dev/pytest-django
+pytest-django==4.1.0  # https://github.com/pytest-dev/pytest-django
 django-cleanup==5.1.0 # https://pypi.org/project/django-cleanup/
 
