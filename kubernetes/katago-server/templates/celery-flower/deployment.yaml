@@ -36,14 +36,14 @@ spec:
             name: django-env-secrets
         readinessProbe:
           tcpSocket:
-            port: flower-port
+            port: {{.Values.celeryFlower.containerPort}}
           initialDelaySeconds: 15
           periodSeconds: 6
           timeoutSeconds: 2
           failureThreshold: 2
         livenessProbe:
           tcpSocket:
-            port: flower-port
+            port: {{.Values.celeryFlower.containerPort}}
           initialDelaySeconds: 15
           periodSeconds: 20
           timeoutSeconds: 3

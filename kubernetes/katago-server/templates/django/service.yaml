@@ -13,5 +13,5 @@ spec:
   - name: django-service-port
     protocol: TCP
     port: {{.Values.django.servicePort}}
-    targetPort: django-port
+    targetPort: {{.Values.django.containerPort}}
 

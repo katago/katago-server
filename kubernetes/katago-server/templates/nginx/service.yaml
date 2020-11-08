@@ -13,5 +13,5 @@ spec:
   - name: nginx-service-port
     protocol: TCP
     port: {{.Values.nginx.servicePort}}
-    targetPort: nginx-port
+    targetPort: {{.Values.nginx.containerPort}}
 

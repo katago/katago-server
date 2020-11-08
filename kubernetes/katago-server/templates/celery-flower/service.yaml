@@ -13,5 +13,5 @@ spec:
   - name: celery-flower-service-port
     protocol: TCP
     port: {{.Values.celeryFlower.servicePort}}
-    targetPort: flower-port
+    targetPort: {{.Values.celeryFlower.containerPort}}
 
