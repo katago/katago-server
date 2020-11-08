@@ -81,17 +81,23 @@
           </a>
 
         {% if user.is_authenticated %}
+          {% url 'account_logout' as logout_url %}
+          {% if logout_url %}
+            <a class="navbar-item is-hidden-desktop-only" href="{{ logout_url }}">
+              {% trans "Log Out" %} ({{user.username}})
+            </a>
+          {% endif %}
         {% else %}
           {% url 'account_login' as login_url %}
           {% if login_url %}
             <a class="navbar-item is-hidden-desktop-only" href="{{ login_url }}">
-              Login
+              {% trans "Log In" %}
             </a>
           {% endif %}
           {% url 'account_signup' as signup_url %}
           {% if signup_url %}
             <a class="navbar-item is-hidden-desktop-only" href="{{ signup_url }}">
-              Signup
+              {% trans "Sign Up" %}
            </a>
           {% endif %}
         {% endif %}
