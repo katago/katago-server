@@ -353,3 +353,6 @@ celerybeat.pid
 
 # Secrets will go in here
 kubernetes/katago-server/templates/env
+
+kubernetes/katago-server/values_private.yaml
+
