@@ -30,14 +30,16 @@ spec:
           protocol: TCP
         command: [ "/docker-entrypoint.sh", "nginx", "-g", "daemon off;"]
         readinessProbe:
-          tcpSocket:
+          httpGet:
+            path: {{.Values.nginx.readinessPath}}
             port: {{.Values.nginx.containerPort}}
           initialDelaySeconds: 5
           periodSeconds: 6
           timeoutSeconds: 2
           failureThreshold: 2
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: {{.Values.nginx.readinessPath}}
             port: {{.Values.nginx.containerPort}}
           initialDelaySeconds: 5
           periodSeconds: 20

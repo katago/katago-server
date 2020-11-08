@@ -15,8 +15,8 @@ django:
     repo: TODO
     tag: TODO
   containerPort: 5000
-  readinessPath: api/
-  livenessPath: api/
+  readinessPath: healthz/
+  livenessPath: healthz/
   servicePort: 80
 
 celeryWorker:
@@ -26,6 +26,8 @@ celeryBeat:
 celeryFlower:
   replicaCount: 1
   containerPort: 5555
+  readinessPath: metrics/
+  livenessPath: metrics/
   servicePort: 5555
 
 nginx:
@@ -34,6 +36,8 @@ nginx:
     repo: TODO
     tag: TODO
   containerPort: 80
+  readinessPath: healthz/
+  livenessPath: healthz/
   servicePort: 80
 
 # https://cloud.google.com/filestore/docs/accessing-fileshares
