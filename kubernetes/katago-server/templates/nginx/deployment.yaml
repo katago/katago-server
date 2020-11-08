@@ -28,7 +28,7 @@ spec:
         - name: nginx-port
           containerPort: {{.Values.nginx.containerPort}}
           protocol: TCP
-        command: [ "/docker-entrypoint.sh", "/nginx", "-g", "daemon off;"]
+        command: [ "/docker-entrypoint.sh", "nginx", "-g", "daemon off;"]
         readinessProbe:
           tcpSocket:
             port: nginx-port
