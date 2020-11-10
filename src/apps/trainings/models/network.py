@@ -27,10 +27,16 @@ from django.conf import settings
 from django.core.files.storage import get_storage_class
 network_filestorage_class = get_storage_class(settings.NETWORK_FILE_STORAGE)
 
-def upload_network_to(instance, _filename):
-    return os.path.join("networks", instance.run.name, f"{instance.name}.bin.gz")
-def upload_network_zip_to(instance, _filename):
-    return os.path.join("networks", instance.run.name, f"{instance.name}.zip")
+def upload_network_to(instance, filename):
+    if filename.endswith(".bin.gz"):
+        return os.path.join("networks", "models", instance.run.name, f"{instance.name}.bin.gz")
+    elif filename.endswith(".txt.gz"):
+        return os.path.join("networks", "models", instance.run.name, f"{instance.name}.txt.gz")
+    else:
+        return os.path.join("networks", "models", instance.run.name, f"{instance.name}" + os.path.splitext(filename)[1])
+
+def upload_network_zip_to(instance, filename):
+    return os.path.join("networks", "zips", instance.run.name, f"{instance.name}" + os.path.splitext(filename)[1])
 
 
 validate_gzip = FileValidator(max_size=1024 * 1024 * 1024, content_types=["application/gzip"])
