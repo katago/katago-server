@@ -8,6 +8,6 @@ steps:
 - name: postgres:13
   args: ['psql', 'postgresql://katago:katago@postgres:5432/katago', '--command', 'SELECT * FROM INFORMATION_SCHEMA.Tables']
 - name: gcr.io/cloud-builders/docker
-  args: ['run', '--network=cloudbuild', '--env-file=./envs/local/django',  '--env=POSTGRES_HOST_AUTH_METHOD=trust', '--env=POSTGRES_PASSWORD=katago', '--env=POSTGRES_USER=katago', '--env=POSTGRES_DB=katago', '--name=katago-django', 'katago-django', 'manage.py', 'test']
+  args: ['run', '--network=cloudbuild', '--env-file=./envs/local/django',  '--env=POSTGRES_HOST_AUTH_METHOD=trust', '--env=POSTGRES_PASSWORD=katago', '--env=POSTGRES_USER=katago', '--env=POSTGRES_DB=katago', '--name=katago-django', 'katago-django', 'python manage.py test']
 - name: gcr.io/cloud-builders/docker
   args: ['rm', '--force', 'postgres']
