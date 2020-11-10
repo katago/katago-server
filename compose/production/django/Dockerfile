@@ -33,25 +33,21 @@ COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
 
-COPY ./compose/production/django/entrypoint /entrypoint
+COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
-RUN chown django /entrypoint
 
-COPY ./compose/production/django/start /start
+COPY --chown=django:django ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-RUN chown django /start
 
-COPY ./compose/production/django/celery/worker/start /start-celeryworker
+COPY --chown=django:django ./compose/production/django/celery/worker/start /start-celeryworker
 RUN sed -i 's/\r$//g' /start-celeryworker
 RUN chmod +x /start-celeryworker
-RUN chown django /start-celeryworker
 
-COPY ./compose/production/django/celery/beat/start /start-celerybeat
+COPY --chown=django:django ./compose/production/django/celery/beat/start /start-celerybeat
 RUN sed -i 's/\r$//g' /start-celerybeat
 RUN chmod +x /start-celerybeat
-RUN chown django /start-celerybeat
 
 COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
@@ -64,8 +60,7 @@ RUN chown -R django /data
 
 COPY ./.credentials /.credentials
 
-COPY --from=client-builder /app /app
-RUN chown -R django /app
+COPY --from=client-builder --chown=django:django /app /app
 
 USER django
 WORKDIR /app
