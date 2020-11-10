@@ -87,6 +87,7 @@ function makeGraph() {
       xScaleIsLogDataRows = false;
 
       var buffer = 0.01 * (maxCreatedAt.getTime() - minCreatedAt.getTime());
+      buffer += 1000 * 60 * 30; //30 minutes in milliseconds
       xDomainMin = new Date(minCreatedAt.getTime()-buffer);
       xDomainMax = new Date(maxCreatedAt.getTime()+buffer*2);
       xScale =
@@ -101,6 +102,7 @@ function makeGraph() {
       xScaleIsLogDataRows = false;
 
       var buffer = 0.01 * (maxDataRows - minDataRows);
+      buffer += 10000; //10000 data rows
       xDomainMin = minDataRows-buffer;
       xDomainMax = maxDataRows+buffer*2;
       xScale =
@@ -116,6 +118,7 @@ function makeGraph() {
 
       var maxDataRowsOr10k = Math.max(maxDataRows,10000);
       var buffer = 0.2 * (maxDataRows - minDataRows);
+      buffer += 10000; //10000 data rows
       xDomainMin = Math.min(minDataRows + 500000, maxDataRowsOr10k * 0.02);
       xDomainMax = maxDataRowsOr10k + buffer;
       xScale =
@@ -174,7 +177,7 @@ function makeGraph() {
     var brighterColorDict = {};
     for(var i = 0; i<networkSizes.length; i++) {
       colorDict[networkSizes[i]] = colorScale(networkSizes.length-i-1);
-      brighterColorDict[networkSizes[i]] = d3.rgb(colorScale(networkSizes.length-i-1)).brighter(0.5);
+      brighterColorDict[networkSizes[i]] = d3.rgb(colorScale(networkSizes.length-i-1)).brighter(0.6);
     }
 
     var escapeHtml = function(s) {
@@ -331,6 +334,9 @@ function makeGraph() {
       var xRatio = (xScale.domain()[1] - xScale.domain()[0]) / (xDomainMax - xDomainMin);
       var yRatio = (yScale.domain()[1] - yScale.domain()[0]) / (unzoomedYDomainMax - unzoomedYDomainMin);
       var ratio = Math.max(xRatio,yRatio);
+      // Also scale ratio based on the abs number of data points
+      ratio /= Math.max(1.0, Math.sqrt(200.0 / (5.0 + networks.length)));
+
       curStrokeWidth = baseStrokeWidth / Math.max(0.2, Math.sqrt(ratio));
       curDataRadius = baseDataRadius / Math.max(0.2, Math.sqrt(ratio));
 
