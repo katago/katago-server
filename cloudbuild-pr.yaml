@@ -5,7 +5,7 @@ steps:
 - name: jwilder/dockerize:0.6.1
   args: ['dockerize', '-timeout=60s', '-wait=tcp://katago:katago@postgres:5432/katago']
 - name: postgres:13
-  args: ['psql', '--host=postgres', '--user=katago', '--password=katago', '--database=katago', '--command', 'SELECT * FROM INFORMATION_SCHEMA.Tables']
+  args: ['psql', 'postgresql://katago:katago@postgres:5432/katago', '--command', 'SELECT * FROM INFORMATION_SCHEMA.Tables']
 # TODO: run docker-image for django with argument test
 - name: gcr.io/cloud-builders/docker
   args: ['rm', '--force', 'postgres']
