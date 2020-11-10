@@ -1,0 +1,11 @@
+steps:
+# TODO: build docker-image for django
+- name: gcr.io/cloud-builders/docker
+  args: ['run', '-d', '--network=cloudbuild', '--env=POSTGRES_HOST_AUTH_METHOD=trust', '--env=POSTGRES_PASSWORD=katago', '--env=POSTGRES_USER=katago', '--env=POSTGRES_DB=katago', '--name=postgres', 'postgres:13']
+- name: jwilder/dockerize:0.6.1
+  args: ['dockerize', '-timeout=60s', '-wait=tcp://postgres:5432']
+- name: postgres:13
+  args: ['psql', '--host=postgres', '--user=postgres', '--command', 'SELECT * FROM INFORMATION_SCHEMA.Tables']
+# TODO: run docker-image for django with argument test
+- name: gcr.io/cloud-builders/docker
+  args: ['rm', '--force', 'postgres']
