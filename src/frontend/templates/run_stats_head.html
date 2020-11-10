@@ -148,7 +148,7 @@ function makeGraph() {
         minElo = 0;
         maxElo = 100;
       }
-      var eloBuffer = 0.01 * (maxElo - minElo) + 30;
+      var eloBuffer = 0.01 * (maxElo - minElo) + 10;
       minElo = minElo - eloBuffer;
       maxElo = maxElo + eloBuffer;
       //Also stretch out a little by scale
