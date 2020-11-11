@@ -27,4 +27,6 @@ spec:
         - configMapRef:
             # POSTGRES_HOST, POSTGRES_DB, POSTGRES_PORT
             name: postgres-env-config-for-hooks
+        securityContext:
+          allowPrivilegeEscalation: false
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
