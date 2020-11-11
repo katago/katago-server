@@ -35,7 +35,7 @@ nginx:
   image:
     repo: TODO
     tag: TODO
-  containerPort: 80
+  containerPort: 18080
   readinessPath: healthz/
   livenessPath: healthz/
   servicePort: 80
