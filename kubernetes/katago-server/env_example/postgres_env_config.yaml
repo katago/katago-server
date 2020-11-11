@@ -1,13 +1,13 @@
 {{- define "katago-server.postgres-env-config-data" -}}
 data:
   # ip address or hostname
-  POSTGRES_HOST: TODO
+  POSTGRES_HOST: "TODO"
   # Name of database inside the postgres db instance
-  POSTGRES_DB: TODO
+  POSTGRES_DB: "TODO"
   # Port number for accessing database
-  POSTGRES_PORT: TODO
+  POSTGRES_PORT: "TODO"
   # {Project}:{Region}:{Database instance name from cloud sql}
-  GCP_DATABASE_INSTANCE: TODO
+  GCP_DATABASE_INSTANCE: "TODO"
 {{- end -}}
 ---
 apiVersion: v1
