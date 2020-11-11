@@ -1,0 +1,9 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: katago-managed-cert
+  namespace: serverspace
+spec:
+  domains:
+    - katagotraining.org
+    - flower.katagotraining.org
