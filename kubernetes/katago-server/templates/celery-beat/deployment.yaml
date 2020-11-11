@@ -45,4 +45,7 @@ spec:
         # it fails then the process itself will exit so the container will die, since container death
         # will always be noticed.
         # livenessProbe:
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
