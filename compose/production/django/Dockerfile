@@ -26,7 +26,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --gid 23460 django \
-    && adduser --uid 23450 --ingroup django django
+    && adduser --uid 23450 --ingroup django --disabled-password --gecos "" django
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
