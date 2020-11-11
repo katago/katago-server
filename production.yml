@@ -105,7 +105,10 @@ services:
 
   # Serves uploaded sgfs and npz files
   nginx:
-    image: nginx
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: katago_server_production_nginx
     depends_on:
       - django
     volumes:
@@ -120,7 +123,7 @@ services:
       traefik.http.routers.nginxroute.entrypoints: "websecure"
       traefik.http.routers.nginxroute.tls.certresolver: "letsencrypt"
       traefik.http.routers.nginxroute.priority: 20
-      traefik.http.services.nginxroute.loadbalancer.server.port: 80
+      traefik.http.services.nginxroute.loadbalancer.server.port: 18080
       # Define the "csrf" middleware and make nginxroute use it
       traefik.http.middlewares.csrf.headers.hostsProxyHeaders: "X-CSRFToken"
       traefik.http.routers.nginxroute.middlewares: "csrf"
