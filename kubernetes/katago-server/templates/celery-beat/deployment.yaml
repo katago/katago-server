@@ -47,5 +47,4 @@ spec:
         # livenessProbe:
         securityContext:
           allowPrivilegeEscalation: false
-          runAsNonRoot: true
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}

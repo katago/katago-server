@@ -56,7 +56,6 @@ spec:
           subPath: {{.Values.fileserver.subPath}}
         securityContext:
           allowPrivilegeEscalation: false
-          runAsNonRoot: true
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:
