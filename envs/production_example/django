@@ -13,6 +13,15 @@ DJANGO_SETTINGS_MODULE=src.settings.production
 # Controls the relative URL that the admin panel of the website will be accessible through
 DJANGO_ADMIN_URL=admin
 
+# Uncomment these and set them to the domain for the site and a reasonable name for the site
+# DJANGO_SITE_DOMAIN_FOR_MIGRATION=example.com
+# DJANGO_SITE_NAME_FOR_MIGRATION=
+
+# Redirect http to https in django, defaults to True
+# DJANGO_SECURE_SSL_REDIRECT=True
+
+# Use a much longer time for strict transport security. Set to true once SSL is all working.
+DJANGO_SECURE_HSTS_LONG=False
 
 # Email
 # ------------------------------------------------------------------------------
