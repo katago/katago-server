@@ -14,6 +14,12 @@ git+git://github.com/mher/flower@e64ceb0cbda515ee9dceb862a8c4b27d253d4800#egg=fl
 uvicorn[standard]==0.12.2 # https://github.com/encode/uvicorn
 gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
 
+# TODO HACK - remove this when python package maintainers fix their incompatibilities
+# https://github.com/microsoft/onefuzz/issues/284
+# urllib 1.26.0 release causes incompatibilities on packages that
+# depend on it (as of 2020-11-10)
+urllib3==1.25.11
+
 # Django
 # ------------------------------------------------------------------------------
 django==3.0.11  # pyup: < 3.1  # https://www.djangoproject.com/
