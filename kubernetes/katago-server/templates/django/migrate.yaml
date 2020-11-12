@@ -29,4 +29,7 @@ spec:
             name: postgres-env-config-for-hooks
         securityContext:
           allowPrivilegeEscalation: false
+        resources:
+          requests:
+            cpu: 500m
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}

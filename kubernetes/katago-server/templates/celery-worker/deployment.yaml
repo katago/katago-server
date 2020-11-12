@@ -56,6 +56,11 @@ spec:
           subPath: {{.Values.fileserver.subPath}}
         securityContext:
           allowPrivilegeEscalation: false
+        resources:
+          requests:
+            cpu: 200m
+          limits:
+            cpu: 500m
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:

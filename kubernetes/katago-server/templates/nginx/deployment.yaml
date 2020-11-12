@@ -54,6 +54,9 @@ spec:
         - name: nginx-config-volume
           mountPath: /etc/nginx/conf.d/
           readOnly: true
+        resources:
+          requests:
+            cpu: 100m
       volumes:
       - name: nginx-fileserver-storage
         persistentVolumeClaim:

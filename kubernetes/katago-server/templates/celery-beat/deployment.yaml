@@ -47,4 +47,9 @@ spec:
         # livenessProbe:
         securityContext:
           allowPrivilegeEscalation: false
+        resources:
+          requests:
+            cpu: 50m
+          limits:
+            cpu: 500m
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}
