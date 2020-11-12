@@ -65,14 +65,14 @@ spec:
         resources:
           requests:
             cpu: 300m
-        topologySpreadConstraints:
-        - maxSkew: 3
-          topologyKey: "kubernetes.io/hostname"
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: django
-              {{- include "katago-server.selectorLabels" . | nindent 14 }}
+      topologySpreadConstraints:
+      - maxSkew: 3
+        topologyKey: "kubernetes.io/hostname"
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: django
+            {{- include "katago-server.selectorLabels" . | nindent 12 }}
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:
