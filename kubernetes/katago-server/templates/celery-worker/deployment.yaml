@@ -61,6 +61,14 @@ spec:
             cpu: 200m
           limits:
             cpu: 500m
+        topologySpreadConstraints:
+        - maxSkew: 2
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: celery-worker
+              {{- include "katago-server.selectorLabels" . | nindent 14 }}
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:

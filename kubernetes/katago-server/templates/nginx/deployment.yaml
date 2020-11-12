@@ -57,6 +57,14 @@ spec:
         resources:
           requests:
             cpu: 100m
+        topologySpreadConstraints:
+        - maxSkew: 2
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: nginx
+              {{- include "katago-server.selectorLabels" . | nindent 14 }}
       volumes:
       - name: nginx-fileserver-storage
         persistentVolumeClaim:
