@@ -62,6 +62,9 @@ spec:
         - name: django-fileserver-storage
           mountPath: /data
           subPath: {{.Values.fileserver.subPath}}
+        resources:
+          requests:
+            cpu: 300m
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:
