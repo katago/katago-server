@@ -19,7 +19,7 @@ spec:
         app: nginx
         {{- include "katago-server.selectorLabels" . | nindent 8 }}
       annotations:
-        checksum/nginx_config: {{ include (print $.Template.BasePath "/nginx/configmap.yaml") . | sha256sum }}
+        checksum/nginx_env_config: {{ include (print $.Template.BasePath "/env/nginx_env_config.yaml") . | sha256sum }}
     spec:
       containers:
       - name: nginx
@@ -28,7 +28,10 @@ spec:
         - name: nginx-port
           containerPort: {{.Values.nginx.containerPort}}
           protocol: TCP
-        command: [ "/docker-entrypoint.sh", "nginx", "-g", "daemon off;"]
+        command: [ "/make_nginx_conf.sh", "nginx", "-g", "daemon off;"]
+        envFrom:
+        - configMapRef:
+            name: nginx-env-config
         readinessProbe:
           httpGet:
             path: {{.Values.nginx.readinessPath}}
@@ -51,15 +54,10 @@ spec:
         - name: nginx-fileserver-storage
           mountPath: /data
           subPath: {{.Values.fileserver.subPath}}
-        - name: nginx-config-volume
-          mountPath: /etc/nginx/
-          readOnly: true
-        - name: nginx-default-config-volume
-          mountPath: /etc/nginx/conf.d/
-          readOnly: true
         resources:
           requests:
             cpu: 100m
+            memory: 600Mi
       topologySpreadConstraints:
       - maxSkew: 2
         topologyKey: "kubernetes.io/hostname"
@@ -72,15 +70,3 @@ spec:
       - name: nginx-fileserver-storage
         persistentVolumeClaim:
           claimName: fileserver-claim
-      - name: nginx-config-volume
-        configMap:
-          name: nginx-config
-          items:
-            - key: nginxConfig
-              path: nginx.conf
-      - name: nginx-default-config-volume
-        configMap:
-          name: nginx-default-config
-          items:
-            - key: nginxDefaultConfig
-              path: default.conf
