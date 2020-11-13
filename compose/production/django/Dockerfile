@@ -1,8 +1,5 @@
+# Python build stage
 FROM python:3.8-buster
-
-WORKDIR /app
-RUN apt-get update && apt-get install -y autoconf && apt-get install -y build-essential
-COPY . /app
 
 ENV PYTHONUNBUFFERED 1
 
@@ -54,9 +51,9 @@ RUN chown -R django /data
 
 COPY ./.credentials /.credentials
 
-COPY --from=client-builder --chown=django:django /app /app
+WORKDIR /app
+COPY --chown=django:django . /app
 
 USER django
-WORKDIR /app
 
 ENTRYPOINT ["/entrypoint"]
