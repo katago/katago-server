@@ -44,17 +44,30 @@ COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
-RUN mkdir -p /data/games
-RUN mkdir -p /data/training_npz
-RUN mkdir -p /data/networks
-RUN chown -R django /data
+RUN mkdir -p /data/games \
+    && mkdir -p /data/training_npz \
+    && mkdir -p /data/networks \
+    && chown -R django /data
 
 COPY ./.credentials /.credentials
 
 WORKDIR /app
-COPY --chown=django:django . /app
-# For collectstatic in start script, for whitenoise static middleware
-RUN mkdir -p /app/staticfiles && chown django:django /app/staticfiles
+
+# staticfiles is for collectstatic in start script, for whitenoise static middleware
+# src is all the django python source that django will use
+# locale is for i18n
+
+RUN chown django:django /app \
+    && mkdir -p /app/staticfiles \
+    && chown django:django /app/staticfiles \
+    && mkdir -p /app/locale \
+    && chown django:django /app/locale \
+    && mkdir -p /app/src \
+    && chown django:django /app/src
+
+COPY --chown=django:django locale  /app/locale
+COPY --chown=django:django src  /app/src
+COPY --chown=django:django manage.py  /app
 
 USER django
 
