@@ -1,4 +1,4 @@
-limit_req_zone $binary_remote_addr zone=mylimit:500m rate=20r/m;
+limit_req_zone $binary_remote_addr zone=mylimit:500m rate=10r/m;
 
 server {
    listen                      18080; # listen on http
@@ -12,7 +12,7 @@ server {
    location /media {
        autoindex off;
        alias /data;
-       limit_req zone=mylimit burst=500 nodelay;
+       limit_req zone=mylimit burst=5 nodelay;
    }
    location /healthz {
        access_log off;
