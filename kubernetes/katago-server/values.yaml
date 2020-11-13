@@ -36,8 +36,8 @@ celeryBeat:
 celeryFlower:
   replicaCount: 1
   containerPort: 5555
-  readinessPath: healthcheck/
-  livenessPath: healthcheck/
+  readinessPath: healthcheck
+  livenessPath: healthcheck
   servicePort: 5555
 
 # https://cloud.google.com/filestore/docs/accessing-fileshares
