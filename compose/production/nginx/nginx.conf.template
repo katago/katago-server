@@ -1,4 +1,3 @@
-# NOTE: If editing this file, consider also editing /compose/production/nginx/nginx.conf
 # user  nginx;  # disabled to avoid a warning since we're booting up the container as nginx, rather than as root
 worker_processes  1;
 
@@ -12,6 +11,10 @@ events {
 
 
 http {
+    ${NGINX_TRUSTED_IP_PROXY_LIST}
+    real_ip_header ${NGINX_REAL_IP_HEADER};
+    real_ip_recursive on;
+
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 

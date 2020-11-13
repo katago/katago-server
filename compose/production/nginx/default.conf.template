@@ -1,4 +1,5 @@
-# NOTE: If editing this file, consider also editing /compose/production/nginx/nginx.conf
+limit_req_zone $binary_remote_addr zone=mylimit:500m rate=20r/m;
+
 server {
    listen                      18080; # listen on http
    server_name                 _; # don't expect a special server name (it is traefik job to already do the filter)
@@ -11,6 +12,7 @@ server {
    location /media {
        autoindex off;
        alias /data;
+       limit_req zone=mylimit burst=500 nodelay;
    }
    location /healthz {
        access_log off;
