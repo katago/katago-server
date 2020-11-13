@@ -1,14 +1,8 @@
-FROM node:14-buster-slim as client-builder
+FROM python:3.8-buster
 
 WORKDIR /app
-COPY ./package.json /app
 RUN apt-get update && apt-get install -y autoconf && apt-get install -y build-essential
-RUN npm install && npm cache clean --force
 COPY . /app
-RUN npm run build
-
-# Python build stage
-FROM python:3.8-buster
 
 ENV PYTHONUNBUFFERED 1
 
