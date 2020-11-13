@@ -52,6 +52,9 @@ spec:
           mountPath: /data
           subPath: {{.Values.fileserver.subPath}}
         - name: nginx-config-volume
+          mountPath: /etc/nginx/
+          readOnly: true
+        - name: nginx-default-config-volume
           mountPath: /etc/nginx/conf.d/
           readOnly: true
         resources:
@@ -74,4 +77,10 @@ spec:
           name: nginx-config
           items:
             - key: nginxConfig
+              path: nginx.conf
+      - name: nginx-default-config-volume
+        configMap:
+          name: nginx-default-config
+          items:
+            - key: nginxDefaultConfig
               path: default.conf

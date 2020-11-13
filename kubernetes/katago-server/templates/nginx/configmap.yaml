@@ -7,4 +7,6 @@ metadata:
     {{- include "katago-server.labels" . | nindent 4 }}
 data:
   nginxConfig: |
-{{ .Files.Get "nginx.conf" | indent 4 }}
+{{ .Files.Get "nginx/nginx.conf" | indent 4 }}
+  nginxDefaultConfig: |
+{{ .Files.Get "nginx/default.conf" | indent 4 }}
