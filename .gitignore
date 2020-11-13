@@ -342,8 +342,8 @@ katago_server/media/
 .env
 
 .envs/*
-envs
-envs/*
+envs/production/
+envs/production/*
 
 !.envs/.local/
 
