@@ -23,6 +23,15 @@ DJANGO_ADMIN_URL=admin
 # Use a much longer time for strict transport security. Set to true once SSL is all working.
 DJANGO_SECURE_HSTS_LONG=False
 
+# Rest API
+--------------------------------------------------------------------------------
+# DJANGO_USE_REST_API_THROTTLES=False
+# DJANGO_REST_API_BURST_USER_THROTTLE=1/minute
+# DJANGO_REST_API_BURST_ANON_THROTTLE=1/minute
+# DJANGO_REST_API_SUSTAINED_USER_THROTTLE=1/hour
+# DJANGO_REST_API_SUSTAINED_ANON_THROTTLE=1/hour
+# DJANGO_REST_NUM_PROXIES=0
+
 # Email
 # ------------------------------------------------------------------------------
 
