@@ -285,3 +285,18 @@ REST_FRAMEWORK = {
     "ALLOWED_VERSIONS": ["1.2"],
     "DEFAULT_VERSION": "1.2",
 }
+
+if env.bool("DJANGO_USE_REST_API_THROTTLES", default=False):
+    REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = [
+        'src.settings.throttles.BurstRateThrottleUser',
+        'src.settings.throttles.SustainedRateThrottleUser',
+        'src.settings.throttles.BurstRateThrottleAnon',
+        'src.settings.throttles.SustainedRateThrottleAnon',
+    ]
+    REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+        'burstuser': env("DJANGO_REST_API_BURST_USER_THROTTLE"),
+        'burstanon': env("DJANGO_REST_API_BURST_ANON_THROTTLE"),
+        'sustaineduser': env("DJANGO_REST_API_SUSTAINED_USER_THROTTLE"),
+        'sustainedanon': env("DJANGO_REST_API_SUSTAINED_ANON_THROTTLE"),
+    }
+    REST_FRAMEWORK["NUM_PROXIES"] = env.int("DJANGO_REST_NUM_PROXIES")
