@@ -53,6 +53,8 @@ COPY ./.credentials /.credentials
 
 WORKDIR /app
 COPY --chown=django:django . /app
+# For collectstatic in start script, for whitenoise static middleware
+RUN mkdir -p /app/staticfiles && chown django:django /app/staticfiles
 
 USER django
 
