@@ -1,23 +1,20 @@
-FROM python:3.8-buster
+# Python build stage
+FROM python:3.8-alpine3.12
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update \
-  # dependencies for building Python packages
-  && apt-get install -y build-essential \
-  # psycopg2 dependencies
-  && apt-get install -y libpq-dev \
+RUN apk add --no-cache --virtual build-deps alpine-sdk gfortran python3-dev musl-dev libffi-dev openblas-dev
+RUN apk add --no-cache postgresql-dev \
+  postgresql-client \
   # MIME magic
-  && apt-get install -y libmagic-dev \
+  libmagic \
   # Translations dependencies
-  && apt-get install -y gettext \
-  # cleaning up unused files
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
+  gettext
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
-RUN pip install -r /requirements/local.txt
+RUN pip install --no-cache-dir -r /requirements/local.txt
+RUN apk del build-deps
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint

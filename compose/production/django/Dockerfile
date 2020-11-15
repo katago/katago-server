@@ -1,20 +1,15 @@
 # Python build stage
-FROM python:3.8-buster
+FROM python:3.8-alpine3.12
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update \
-  # psycopg2 dependencies
-  && apt-get install -y libpq-dev \
-  # MIME magic
-  && apt-get install -y libmagic-dev \
-  # Translations dependencies
-  && apt-get install -y gettext \
-  # Let DBshell works
-  && apt-get install -y postgresql \
-  # cleaning up unused files
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache --virtual build-deps alpine-sdk gfortran python3-dev musl-dev libffi-dev openblas-dev
+RUN apk add --no-cache postgresql-dev \
+    postgresql-client \
+    # MIME magic
+    libmagic \
+    # Translations dependencies
+    gettext
 
 RUN addgroup --gid 23460 django \
     && adduser --uid 23450 --ingroup django --disabled-password --gecos "" django
@@ -23,6 +18,7 @@ RUN addgroup --gid 23460 django \
 COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
+RUN apk del build-deps
 
 COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
