@@ -61,7 +61,6 @@ DJANGO_APPS = [
     "django.contrib.admindocs",
 ]
 THIRD_PARTY_APPS = [
-    "crispy_forms",
     "allauth",
     "allauth.account",
     "rest_framework",
@@ -191,8 +190,7 @@ TEMPLATES = [
         },
     }
 ]
-# http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+
 
 # FIXTURES
 # ------------------------------------------------------------------------------
