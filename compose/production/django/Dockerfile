@@ -1,28 +1,33 @@
-# Python build stage
-FROM python:3.8-buster
+FROM ubuntu:20.10
 
 ENV PYTHONUNBUFFERED 1
-
-RUN apt-get update \
-  # psycopg2 dependencies
-  && apt-get install -y libpq-dev \
-  # MIME magic
-  && apt-get install -y libmagic-dev \
-  # Translations dependencies
-  && apt-get install -y gettext \
-  # Let DBshell works
-  && apt-get install -y postgresql \
-  # cleaning up unused files
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN addgroup --gid 23460 django \
-    && adduser --uid 23450 --ingroup django --disabled-password --gecos "" django
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
-RUN pip install --no-cache-dir -r /requirements/production.txt \
-    && rm -rf /requirements
+
+RUN apt update \
+    # dependencies for building Python packages
+    && apt install -y python3 python3-dev python3-pip \
+    # dependencies for building Python packages
+    && apt install -y build-essential git \
+    # psycopg2 dependencies
+    && apt install -y libpq-dev \
+    # MIME magic
+    && apt install -y libmagic-dev \
+    # Translations dependencies
+    && apt install -y gettext \
+    # Let DBshell works
+    && apt install -y postgresql \
+    # Install Python deps
+    && pip install --no-cache-dir -r /requirements/production.txt \
+    # cleaning up unused files
+    && apt autoremove -y build-essential python3-dev git \
+    && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN addgroup --gid 23460 django \
+    && adduser --uid 23450 --ingroup django --disabled-password --gecos "" django
 
 COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
@@ -70,5 +75,6 @@ COPY --chown=django:django src  /app/src
 COPY --chown=django:django manage.py  /app
 
 USER django
+EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint"]
