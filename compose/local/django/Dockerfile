@@ -1,25 +1,31 @@
-FROM python:3.8-buster
+FROM ubuntu:20.10
 
 ENV PYTHONUNBUFFERED 1
-
-RUN apt-get update \
-  # dependencies for building Python packages
-  && apt-get install -y build-essential \
-  # psycopg2 dependencies
-  && apt-get install -y libpq-dev \
-  # MIME magic
-  && apt-get install -y libmagic-dev \
-  # Translations dependencies
-  && apt-get install -y gettext \
-  # cleaning up unused files
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
-RUN pip install -r /requirements/local.txt
 
-COPY ./compose/production/django/entrypoint /entrypoint
+RUN apt update \
+  # dependencies for building Python packages
+  && apt install -y python3 python3-dev python3-pip \
+  # dependencies for building Python packages
+  && apt install -y build-essential git \
+  # psycopg2 dependencies
+  && apt install -y libpq-dev \
+  # MIME magic
+  && apt install -y libmagic-dev \
+  # Translations dependencies
+  && apt install -y gettext \
+  && pip install -r /requirements/local.txt \
+  # cleaning up unused files
+  && apt autoremove -y  build-essential python3-dev git \
+  && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
+
+
+
+COPY ./compose/local/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
@@ -42,5 +48,6 @@ RUN chmod +x /start-flower
 RUN mkdir /data
 
 WORKDIR /app
+EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint"]
