@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 volumes:
   local_postgres_data: {}
@@ -26,8 +26,8 @@ services:
   postgres:
     build:
       context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: katago_server_production_postgres
+      dockerfile: ./compose/local/postgres/Dockerfile
+    image: katago_server_local_postgres
     volumes:
       - local_postgres_data:/var/lib/postgresql/data
       - local_postgres_data_backups:/backups
