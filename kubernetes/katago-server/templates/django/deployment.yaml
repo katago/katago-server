@@ -76,5 +76,5 @@ spec:
       volumes:
       - name: django-fileserver-storage
         persistentVolumeClaim:
-          claimName: fileserver-claim
+          claimName: fileserver-claim-{{.Values.fileserver.pvcVersion}}
       serviceAccountName: {{.Values.serviceAccounts.cloudSqlStorage}}

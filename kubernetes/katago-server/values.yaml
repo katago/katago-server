@@ -42,6 +42,9 @@ celeryFlower:
 
 # https://cloud.google.com/filestore/docs/accessing-fileshares
 fileserver:
+  # Update pvcVersion every time you try to resize or change the fileshare properties
+  # so that the name changes, since kubernetes treats them as immutable.
+  pvcVersion: "v1"
   fileShareName: katago_fileshare
   fileShareIpAddress: TODO
   storageAmount: 500Gi
