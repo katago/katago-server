@@ -23,7 +23,7 @@ RUN apt update \
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 COPY ./compose/local/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
