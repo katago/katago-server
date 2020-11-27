@@ -26,6 +26,8 @@ RUN apt update \
     && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
 
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+
 RUN addgroup --gid 23460 django \
     && adduser --uid 23450 --ingroup django --disabled-password --gecos "" django
 
@@ -75,6 +77,6 @@ COPY --chown=django:django src  /app/src
 COPY --chown=django:django manage.py  /app
 
 USER django
-EXPOSE 8000
+EXPOSE 5000
 
 ENTRYPOINT ["/entrypoint"]
