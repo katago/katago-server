@@ -118,7 +118,8 @@ class BayesianRatingService:
 
             # Everything blows up if for some reason (eg first network, or deleted network)
             # the parent_network_id does not reference an actual network, so let's check that
-            if parent_network_id in network_ids:
+            # Also if somehow a network is its own parent, ignore that for computing ratings
+            if parent_network_id in network_ids and parent_network_id != network_id:
                 draw1 = {
                     "reference_network": network_id,
                     "opponent_network": parent_network_id,
