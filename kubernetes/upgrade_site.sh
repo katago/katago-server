@@ -10,5 +10,5 @@ shift
 
 (
     cd kubernetes
-    helm upgrade katago-server katago-server --values katago-server/values_private.yaml --cleanup-on-fail --history-max 30 --description "$DESC"
+    helm upgrade katago-server katago-server --values katago-server/private/values_private.yaml --cleanup-on-fail --history-max 30 --description "$DESC"
 )
