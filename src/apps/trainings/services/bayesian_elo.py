@@ -54,17 +54,23 @@ class BayesianRatingService:
                 self._update_specific_network_log_gamma(network_id, network_log_gamma)
             self._reset_anchor_log_gamma()
 
+        # Count games by network
+        df = pandas.DataFrame()
+        df["reference_network"] = self._detailed_tournament_results["reference_network"]
+        df["nb_games"] = 0.0
+        df["nb_games"] += self._detailed_tournament_results["total_games_white"]
+        df["nb_games"] += self._detailed_tournament_results["total_games_black"]
+        df = df.groupby(["reference_network"]).sum()
+        real_game_count_by_network = df
+
         for network in self._network_ratings.itertuples():
             network_id = network[0]
             network_log_gamma = network.log_gamma
             self._update_specific_network_log_gamma_uncertainty(network_id, network_log_gamma)
-            if network_id not in self._detailed_tournament_results.index:
+            if network_id not in real_game_count_by_network.index:
                 self._network_ratings.loc[network_id, "log_gamma_game_count"] = 0
             else:
-                self._network_ratings.loc[network_id, "log_gamma_game_count"] = (
-                    self._detailed_tournament_results.loc[network_id, "total_games_white"] +
-                    self._detailed_tournament_results.loc[network_id, "total_games_black"]
-                )
+                self._network_ratings.loc[network_id, "log_gamma_game_count"] = real_game_count_by_network.loc[network_id,"nb_games"]
 
         return self._network_ratings
 
