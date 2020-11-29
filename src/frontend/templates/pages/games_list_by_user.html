@@ -49,10 +49,10 @@
     <td> {{ game.created_at|isotimestr }} </td>
     <td> {{ game.run.name }} </td>
     {% if kind == "rating" %}
-    <td> {{ game.black_network.name }} </td>
-    <td> {{ game.white_network.name }} </td>
+    <td> {{ game.black_network.name|chop_network_run_name:game.run.name }} </td>
+    <td> {{ game.white_network.name|chop_network_run_name:game.run.name }} </td>
     {% else %}
-    <td> {{ game.black_network.name }} </td>
+    <td> {{ game.black_network.name|chop_network_run_name:game.run.name }} </td>
     {% endif %}
     <td> {{ game.board_size_x }} </td>
     <td> {{ game.board_size_y }} </td>
