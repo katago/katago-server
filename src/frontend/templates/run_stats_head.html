@@ -95,6 +95,8 @@ function makeGraph() {
         .domain([xDomainMin, xDomainMax])
         .range([0, graphSpaceWidth]);
       xAxis.scale(xScale).ticks(10);
+      d3.select(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.select("#eloGraphTimeButton").classed("eloButtonHighlighted", true);
     };
     var setXScaleAsDataRows = function() {
       xScaleIsTime = false;
@@ -110,6 +112,8 @@ function makeGraph() {
         .domain([xDomainMin, xDomainMax])
         .range([0, graphSpaceWidth]);
       xAxis.scale(xScale).ticks(10,"~s");
+      d3.select(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.select("#eloGraphDataRowsButton").classed("eloButtonHighlighted", true);
     };
     var setXScaleAsDataRowsLog = function() {
       xScaleIsTime = false;
@@ -126,9 +130,11 @@ function makeGraph() {
         .domain([xDomainMin, xDomainMax])
         .range([0, graphSpaceWidth]);
       xAxis.scale(xScale).ticks(15,"~s");
+      d3.select(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.select("#eloGraphDataRowsLogButton").classed("eloButtonHighlighted", true);
     };
 
-    setXScaleAsTime();
+    setXScaleAsDataRowsLog();
 
     var xAxisContent = graphSpace.append("g").attr("transform", "translate(0," + graphSpaceHeight + ")");
     xAxis(xAxisContent);
@@ -420,7 +426,7 @@ function makeGraph() {
       .classed("eloLegend",true)
       .append("text")
       .attr("x", graphSpaceWidth * 0.85)
-      .attr("y", function(networkSize,i) { return graphSpaceHeight * 0.80 + i * 20; })
+      .attr("y", function(networkSize,i) { return graphSpaceHeight * 0.65 + i * 20; })
       .text(networkSize => networkSize)
       .style("fill", networkSize => colorDict[networkSize])
       .style("font-size", 15)
