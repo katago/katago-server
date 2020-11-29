@@ -118,6 +118,15 @@ class TestGame:
             log_gamma=0,
             is_random=True,
         )
+        self.n2 = Network.objects.create(
+            run=self.r1,
+            name="testrun-randomnetwork2",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
         self.u1 = User.objects.create_user(username="test", password="test")
         self.good_games = []
         self.bad_games = []
@@ -145,25 +154,37 @@ class TestGame:
             training_data_file=SimpleUploadedFile(name='game.npz', content=b"\x50\x4b\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", content_type='application/octet-stream')
         ))
 
+        with pytest.raises(ValueError):
+            self.bad_games.extend(self.create_games_with_defaults(rating_only=True, rating_black_network=self.n1, rating_white_network=self.n1))
 
-    def create_games_with_defaults(self, **kwargs):
-        traininggame = create_training_game(
-            run=self.r1,
-            submitted_by=self.u1,
-            black_network=self.n1,
-            white_network=self.n1,
-            **kwargs
-        )
-        if "training_data_file" in kwargs:
-            return [traininggame]
-        ratinggame = create_rating_game(
-            run=self.r1,
-            submitted_by=self.u1,
-            black_network=self.n1,
-            white_network=self.n1,
-            **kwargs
-        )
-        return [traininggame,ratinggame]
+
+    def create_games_with_defaults(self, rating_only=False, rating_black_network=None, rating_white_network=None, **kwargs):
+        games = []
+
+        if not rating_only:
+            if rating_black_network is None:
+                rating_black_network = self.n1
+            if rating_white_network is None:
+                rating_white_network = self.n2
+            traininggame = create_training_game(
+                run=self.r1,
+                submitted_by=self.u1,
+                black_network=self.n1,
+                white_network=self.n1,
+                **kwargs
+            )
+            games.append(traininggame)
+
+        if not ("training_data_file" in kwargs):
+            ratinggame = create_rating_game(
+                run=self.r1,
+                submitted_by=self.u1,
+                black_network=rating_black_network,
+                white_network=rating_white_network,
+                **kwargs
+            )
+            games.append(ratinggame)
+        return games
 
     def teardown_method(self):
         for game in self.good_games:
@@ -172,6 +193,7 @@ class TestGame:
             game.delete()
         self.u1.delete()
         self.n1.delete()
+        self.n2.delete()
         self.r1.delete()
 
     def test_game_validations(self):

@@ -20,3 +20,9 @@ class RatingGame(AbstractGame):
         verbose_name = _("Rating game")
         ordering = ["-created_at"]
 
+    def save(self, *args, **kwargs):
+        # Ratings games must involve distinct networks
+        if self.white_network == self.black_network:
+            raise ValueError("Ratings games cannot be between a network and itself")
+
+        return super(RatingGame, self).save(*args, **kwargs)

@@ -27,7 +27,7 @@ Look up and view games for this run <a href="{{ games_url }}">here</a>.
 
 {% url 'networks' run_name as networks_url %}
 {% blocktrans %}
-A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_random }} networks</a> have been produced for {{ run_name }}.
+A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_random }} networks</a> have been uploaded for {{ run_name }}.
 {% endblocktrans %}
 
 <p>
@@ -42,7 +42,7 @@ A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_rando
 <h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
 
 {% blocktrans %}
-Graph is based on {{ num_rating_games_this_run }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets. Vertical bars indicate approximately a 95% confidence interval.
+Graph is based on about {{ total_num_rating_games_this_run }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets. Vertical bars indicate approximately a 95% confidence interval.
 <p class="mt-2">
 Click and drag to zoom. Double-click or click on a button to reset zoom.
 {% endblocktrans %}

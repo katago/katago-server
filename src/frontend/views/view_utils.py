@@ -82,7 +82,8 @@ def add_run_stats_context(run, context):
 
   context["total_num_training_rows_this_run"] = all_games_stats["total_num_training_rows"]
   context["total_num_training_games_this_run"] = all_games_stats["total_num_training_games"]
-  context["total_num_rating_games_this_run"] = all_games_stats["total_num_rating_games"]
+  # Divide by 2 because each rating game appears twice, once for each network that played it
+  context["total_num_rating_games_this_run"] = all_games_stats["total_num_rating_games"]  // 2
 
   recent_games_stats = (
     RecentGameCountByUser
@@ -108,13 +109,7 @@ def add_run_stats_context(run, context):
   context["num_recent_rating_games_this_run"] = recent_games_stats["total_num_rating_games"]
 
   context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run,is_random=False).count()
-  context["num_rating_games_this_run"] = (
-    GameCountByNetwork
-    .objects
-    .filter(run=run)
-    .aggregate(total_num_rating_games=Sum("total_num_rating_games"))
-    ["total_num_rating_games"]
-  )
+
   context["latest_network"] = Network.objects.filter(run=run).order_by("-created_at").first()
   # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
   max_uncertainty_elo = 100
