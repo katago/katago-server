@@ -41,6 +41,7 @@ Elo ratings are approximate and are *not* necessarily comparable to the Elos fro
 </th>
     <th> {% trans "Uploaded At" %} </th>
     <th> {% trans "Elo Rating" %} </th>
+    <th> {% trans "Num Rating Games" %} </th>
     <th> {% trans "Network File" %} </th>
     <th> {% trans "Raw TF Weights" %} </th>
   </tr>
@@ -54,6 +55,7 @@ Elo ratings are approximate and are *not* necessarily comparable to the Elos fro
     </td>
     <td> {{ network.created_at|isotimestr }} </td>
     <td> {{ network.rating }} </td>
+    <td> {{ network.log_gamma_game_count }} </td>
     <td> {{ network.model_file|file_download_link_html|safe }} </td>
     <td> {{ network.model_zip_file|file_download_link_html|safe }} </td>
   </tr>
