@@ -120,7 +120,7 @@ class Run(Model):
         validators=[validate_non_negative],
     )
     rating_game_high_uncertainty_probability = FloatField(
-        _("Rating game high Elo weight"),
+        _("Rating game high uncertainty weight"),
         help_text=_("RELATIVE probability for high uncertainty rating game."),
         default=1.0,
         validators=[validate_non_negative],
