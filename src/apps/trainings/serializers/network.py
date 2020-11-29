@@ -32,6 +32,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "log_gamma_uncertainty",
             "log_gamma_lower_confidence",
             "log_gamma_upper_confidence",
+            "log_gamma_game_count",
         ]
         extra_kwargs = {
             "url": {"lookup_field": "name"},

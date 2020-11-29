@@ -29,7 +29,7 @@ class NetworkPandasManager(Manager):
         return NetworkPandasQuerySet(self.model, using=self._db)
 
     def get_ratings_dataframe(self, run):
-        rating_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty").all()
+        rating_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty", "log_gamma_game_count").all()
         rating = read_frame(rating_qs)
         rating = rating.set_index("id")
         rating = rating.sort_index()
@@ -38,6 +38,7 @@ class NetworkPandasManager(Manager):
         rating["log_gamma"] = rating["log_gamma"].fillna(0)
         rating["log_gamma_uncertainty"] = rating["log_gamma_uncertainty"].fillna(0)
         rating["log_gamma_uncertainty"] = rating["log_gamma_uncertainty"].replace([np.inf, -np.inf], 0)
+        rating["log_gamma_game_count"] = rating["log_gamma_game_count"].fillna(0)
 
         return rating
 
@@ -54,7 +55,8 @@ class NetworkPandasManager(Manager):
                 network_db.log_gamma_uncertainty = dataframe.loc[network_db.id, "log_gamma_uncertainty"]
                 network_db.log_gamma_upper_confidence = dataframe.loc[network_db.id, "log_gamma_upper_confidence"]
                 network_db.log_gamma_lower_confidence = dataframe.loc[network_db.id, "log_gamma_lower_confidence"]
+                network_db.log_gamma_game_count = dataframe.loc[network_db.id, "log_gamma_game_count"]
 
         self.bulk_update(
-            networks_db, ["log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence",],
+            networks_db, ["log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence", "log_gamma_game_count"],
         )

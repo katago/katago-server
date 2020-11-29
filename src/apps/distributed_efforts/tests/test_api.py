@@ -2,6 +2,7 @@ import pytest
 import copy
 import base64
 import random
+import numpy as np
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -134,6 +135,7 @@ class TestGetRatingTask:
             log_gamma_uncertainty=1,
             log_gamma_lower_confidence=-2.0,
             log_gamma_upper_confidence=2.0,
+            log_gamma_game_count = 3,
             is_random=True,
         )
         self.n2 = Network.objects.create(
@@ -146,6 +148,7 @@ class TestGetRatingTask:
             log_gamma_uncertainty=1.5,
             log_gamma_lower_confidence=-3.0,
             log_gamma_upper_confidence=4.0,
+            log_gamma_game_count = 5,
             is_random=True,
         )
 
@@ -294,6 +297,253 @@ class TestGetRatingTaskForced:
         )
         assert response.status_code == 200
 
+class TestUncertaintyVsEloVsData:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=1,
+            rating_game_entropy_scale=0.25,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+        )
+        self.n1a = Network.objects.create(
+            run=self.r1,
+            name="1a",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=100,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=98,
+            log_gamma_upper_confidence=102,
+            log_gamma_game_count=10000,
+            is_random=True,
+        )
+        self.n1b = Network.objects.create(
+            run=self.r1,
+            name="1b",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=100,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=98,
+            log_gamma_upper_confidence=102,
+            log_gamma_game_count=10000,
+            is_random=True,
+        )
+        self.n1c = Network.objects.create(
+            run=self.r1,
+            name="1c",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=100,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=98,
+            log_gamma_upper_confidence=102,
+            log_gamma_game_count=10000,
+            is_random=True,
+        )
+        self.n2a = Network.objects.create(
+            run=self.r1,
+            name="2a",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=50,
+            log_gamma_uncertainty=10,
+            log_gamma_lower_confidence=30,
+            log_gamma_upper_confidence=70,
+            log_gamma_game_count=10000,
+            is_random=True,
+        )
+        self.n2b = Network.objects.create(
+            run=self.r1,
+            name="2b",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=50,
+            log_gamma_uncertainty=10,
+            log_gamma_lower_confidence=30,
+            log_gamma_upper_confidence=70,
+            log_gamma_game_count=10000,
+            is_random=True,
+        )
+        self.n2c = Network.objects.create(
+            run=self.r1,
+            name="2c",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=50,
+            log_gamma_uncertainty=10,
+            log_gamma_lower_confidence=30,
+            log_gamma_upper_confidence=70,
+            log_gamma_game_count=10000,
+            is_random=True,
+        )
+        self.n3a = Network.objects.create(
+            run=self.r1,
+            name="3a",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=20,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=18,
+            log_gamma_upper_confidence=22,
+            log_gamma_game_count=1000,
+            is_random=True,
+        )
+        self.n3b = Network.objects.create(
+            run=self.r1,
+            name="3b",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=20,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=18,
+            log_gamma_upper_confidence=22,
+            log_gamma_game_count=1000,
+            is_random=True,
+        )
+        self.n3c = Network.objects.create(
+            run=self.r1,
+            name="3c",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=20,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=18,
+            log_gamma_upper_confidence=22,
+            log_gamma_game_count=1000,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n1a.delete()
+        self.n1b.delete()
+        self.n1c.delete()
+        self.n2a.delete()
+        self.n2b.delete()
+        self.n2c.delete()
+        self.n3a.delete()
+        self.n3b.delete()
+        self.n3c.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_high_elo(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.rating_game_high_elo_probability = 1000
+        self.r1.rating_game_high_uncertainty_probability = 0
+        self.r1.rating_game_low_data_probability = 0
+        self.r1.save()
+
+        random.seed(12345)
+        np.random.seed(23456)
+        counts = {}
+        for i in range(100):
+            response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+            name = response.data["white_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+            name = response.data["black_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+        s = ""
+        for k,v in sorted(counts.items()):
+            s += k + ":" + str(v) + ", "
+        assert (s == "1a:56, 1b:43, 1c:43, 2a:22, 2b:17, 2c:5, 3a:4, 3b:4, 3c:6, ")
+
+    def test_high_uncertainty(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.rating_game_high_elo_probability = 0
+        self.r1.rating_game_high_uncertainty_probability = 1000
+        self.r1.rating_game_low_data_probability = 0
+        self.r1.save()
+
+        random.seed(12345)
+        np.random.seed(23456)
+        counts = {}
+        for i in range(100):
+            response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+            name = response.data["white_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+            name = response.data["black_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+        s = ""
+        for k,v in sorted(counts.items()):
+            s += k + ":" + str(v) + ", "
+        assert (s == "1a:13, 1b:15, 1c:3, 2a:54, 2b:35, 2c:34, 3a:20, 3b:19, 3c:7, ")
+
+    def test_low_data(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.rating_game_high_elo_probability = 0
+        self.r1.rating_game_high_uncertainty_probability = 0
+        self.r1.rating_game_low_data_probability = 1000
+        self.r1.save()
+
+        random.seed(12345)
+        np.random.seed(23456)
+        counts = {}
+        for i in range(100):
+            response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+            name = response.data["white_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+            name = response.data["black_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+        s = ""
+        for k,v in sorted(counts.items()):
+            s += k + ":" + str(v) + ", "
+        assert (s == "1a:8, 1b:10, 1c:3, 2a:26, 2b:18, 2c:7, 3a:53, 3b:44, 3c:31, ")
+
+    def test_mix(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.rating_game_high_elo_probability = 1000
+        self.r1.rating_game_high_uncertainty_probability = 1000
+        self.r1.rating_game_low_data_probability = 1000
+        self.r1.save()
+
+        random.seed(12345)
+        np.random.seed(23456)
+        counts = {}
+        for i in range(100):
+            response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+            name = response.data["white_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+            name = response.data["black_network"]["name"]
+            if name not in counts:
+                counts[name] = 0
+            counts[name] += 1
+        s = ""
+        for k,v in sorted(counts.items()):
+            s += k + ":" + str(v) + ", "
+        assert (s == "1a:27, 1b:18, 1c:24, 2a:25, 2b:30, 2c:12, 3a:28, 3b:21, 3c:15, ")
+
+
 class TestGetTaskNoNetwork:
 
     def setup_method(self):
@@ -438,7 +688,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname4/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname4', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname4.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname4/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname4', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname4.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     def test_post_network_loggamma_only(self):
@@ -457,7 +707,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname4b/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname4b', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname4b.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 2.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 8.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname4b/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname4b', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname4b.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 2.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 8.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     def test_post_network_loggamma_partial(self):
@@ -477,7 +727,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname5/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname5', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname5.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 1.5, 'log_gamma_lower_confidence': 1.0, 'log_gamma_upper_confidence': 7.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname5/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname5', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname5.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 1.5, 'log_gamma_lower_confidence': 1.0, 'log_gamma_upper_confidence': 7.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     def test_post_network_loggamma_full(self):
@@ -495,11 +745,12 @@ class TestPostNetwork:
             "log_gamma_uncertainty": "2",
             "log_gamma_lower_confidence": "3",
             "log_gamma_upper_confidence": "7",
+            "log_gamma_game_count": "12",
         }, format='multipart'
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname6/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname6', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname6.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 2.0, 'log_gamma_lower_confidence': 3.0, 'log_gamma_upper_confidence': 7.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname6/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname6', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname6.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 2.0, 'log_gamma_lower_confidence': 3.0, 'log_gamma_upper_confidence': 7.0, 'log_gamma_game_count': 12}"""
         assert response.status_code == 201
 
         response = client.post("/api/networks/", {
@@ -515,7 +766,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname7/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname7', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname7.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': 'http://testserver/api/networks/networkname6/', 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 2.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 8.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname7/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname7', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname7.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': 'http://testserver/api/networks/networkname6/', 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 4.0, 'log_gamma_uncertainty': 2.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 8.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     def test_post_network_with_stats(self):
@@ -536,7 +787,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname8/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname8', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname8.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': 12345678901234, 'total_num_data_rows': 5678901234567, 'extra_stats': {'policy_loss': 12.5}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname8/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname8', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname8.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': 12345678901234, 'total_num_data_rows': 5678901234567, 'extra_stats': {'policy_loss': 12.5}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     # Verifies that the uploaded filename is based on the network name, not the user's uploaded file name
@@ -555,7 +806,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname9/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname9', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname9.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname9/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname9', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname9.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     # Verifies that the uploaded filename does keep the user's filename extension
@@ -574,7 +825,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname10/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname10', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname10.txt.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname10/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname10', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname10.txt.gz', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
     # Verifies that the uploaded filename does keep the user's filename extension
@@ -594,7 +845,7 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         data["created_at"] = None # Suppress timestamp for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/networkname11/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname11', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname11.efgh', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': 'http://testserver/media/networks/zips/testrun/networkname11.aaaa', 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0}"""
+        assert str(data) == """{'url': 'http://testserver/api/networks/networkname11/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networkname11', 'created_at': None, 'network_size': 'b4c32', 'is_random': False, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': 'http://testserver/media/networks/models/testrun/networkname11.efgh', 'model_file_bytes': 28, 'model_file_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'model_zip_file': 'http://testserver/media/networks/zips/testrun/networkname11.aaaa', 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0, 'log_gamma_game_count': 0}"""
         assert response.status_code == 201
 
 
