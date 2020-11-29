@@ -304,7 +304,7 @@ class TestUncertaintyVsEloVsData:
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=1,
-            rating_game_entropy_scale=0.25,
+            rating_game_variability_scale=1.0,
             status="Active",
             git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
         )
@@ -543,6 +543,103 @@ class TestUncertaintyVsEloVsData:
             s += k + ":" + str(v) + ", "
         assert (s == "1a:27, 1b:18, 1c:24, 2a:25, 2b:30, 2c:12, 3a:28, 3b:21, 3c:15, ")
 
+class TestExtremeEloStability:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=1,
+            rating_game_low_data_probability=1.0,
+            rating_game_high_uncertainty_probability=0.0,
+            rating_game_high_elo_probability=0.0,
+            rating_game_variability_scale=0.01,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+        )
+        self.n1a = Network.objects.create(
+            run=self.r1,
+            name="1a",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=5,
+            log_gamma_uncertainty=1,
+            log_gamma_game_count=0,
+            is_random=True,
+        )
+        self.n1b = Network.objects.create(
+            run=self.r1,
+            name="1b",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=7,
+            log_gamma_uncertainty=1,
+            log_gamma_game_count=1,
+            is_random=True,
+        )
+        self.n1c = Network.objects.create(
+            run=self.r1,
+            name="1c",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=8,
+            log_gamma_uncertainty=1,
+            log_gamma_game_count=2,
+            is_random=True,
+        )
+        self.n1d = Network.objects.create(
+            run=self.r1,
+            name="1d",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=10,
+            log_gamma_uncertainty=1,
+            log_gamma_game_count=3,
+            is_random=True,
+        )
+        self.n1e = Network.objects.create(
+            run=self.r1,
+            name="1e",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=11,
+            log_gamma_uncertainty=1,
+            log_gamma_game_count=3,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n1a.delete()
+        self.n1b.delete()
+        self.n1c.delete()
+        self.n1d.delete()
+        self.n1e.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_stability(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.save()
+
+        random.seed(12345)
+        np.random.seed(23456)
+        counts = {}
+        for i in range(100):
+            response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+            names = response.data["white_network"]["name"] + response.data["black_network"]["name"]
+            if names not in counts:
+                counts[names] = 0
+            counts[names] += 1
+        s = ""
+        for k,v in sorted(counts.items()):
+            s += k + ":" + str(v) + ", "
+        assert (s == "1a1b:21, 1b1a:16, 1b1c:19, 1c1b:25, 1d1e:9, 1e1d:10, ")
 
 class TestGetTaskNoNetwork:
 

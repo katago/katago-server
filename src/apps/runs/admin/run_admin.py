@@ -21,7 +21,7 @@ class RunAdmin(admin.ModelAdmin):
                     "rating_game_high_elo_probability",
                     "rating_game_high_uncertainty_probability",
                     "rating_game_low_data_probability",
-                    "rating_game_entropy_scale",
+                    "rating_game_variability_scale",
                     "selfplay_startpos_probability",
                     "virtual_draw_strength",
                     "elo_number_of_iterations",

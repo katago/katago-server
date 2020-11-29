@@ -1,7 +1,7 @@
 import random
 
 import numpy as np
-from math import log10, e, exp
+from math import log10, e, exp, log1p
 
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
@@ -91,7 +91,8 @@ class RatingNetworkPairerService:
         """
         Given a reference network, first preselect all networks in a fixed elo range.
         Then, for each network, calculate the win probability using log_gamma.
-        Once we have all that, we look for a network close enough, by applying shannon entropy: https://imgur.com/v9Q4By7
+        Once we have all that, we look for a network close enough, selecting a network with probability proportional to the variance
+        of the 0-1 game result.
 
         :param reference_network:
         :return: a network, chosen to be used as an opponent, or None if no distinct opponent could be found
@@ -101,7 +102,7 @@ class RatingNetworkPairerService:
 
         # Vary the reference net's log gamma so that networks that are uncertain will play a greater variety of opponents
         # based on that uncertainty
-        ref_net_log_gamma = reference_network.log_gamma + np.random.normal() * reference_network.log_gamma_uncertainty
+        ref_net_log_gamma = reference_network.log_gamma + np.random.normal() * reference_network.log_gamma_uncertainty * self.current_run.rating_game_variability_scale
 
         log_gamma_search_range = 1200 / (400 * log10(e))  # Hardcoded window of 1200 Elo, we could dehardcode if needed in the future
         log_gamma_lower_bound = ref_net_log_gamma - log_gamma_search_range
@@ -130,9 +131,25 @@ class RatingNetworkPairerService:
                 return None
             return np.random.choice(nearby_networks)
 
-        win_probability = np.asarray([
-            1 / (1 + exp((opp_net.log_gamma - ref_net_log_gamma) / self.current_run.rating_game_entropy_scale)) for opp_net in nearby_networks
-        ])
-        shannon_entropy = -win_probability * np.log2(win_probability) - (1 - win_probability) * np.log2(1 - win_probability)
+        log_variances = [
+            self._log_variance_of_gamma_difference((opp_net.log_gamma - ref_net_log_gamma) / self.current_run.rating_game_variability_scale) for opp_net in nearby_networks
+        ]
+        max_log_variance = max(log_variances)
+        # Subtract out the max to make sure that we're near 0, for numerical stability
+        log_variances = [ log_variance - max_log_variance for log_variance in log_variances ]
+        variances = [ exp(log_variance) for log_variance in log_variances ]
+        print(log_variances)
+        print(variances)
+        return np.random.choice(nearby_networks, p=variances / np.sum(variances))
 
-        return np.random.choice(nearby_networks, p=shannon_entropy / np.sum(shannon_entropy))
+    def _log_variance_of_gamma_difference(self, gamma_diff):
+        # We would like to compute log(p * q) = log(p) + log(q)
+        # where p = 1 / (1+exp(gamma_diff)) and q = 1 / (1+exp(-gamma_diff))
+        return -self.log_one_plus_exp(gamma_diff) - self.log_one_plus_exp(-gamma_diff)
+
+    # Computes log(1+exp(x)) in a numerically stable way
+    def log_one_plus_exp(self, x):
+        if x >= 40:
+            return x
+        return log1p(exp(x))
+
