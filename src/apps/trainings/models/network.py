@@ -128,6 +128,7 @@ class Network(Model):
     log_gamma_upper_confidence = FloatField(
         _("log gamma upper confidence"), default=0, db_index=True, help_text=_("Upper confidence bound on BayesElo strength of network."),
     )
+    log_gamma_game_count = BigIntegerField(_("log gamma game count"), default=0, db_index=True, help_text=_("Number of real games used to compute log_gamma for this network."),)
 
     def __str__(self):
         return f"{self.name} ({self.elo}±{2 * self.elo_uncertainty})"

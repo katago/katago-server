@@ -53,6 +53,12 @@ def validate_positive(value):
             params={'value': value},
         )
 
+def validate_non_negative(value):
+    if np.isnan(value) or value < 0:
+        raise ValidationError(
+            _('%(value)s must be nonnegative'),
+            params={'value': value},
+        )
 
 class Run(Model):
     """
@@ -108,10 +114,22 @@ class Run(Model):
         validators=[validate_probability],
     )
     rating_game_high_elo_probability = FloatField(
-        _("Rating game high Elo probability"),
-        help_text=_("Rating games are randomly selected to test a network with high Elo or high uncertainty."),
-        default=0.5,
-        validators=[validate_probability],
+        _("Rating game high Elo weight"),
+        help_text=_("RELATIVE probability for high Elo rating game."),
+        default=1.0,
+        validators=[validate_non_negative],
+    )
+    rating_game_high_uncertainty_probability = FloatField(
+        _("Rating game high Elo weight"),
+        help_text=_("RELATIVE probability for high uncertainty rating game."),
+        default=1.0,
+        validators=[validate_non_negative],
+    )
+    rating_game_low_data_probability = FloatField(
+        _("Rating game low data weight"),
+        help_text=_("RELATIVE probability for low data rating game."),
+        default=1.0,
+        validators=[validate_non_negative],
     )
     selfplay_startpos_probability = FloatField(
         _("Selfplay startpos probability"),

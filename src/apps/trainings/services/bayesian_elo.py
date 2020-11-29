@@ -58,6 +58,13 @@ class BayesianRatingService:
             network_id = network[0]
             network_log_gamma = network.log_gamma
             self._update_specific_network_log_gamma_uncertainty(network_id, network_log_gamma)
+            if network_id not in self._detailed_tournament_results.index:
+                self._network_ratings.loc[network_id, "log_gamma_game_count"] = 0
+            else:
+                self._network_ratings.loc[network_id, "log_gamma_game_count"] = (
+                    self._detailed_tournament_results.loc[network_id, "total_games_white"] +
+                    self._detailed_tournament_results.loc[network_id, "total_games_black"]
+                )
 
         return self._network_ratings
 

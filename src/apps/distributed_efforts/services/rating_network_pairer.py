@@ -17,10 +17,30 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        if random.random() < self.current_run.rating_game_high_elo_probability:
+
+        high_elo_prob = self.current_run.rating_game_high_elo_probability
+        high_uncertainty_prob = self.current_run.rating_game_high_uncertainty_probability
+        low_data_prob = self.current_run.rating_game_low_data_probability
+
+        total = high_elo_prob + high_uncertainty_prob + low_data_prob
+        # If all three are zero, then equal-weight them
+        if total <= 0:
+            high_elo_prob = 1
+            high_uncertainty_prob = 1
+            low_data_prob = 1
+            total = 3
+
+        high_elo_prob /= total
+        high_uncertainty_prob /= total
+        low_data_prob /= total
+
+        r = random.random()
+        if r < high_elo_prob:
             return self.generate_high_elo_game()
-        else:
+        elif r < high_elo_prob + high_uncertainty_prob:
             return self.generate_high_uncertainty_game()
+        else:
+            return self.generate_low_data_game()
 
     def generate_high_elo_game(self):
         """
@@ -44,6 +64,21 @@ class RatingNetworkPairerService:
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
         reference_network = Network.objects.select_high_uncertainty(self.current_run,for_rating_games=True)
+        opponent_network = self._choose_opponent(reference_network)
+        if reference_network is None or opponent_network is None:
+            return None
+        if random.random() < 0.5:
+            return reference_network, opponent_network
+        else:
+            return opponent_network, reference_network
+
+    def generate_low_data_game(self):
+        """
+        Try to generate a game on the network with the least actual games, regardless of modeled Elo or uncertainty.
+
+        :return: Tuple of (white_network,black_network), or None if no pairing could be generated
+        """
+        reference_network = Network.objects.select_low_data(self.current_run,for_rating_games=True)
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
