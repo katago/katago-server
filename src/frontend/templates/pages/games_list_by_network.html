@@ -22,15 +22,52 @@
 
 {% include 'pagination.html' with other_get_params='' page_obj=page_obj %}
 
+{% if kind == "rating" %}
 <table class="table">
   <tr>
     <th> {% trans "Game ID" %} </th>
     <th> {% trans "Uploaded At" %} </th>
     <th> {% trans "Submitted By" %} </th>
-    {% if kind == "rating" %}
-    <th> {% trans "Black" %} </th>
-    <th> {% trans "White" %} </th>
+    <th> {% trans "Own Color" %} </th>
+    <th> {% trans "Opponent" %} </th>
+    <th> {% trans "BSizeX" %} </th>
+    <th> {% trans "BSizeY" %} </th>
+    <th> {% trans "Komi" %} </th>
+    <th> {% trans "GameType" %} </th>
+    <th> {% trans "Length" %} </th>
+    <th> {% trans "Result" %} </th>
+    <th> {% trans "SGF" %} </th>
+    <th> {% trans "View" %} </th>
+  </tr>
+{% for game in page_obj %}
+  <tr>
+    <td> {{ game.id }} </td>
+    <td> {{ game.created_at|isotimestr }} </td>
+    <td> {{ game.submitted_by }} </td>
+    {% if game.black_network.name == network.name %}
+    <td> Black </td>
+    <td> {{ game.white_network.name|chop_network_run_name:run.name }} </td>
+    {% else %}
+    <td> White </td>
+    <td> {{ game.black_network.name|chop_network_run_name:run.name }} </td>
     {% endif %}
+    <td> {{ game.board_size_x }} </td>
+    <td> {{ game.board_size_y }} </td>
+    <td> {{ game.komi }} </td>
+    <td> {{ game.gametype|underscores_to_spaces }} </td>
+    <td> {{ game.game_length }} </td>
+    <td> {{ game.result_text }} </td>
+    <td> <a href="{{ game.sgf_file.url }}">[{% trans "SGF" %}]</a> </td>
+    <td> <a href="{% sgfplayer kind game.id %}">[{% trans "View" %}]</a> </td>
+  </tr>
+{% endfor %}
+</table>
+{% else %}
+<table class="table">
+  <tr>
+    <th> {% trans "Game ID" %} </th>
+    <th> {% trans "Uploaded At" %} </th>
+    <th> {% trans "Submitted By" %} </th>
     <th> {% trans "BSizeX" %} </th>
     <th> {% trans "BSizeY" %} </th>
     <th> {% trans "Handicap" %} </th>
@@ -46,10 +83,6 @@
     <td> {{ game.id }} </td>
     <td> {{ game.created_at|isotimestr }} </td>
     <td> {{ game.submitted_by }} </td>
-    {% if kind == "rating" %}
-    <td> {{ game.black_network.name }} </td>
-    <td> {{ game.white_network.name }} </td>
-    {% endif %}
     <td> {{ game.board_size_x }} </td>
     <td> {{ game.board_size_y }} </td>
     <td> {{ game.handicap }} </td>
@@ -60,8 +93,9 @@
     <td> <a href="{{ game.sgf_file.url }}">[{% trans "SGF" %}]</a> </td>
     <td> <a href="{% sgfplayer kind game.id %}">[{% trans "View" %}]</a> </td>
   </tr>
-  {% endfor %}
+{% endfor %}
 </table>
+{% endif %}
 
 {% include 'pagination.html' with other_get_params='' page_obj=page_obj %}
 
