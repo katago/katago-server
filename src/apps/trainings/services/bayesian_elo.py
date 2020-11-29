@@ -229,7 +229,7 @@ class BayesianRatingService:
         :param network_log_gamma:
         """
         games_played = self._get_games_played_by_specific_network(network_id)
-        pandas_utils.print_data_frame(games_played)
+        # pandas_utils.print_data_frame(games_played)
 
         expected_score = 0.0
         for game in games_played.itertuples():

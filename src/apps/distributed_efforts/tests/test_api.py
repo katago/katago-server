@@ -314,11 +314,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=100,
-            log_gamma_uncertainty=1,
-            log_gamma_lower_confidence=98,
-            log_gamma_upper_confidence=102,
-            log_gamma_game_count=10000,
+            log_gamma=100.0003,
+            log_gamma_uncertainty=1.0003,
+            log_gamma_lower_confidence=98.0003,
+            log_gamma_upper_confidence=102.0003,
+            log_gamma_game_count=10001,
             is_random=True,
         )
         self.n1b = Network.objects.create(
@@ -327,11 +327,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=100,
-            log_gamma_uncertainty=1,
-            log_gamma_lower_confidence=98,
-            log_gamma_upper_confidence=102,
-            log_gamma_game_count=10000,
+            log_gamma=100.0002,
+            log_gamma_uncertainty=1.0002,
+            log_gamma_lower_confidence=98.0002,
+            log_gamma_upper_confidence=102.0002,
+            log_gamma_game_count=10002,
             is_random=True,
         )
         self.n1c = Network.objects.create(
@@ -340,11 +340,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=100,
-            log_gamma_uncertainty=1,
-            log_gamma_lower_confidence=98,
-            log_gamma_upper_confidence=102,
-            log_gamma_game_count=10000,
+            log_gamma=100.0001,
+            log_gamma_uncertainty=1.0001,
+            log_gamma_lower_confidence=98.0001,
+            log_gamma_upper_confidence=102.0001,
+            log_gamma_game_count=10003,
             is_random=True,
         )
         self.n2a = Network.objects.create(
@@ -353,11 +353,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=50,
-            log_gamma_uncertainty=10,
-            log_gamma_lower_confidence=30,
-            log_gamma_upper_confidence=70,
-            log_gamma_game_count=10000,
+            log_gamma=50.0003,
+            log_gamma_uncertainty=10.0003,
+            log_gamma_lower_confidence=30.0003,
+            log_gamma_upper_confidence=70.0003,
+            log_gamma_game_count=10004,
             is_random=True,
         )
         self.n2b = Network.objects.create(
@@ -366,11 +366,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=50,
-            log_gamma_uncertainty=10,
-            log_gamma_lower_confidence=30,
-            log_gamma_upper_confidence=70,
-            log_gamma_game_count=10000,
+            log_gamma=50.0002,
+            log_gamma_uncertainty=10.0002,
+            log_gamma_lower_confidence=30.0002,
+            log_gamma_upper_confidence=70.0002,
+            log_gamma_game_count=10005,
             is_random=True,
         )
         self.n2c = Network.objects.create(
@@ -379,11 +379,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=50,
-            log_gamma_uncertainty=10,
-            log_gamma_lower_confidence=30,
-            log_gamma_upper_confidence=70,
-            log_gamma_game_count=10000,
+            log_gamma=50.0001,
+            log_gamma_uncertainty=10.0001,
+            log_gamma_lower_confidence=30.0001,
+            log_gamma_upper_confidence=70.0001,
+            log_gamma_game_count=10006,
             is_random=True,
         )
         self.n3a = Network.objects.create(
@@ -392,11 +392,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=20,
-            log_gamma_uncertainty=1,
-            log_gamma_lower_confidence=18,
-            log_gamma_upper_confidence=22,
-            log_gamma_game_count=1000,
+            log_gamma=20.0003,
+            log_gamma_uncertainty=2.0003,
+            log_gamma_lower_confidence=18.0003,
+            log_gamma_upper_confidence=22.0003,
+            log_gamma_game_count=1001,
             is_random=True,
         )
         self.n3b = Network.objects.create(
@@ -405,11 +405,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=20,
-            log_gamma_uncertainty=1,
-            log_gamma_lower_confidence=18,
-            log_gamma_upper_confidence=22,
-            log_gamma_game_count=1000,
+            log_gamma=20.0002,
+            log_gamma_uncertainty=2.0002,
+            log_gamma_lower_confidence=18.0002,
+            log_gamma_upper_confidence=22.0002,
+            log_gamma_game_count=1002,
             is_random=True,
         )
         self.n3c = Network.objects.create(
@@ -418,11 +418,11 @@ class TestUncertaintyVsEloVsData:
             model_file="",
             model_file_bytes=0,
             model_file_sha256=fake_sha256,
-            log_gamma=20,
-            log_gamma_uncertainty=1,
-            log_gamma_lower_confidence=18,
-            log_gamma_upper_confidence=22,
-            log_gamma_game_count=1000,
+            log_gamma=20.0001,
+            log_gamma_uncertainty=2.0001,
+            log_gamma_lower_confidence=18.0001,
+            log_gamma_upper_confidence=22.0001,
+            log_gamma_game_count=1003,
             is_random=True,
         )
 
@@ -463,7 +463,7 @@ class TestUncertaintyVsEloVsData:
         s = ""
         for k,v in sorted(counts.items()):
             s += k + ":" + str(v) + ", "
-        assert (s == "1a:56, 1b:43, 1c:43, 2a:22, 2b:17, 2c:5, 3a:4, 3b:4, 3c:6, ")
+        assert (s == "1a:51, 1b:53, 1c:38, 2a:20, 2b:16, 2c:8, 3a:7, 3b:6, 3c:1, ")
 
     def test_high_uncertainty(self):
         client = APIClient()
@@ -489,7 +489,7 @@ class TestUncertaintyVsEloVsData:
         s = ""
         for k,v in sorted(counts.items()):
             s += k + ":" + str(v) + ", "
-        assert (s == "1a:13, 1b:15, 1c:3, 2a:54, 2b:35, 2c:34, 3a:20, 3b:19, 3c:7, ")
+        assert (s == "1a:4, 1b:18, 1c:11, 2a:46, 2b:48, 2c:28, 3a:21, 3b:16, 3c:8, ")
 
     def test_low_data(self):
         client = APIClient()
@@ -515,7 +515,7 @@ class TestUncertaintyVsEloVsData:
         s = ""
         for k,v in sorted(counts.items()):
             s += k + ":" + str(v) + ", "
-        assert (s == "1a:8, 1b:10, 1c:3, 2a:26, 2b:18, 2c:7, 3a:53, 3b:44, 3c:31, ")
+        assert (s == "1a:14, 1b:11, 1c:13, 2a:5, 2b:17, 2c:11, 3a:50, 3b:47, 3c:32, ")
 
     def test_mix(self):
         client = APIClient()
@@ -541,7 +541,7 @@ class TestUncertaintyVsEloVsData:
         s = ""
         for k,v in sorted(counts.items()):
             s += k + ":" + str(v) + ", "
-        assert (s == "1a:27, 1b:18, 1c:24, 2a:25, 2b:30, 2c:12, 3a:28, 3b:21, 3c:15, ")
+        assert (s == "1a:27, 1b:31, 1c:15, 2a:20, 2b:28, 2c:15, 3a:26, 3b:23, 3c:15, ")
 
 class TestExtremeEloStability:
 
@@ -609,7 +609,7 @@ class TestExtremeEloStability:
             model_file_sha256=fake_sha256,
             log_gamma=11,
             log_gamma_uncertainty=1,
-            log_gamma_game_count=3,
+            log_gamma_game_count=4,
             is_random=True,
         )
 

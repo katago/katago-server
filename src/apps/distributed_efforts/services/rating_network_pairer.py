@@ -138,8 +138,8 @@ class RatingNetworkPairerService:
         # Subtract out the max to make sure that we're near 0, for numerical stability
         log_variances = [ log_variance - max_log_variance for log_variance in log_variances ]
         variances = [ exp(log_variance) for log_variance in log_variances ]
-        print(log_variances)
-        print(variances)
+        # print(log_variances)
+        # print(variances)
         return np.random.choice(nearby_networks, p=variances / np.sum(variances))
 
     def _log_variance_of_gamma_difference(self, gamma_diff):

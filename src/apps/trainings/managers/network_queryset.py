@@ -39,25 +39,25 @@ class NetworkQuerySet(QuerySet):
 
     def select_high_lower_confidence(self, run: Run, for_training_games=False, for_rating_games=False):
         filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
-        return filtered.order_by("-log_gamma_lower_confidence").first()
+        return filtered.order_by("-log_gamma_lower_confidence","?").first()
 
     def select_high_upper_confidence(self, run: Run, for_training_games=False, for_rating_games=False):
         filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
-        best_networks = filtered.order_by("-log_gamma_upper_confidence")[:10]
+        best_networks = filtered.order_by("-log_gamma_upper_confidence","?")[:10]
         if len(best_networks) <= 0:
             return None
         return random_weighted_choice(best_networks)
 
     def select_high_uncertainty(self, run: Run, for_training_games=False, for_rating_games=False):
         filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
-        more_uncertain_networks = filtered.order_by("-log_gamma_uncertainty")[:10]
+        more_uncertain_networks = filtered.order_by("-log_gamma_uncertainty","?")[:10]
         if len(more_uncertain_networks) <= 0:
             return None
         return random_weighted_choice(more_uncertain_networks)
 
     def select_low_data(self, run: Run, for_training_games=False, for_rating_games=False):
         filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
-        low_data_networks = filtered.order_by("log_gamma_game_count")[:10]
+        low_data_networks = filtered.order_by("log_gamma_game_count","?")[:10]
         if len(low_data_networks) <= 0:
             return None
         return random_weighted_choice(low_data_networks)
