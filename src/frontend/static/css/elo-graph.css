@@ -34,3 +34,7 @@ body {
   display: block;
   font-size: 1em;
 }
+
+.eloGraphButtonHighlighted {
+  box-shadow: 0 0 3px blue;
+}
