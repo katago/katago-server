@@ -27,6 +27,10 @@ def set_current_run_or_run_from_url_for_view_get_queryset(view):
     view.run = get_object_or_404(Run, name=view.kwargs["run"])
     view.run_specified_in_url = True
 
+def default_zero(x):
+  if x is None:
+    return 0
+  return x
 
 def add_run_stats_context(run, context):
   """Add all the detailed summary stats about a run and its networks and games.
@@ -80,10 +84,10 @@ def add_run_stats_context(run, context):
     .values("username").distinct().count()
   )
 
-  context["total_num_training_rows_this_run"] = all_games_stats["total_num_training_rows"]
-  context["total_num_training_games_this_run"] = all_games_stats["total_num_training_games"]
+  context["total_num_training_rows_this_run"] = default_zero(all_games_stats["total_num_training_rows"])
+  context["total_num_training_games_this_run"] = default_zero(all_games_stats["total_num_training_games"])
   # Divide by 2 because each rating game appears twice, once for each network that played it
-  context["total_num_rating_games_this_run"] = all_games_stats["total_num_rating_games"]  // 2
+  context["total_num_rating_games_this_run"] = default_zero(all_games_stats["total_num_rating_games"]) // 2
 
   recent_games_stats = (
     RecentGameCountByUser
@@ -104,9 +108,9 @@ def add_run_stats_context(run, context):
     .values("username").distinct().count()
   )
 
-  context["num_recent_training_rows_this_run"] = recent_games_stats["total_num_training_rows"]
-  context["num_recent_training_games_this_run"] = recent_games_stats["total_num_training_games"]
-  context["num_recent_rating_games_this_run"] = recent_games_stats["total_num_rating_games"]
+  context["num_recent_training_rows_this_run"] = default_zero(recent_games_stats["total_num_training_rows"])
+  context["num_recent_training_games_this_run"] = default_zero(recent_games_stats["total_num_training_games"])
+  context["num_recent_rating_games_this_run"] = default_zero(recent_games_stats["total_num_rating_games"])
 
   context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run,is_random=False).count()
 
