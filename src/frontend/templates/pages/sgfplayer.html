@@ -45,6 +45,7 @@ window.addEventListener("load", function() {
     sgfFile: "{{ game.sgf_file.url }}",
     board: { background: "#E8CF6D" },
     layout: dynamicLayout,
+    allowIllegalMoves: true,
   });
   player.setCoordinates(true);
 });
