@@ -137,9 +137,9 @@ class Run(Model):
         default=0.0,
         validators=[validate_probability],
     )
-    rating_game_entropy_scale = FloatField(
-        _("Rating game entropy scale"),
-        help_text=_("Rating games normally choose opponent based on entropy of predicted result, set larger to add more variability, smaller to scale it down."),
+    rating_game_variability_scale = FloatField(
+        _("Rating game variability scale"),
+        help_text=_("Rating games normally choose opponent proportional to variance of predicted result, set larger to add more variability, smaller to scale it down."),
         default=1.0,
         validators=[validate_positive],
     )
