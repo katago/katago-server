@@ -204,6 +204,8 @@ class TestEloTwoNetworksSomeGames:
         assert(self.n2.log_gamma == pytest.approx(math.log(2)))
         assert(self.n1.log_gamma_uncertainty == pytest.approx(0.5))
         assert(self.n2.log_gamma_uncertainty == pytest.approx(0.5))
+        assert(self.n1.log_gamma_game_count == 14)
+        assert(self.n2.log_gamma_game_count == 14)
 
 class TestEloTwoNetworksSomeGamesWithDraws:
 
@@ -261,6 +263,8 @@ class TestEloTwoNetworksSomeGamesWithDraws:
         assert(self.n2.log_gamma == pytest.approx(math.log(3)))
         assert(self.n1.log_gamma_uncertainty == pytest.approx(1/3))
         assert(self.n2.log_gamma_uncertainty == pytest.approx(1/3))
+        assert(self.n1.log_gamma_game_count == 44)
+        assert(self.n2.log_gamma_game_count == 44)
 
 
 class TestEloChain:
@@ -363,3 +367,8 @@ class TestEloChain:
         assert(self.n3.log_gamma_uncertainty == pytest.approx(math.sqrt(1/(4+8))))
         assert(self.n4.log_gamma_uncertainty == pytest.approx(math.sqrt(1/(20/3 + 8))))
         assert(self.n5.log_gamma_uncertainty == pytest.approx(math.sqrt(3/20)))
+        assert(self.n1.log_gamma_game_count == 28)
+        assert(self.n2.log_gamma_game_count == 14)
+        assert(self.n3.log_gamma_game_count == 46)
+        assert(self.n4.log_gamma_game_count == 76)
+        assert(self.n5.log_gamma_game_count == 44)
