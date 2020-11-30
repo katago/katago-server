@@ -27,3 +27,15 @@ def chop_network_run_name(value,run_name):
   if value.startswith(run_name + "-"):
     return value[len(run_name)+1:]
   return value
+
+@register.filter()
+def game_winner_class(game, network):
+  if game.winner == "W" and game.white_network.name == network.name:
+    return "winnerResultStyle"
+  if game.winner == "B" and game.black_network.name == network.name:
+    return "winnerResultStyle"
+  if game.winner == "B" and game.white_network.name == network.name:
+    return "loserResultStyle"
+  if game.winner == "W" and game.black_network.name == network.name:
+    return "loserResultStyle"
+  return "drawResultStyle"

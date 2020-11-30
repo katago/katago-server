@@ -1,0 +1,13 @@
+
+.winnerResultStyle {
+  color:#00cc77;
+  font-weight:500;
+}
+
+.loserResultStyle {
+  color:red
+}
+
+.drawResultStyle {
+  font-weight:bold;
+}
