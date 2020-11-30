@@ -56,7 +56,7 @@
     <td> {{ game.komi }} </td>
     <td> {{ game.gametype|underscores_to_spaces }} </td>
     <td> {{ game.game_length }} </td>
-    <td> {{ game.result_text }} </td>
+    <td class="{{ game|game_winner_class:network }}"> {{ game.result_text }} </td>
     <td> <a href="{{ game.sgf_file.url }}">[{% trans "SGF" %}]</a> </td>
     <td> <a href="{% sgfplayer kind game.id %}">[{% trans "View" %}]</a> </td>
   </tr>
