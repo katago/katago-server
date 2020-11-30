@@ -95,7 +95,7 @@ function makeGraph() {
         .domain([xDomainMin, xDomainMax])
         .range([0, graphSpaceWidth]);
       xAxis.scale(xScale).ticks(10);
-      d3.select(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.selectAll(".eloGraphButton").classed("eloButtonHighlighted", false);
       d3.select("#eloGraphTimeButton").classed("eloButtonHighlighted", true);
     };
     var setXScaleAsDataRows = function() {
@@ -112,7 +112,7 @@ function makeGraph() {
         .domain([xDomainMin, xDomainMax])
         .range([0, graphSpaceWidth]);
       xAxis.scale(xScale).ticks(10,"~s");
-      d3.select(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.selectAll(".eloGraphButton").classed("eloButtonHighlighted", false);
       d3.select("#eloGraphDataRowsButton").classed("eloButtonHighlighted", true);
     };
     var setXScaleAsDataRowsLog = function() {
@@ -130,7 +130,7 @@ function makeGraph() {
         .domain([xDomainMin, xDomainMax])
         .range([0, graphSpaceWidth]);
       xAxis.scale(xScale).ticks(15,"~s");
-      d3.select(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.selectAll(".eloGraphButton").classed("eloButtonHighlighted", false);
       d3.select("#eloGraphDataRowsLogButton").classed("eloButtonHighlighted", true);
     };
 
