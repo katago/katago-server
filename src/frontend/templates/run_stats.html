@@ -42,14 +42,14 @@ A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_rando
 <h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
 
 {% blocktrans %}
-Graph is based on about {{ total_num_rating_games_this_run }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets. Vertical bars indicate approximately a 95% confidence interval.
+Graph is based on about {{ total_num_rating_games_this_run }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets, but otherwise are fresh and unbiased and involve a variety of nets to avoid rock-paper-scissors. Vertical bars indicate approximately a 95% confidence interval.
 <p class="mt-2">
 Click and drag to zoom. Double-click or click on a button to reset zoom.
 {% endblocktrans %}
 
 <div id="eloGraphButtons" class="mt-2">
 {% blocktrans %}
-<button id="eloGraphTimeButton" class="button eloGraphButton">Graph By Time</button>
+<button id="eloGraphTimeButton" class="button eloGraphButton">Graph By Upload Time</button>
 <button id="eloGraphDataRowsButton" class="button eloGraphButton">Graph By Data Rows (linear)</button>
 <button id="eloGraphDataRowsLogButton" class="button eloGraphButton">Graph By Data Rows (log)</button>
 {% endblocktrans %}
