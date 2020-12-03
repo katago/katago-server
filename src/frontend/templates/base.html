@@ -82,6 +82,12 @@
           </a>
 
         {% if user.is_authenticated %}
+          {% url 'account_page' as account_url %}
+          {% if account_url %}
+            <a class="navbar-item is-hidden-desktop-only" href="{{ account_url }}">
+              {% trans "Account" %}
+            </a>
+          {% endif %}
           {% url 'account_logout' as logout_url %}
           {% if logout_url %}
             <a class="navbar-item is-hidden-desktop-only" href="{{ logout_url }}">

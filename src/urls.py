@@ -17,6 +17,7 @@ from src.apps.startposes.viewsets import StartPosViewSet
 
 from src.frontend.views import (
     HomeView,
+    AccountView,
     RunsListView,
     RunInfoView,
     NetworksView,
@@ -50,6 +51,7 @@ urlpatterns = (
         # Django Admin, use {% url 'admin:index' %}
         path(settings.ADMIN_URL, admin.site.urls),
         path(f"{settings.ADMIN_URL}doc/", include("django.contrib.admindocs.urls")),
+        path("account/", AccountView.as_view(), name="account_page"),
         path("accounts/", include("allauth.urls")),
 
         # Health check
