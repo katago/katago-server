@@ -267,6 +267,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ADAPTER = "src.apps.users.adapters.AccountAdapter"
+# Manual implementation of needing verified email for django rest framework, which doesn't check
+# for this by default.
+DRF_ACCOUNT_EMAIL_VERIFICATION = env.bool("DRF_ACCOUNT_EMAIL_VERIFICATION", False)
 
 # Your stuff...
 # ------------------------------------------------------------------------------
