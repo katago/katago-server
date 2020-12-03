@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load custom_formatting %}
+{% load custom_translation %}
+
+{% block title %}{% trans "KataGo - Account" %}{% endblock %}
+
+
+{% block content %}
+
+<h2 class="title">{% trans "KataGo - Account" %}</h1>
+
+{% url 'account_change_password' as password_url %}
+<a href="{{password_url}}">
+  <button class="button is-warning">
+    {% trans "Change password" %}
+  </button>
+</a>
+
+{% url 'account_email' as email_url %}
+<a href="{{email_url}}">
+  <button class="button is-warning">
+    {% trans "Change email" %}
+  </button>
+</a>
+
+{% endblock content %}
