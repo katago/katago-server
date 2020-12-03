@@ -270,6 +270,8 @@ ACCOUNT_ADAPTER = "src.apps.users.adapters.AccountAdapter"
 # Manual implementation of needing verified email for django rest framework, which doesn't check
 # for this by default.
 DRF_ACCOUNT_EMAIL_VERIFICATION = env.bool("DRF_ACCOUNT_EMAIL_VERIFICATION", False)
+# Make sure we can't go crazy on multiple emails
+ACCOUNT_MAX_EMAIL_ADDRESSES = 10
 
 # Your stuff...
 # ------------------------------------------------------------------------------
