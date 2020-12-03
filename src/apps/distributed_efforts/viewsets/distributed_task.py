@@ -5,6 +5,8 @@ from rest_framework import viewsets, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from src.contrib.permission import AuthOnly
+
 from src.apps.distributed_efforts.services import RatingNetworkPairerService
 from src.apps.runs.models import Run
 from src.apps.runs.serializers import RunSerializerForClient
@@ -26,7 +28,7 @@ class TaskCreateSerializer(serializers.Serializer):
         return data
 
 class DistributedTaskViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AuthOnly]
 
     # noinspection PyMethodMayBeStatic
     def create(self, request):
