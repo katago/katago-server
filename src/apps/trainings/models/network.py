@@ -15,6 +15,7 @@ from django.db.models import (
 )
 from django.contrib.postgres.fields import JSONField
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 from math import log10, e
 
 from src.contrib.validators import FileValidator
@@ -149,10 +150,11 @@ class Network(Model):
     def rating(self):
         return f"{self.elo} ± {2 * self.elo_uncertainty}"
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         # Allow blank file only if random
         no_model_file = not self.model_file or len(self.model_file) <= 0
         if no_model_file and not self.is_random:
-            raise ValueError("model_file is only allowed to be blank when is_random is True")
+            raise ValidationError("model_file is only allowed to be blank when is_random is True")
 
+    def save(self, *args, **kwargs):
         return super(Network, self).save(*args, **kwargs)

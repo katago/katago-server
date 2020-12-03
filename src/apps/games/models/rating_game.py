@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_delete
 from django.core.files.storage import default_storage
+from django.core.exceptions import ValidationError
 
 from src.apps.games.managers.rating_game_pandas_manager import RatingGamePandasManager
 from src.apps.games.models.abstract_game import AbstractGame
@@ -20,9 +21,10 @@ class RatingGame(AbstractGame):
         verbose_name = _("Rating game")
         ordering = ["-created_at"]
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         # Ratings games must involve distinct networks
         if self.white_network == self.black_network:
-            raise ValueError("Ratings games cannot be between a network and itself")
+            raise ValidationError("Ratings games cannot be between a network and itself")
 
+    def save(self, *args, **kwargs):
         return super(RatingGame, self).save(*args, **kwargs)

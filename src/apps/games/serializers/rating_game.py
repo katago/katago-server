@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from rest_framework.serializers import (
     HyperlinkedModelSerializer,
     HiddenField,
@@ -49,6 +50,8 @@ class RatingGameCreateSerializer(HyperlinkedModelSerializer):
         }
 
     def validate(self,data):
+        if data["white_network"] == data["black_network"]:
+            raise ValidationError("Ratings games cannot be between a network and itself")
         if not data["white_network"].rating_games_enabled or not data["black_network"].rating_games_enabled:
             raise ValidationError("Network is no longer enabled for rating games")
         return data
