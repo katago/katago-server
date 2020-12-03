@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
 
-from src.contrib.permission import ReadOrCreateOnly
+from src.contrib.permission import ReadOrAuthCreateOnly
 
 from src.apps.games.models import TrainingGame
 from src.apps.games.serializers import (
@@ -16,7 +16,7 @@ class TrainingGameViewSet(viewsets.ModelViewSet):
     """
 
     queryset = TrainingGame.objects.all()
-    permission_classes = [IsAdminUser | ReadOrCreateOnly]
+    permission_classes = [IsAdminUser | ReadOrAuthCreateOnly]
 
     # Used to get the proper serializer for the given action
     # so create still reference to an existing network

@@ -114,6 +114,12 @@ class TestGetSelfplayTask:
         assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
         assert response.status_code == 200
 
+    def test_get_job_no_trailing_slash(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        response = client.post("/api/tasks", {"git_revision":"1111222233334444555566667777888899990000"})
+        assert response.url == "/api/tasks/"
+        assert response.status_code == 301
 
 class TestGetRatingTask:
 
@@ -736,6 +742,22 @@ class TestPostNetwork:
         assert str(data) == """{'detail': ErrorDetail(string='You do not have permission to perform this action.', code='permission_denied')}"""
         assert response.status_code == 403
 
+    def test_post_network_no_trailing_slash(self):
+        client = APIClient()
+        client.login(username="testadmin", password="testadmin")
+        response = client.post("/api/networks", {
+            "run": "http://testserver/api/runs/testrun/",
+            "name": "networkname2",
+            "network_size": "b4c32",
+            "is_random": "false",
+            "model_file": SimpleUploadedFile("networkname2.bin.gz", b"", content_type="application/octet-stream"),
+            "model_file_bytes": "0",
+            "model_file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        }, format='multipart'
+        )
+        assert response.url == "/api/networks/"
+        assert response.status_code == 301
+
     def test_post_network_empty(self):
         client = APIClient()
         client.login(username="testadmin", password="testadmin")
@@ -751,6 +773,39 @@ class TestPostNetwork:
         )
         data = copy.deepcopy(response.data)
         assert str(data) == """{'model_file': [ErrorDetail(string='The submitted file is empty.', code='empty')]}"""
+        assert response.status_code == 400
+
+    def test_post_network_no_file_random(self):
+        client = APIClient()
+        client.login(username="testadmin", password="testadmin")
+        response = client.post("/api/networks/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "name": "networknamenofilerandom",
+            "network_size": "random",
+            "is_random": "true",
+            "model_file_bytes": "0",
+            "model_file_sha256": "-",
+        }, format='multipart'
+        )
+        data = copy.deepcopy(response.data)
+        data["created_at"] = None # Suppress timestamp for test
+        assert str(data) == """{'url': 'http://testserver/api/networks/networknamenofilerandom/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'networknamenofilerandom', 'created_at': None, 'network_size': 'random', 'is_random': True, 'training_games_enabled': False, 'rating_games_enabled': False, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '-', 'model_zip_file': None, 'parent_network': None, 'train_step': None, 'total_num_data_rows': None, 'extra_stats': {}, 'notes': '', 'log_gamma': 0.0, 'log_gamma_uncertainty': 0.0, 'log_gamma_lower_confidence': 0.0, 'log_gamma_upper_confidence': 0.0, 'log_gamma_game_count': 0}"""
+        assert response.status_code == 201
+
+    def test_post_network_no_file_nonrandom(self):
+        client = APIClient()
+        client.login(username="testadmin", password="testadmin")
+        response = client.post("/api/networks/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "name": "networknamenofilenonrandom",
+            "network_size": "b4c32",
+            "is_random": "false",
+            "model_file_bytes": "0",
+            "model_file_sha256": "-",
+        }, format='multipart'
+        )
+        data = copy.deepcopy(response.data)
+        assert str(data) == """{'non_field_errors': [ErrorDetail(string='model_file is only allowed to be blank when is_random is True', code='invalid')]}"""
         assert response.status_code == 400
 
     def test_post_network_not_a_zip(self):

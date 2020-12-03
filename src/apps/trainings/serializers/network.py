@@ -1,4 +1,5 @@
 from rest_framework.serializers import HyperlinkedModelSerializer
+from django.core.exceptions import ValidationError
 
 from src.apps.trainings.models import Network
 
@@ -39,6 +40,13 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "run": {"lookup_field": "name"},
             "parent_network": {"lookup_field": "name"}
         }
+
+    def validate(self, data):
+        # Allow blank file only if random
+        no_model_file = "model_file" not in data or len(data["model_file"]) <= 0
+        if no_model_file and not ("is_random" in data and data["is_random"]):
+            raise ValidationError("model_file is only allowed to be blank when is_random is True")
+        return data
 
     def create(self, validated_data):
         data = validated_data.copy()
