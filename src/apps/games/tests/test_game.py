@@ -12,6 +12,8 @@ from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
 from src.apps.games.models import RatingGame, TrainingGame, GameCountByNetwork, GameCountByUser
 
+from . import bad_libmagic_npz
+
 pytestmark = pytest.mark.django_db
 
 User = get_user_model()
@@ -155,6 +157,9 @@ class TestGame:
             training_data_file=SimpleUploadedFile(name='game.npz', content=b"\x50\x4b\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", content_type='application/octet-stream')
         ))
         self.bad_games.extend(self.create_games_with_defaults(rating_only=True, rating_black_network=self.n1, rating_white_network=self.n1))
+        self.good_games.extend(self.create_games_with_defaults(
+            training_data_file=SimpleUploadedFile(name='game.npz', content=base64.decodebytes(bad_libmagic_npz.base64data), content_type='application/octet-stream')
+        ))
 
 
     def create_games_with_defaults(self, rating_only=False, rating_black_network=None, rating_white_network=None, **kwargs):

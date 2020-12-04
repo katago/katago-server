@@ -1,6 +1,7 @@
 import logging
 
 import magic
+import zipfile
 from django.core.exceptions import ValidationError
 
 from django.utils.deconstruct import deconstructible
@@ -38,6 +39,27 @@ class FileValidator(object):
                 "size": filesizeformat(data.size),
             }
             raise ValidationError(self.error_messages["min_size"], "min_size", params)
+
+        # # Special detectors for specific types that don't give false-negatives (libmagic can be flakey)
+        if "application/gzip" in self.content_types:
+            good = data.read(2) == b'\x1f\x8b'
+            data.seek(0)
+            if good:
+                return
+        if "application/zip" in self.content_types:
+            good = zipfile.is_zipfile(data)
+            data.seek(0)
+            if good:
+                return
+        if "Smart Game Format (Go)" in self.magic_types:
+            # This actually doesn't detect all SGF files, but KataGo's SGF files always start with these
+            # so this is a guaranteed test for them. If it's another SGF file, we will still fall through
+            # and catch it below if libmagic isn't flakey.
+            prefix = data.read(12)
+            good = prefix == b"(;FF[4]GM[1]" or prefix == b"(;GM[1]FF[4]"
+            data.seek(0)
+            if good:
+                return
 
         if self.content_types:
             content_type = magic.from_buffer(data.read(), mime=True)
