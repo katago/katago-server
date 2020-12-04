@@ -13,8 +13,11 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------
+Additional disclaimer from David J Wu ("lightvector"), applicable to the parts of this public shared repository that they contributed or authored:
+The code in this repository is being provided to you under an open source license. The license you receive to my code is from me and not my employer (Facebook).
 
-With the exceptions of certain libraries and dependencies that are covered by other licenses:
+-------------------------------------------------------------
+Not covered by the above license are certain libraries and dependencies that are covered by other licenses:
 
 Bulma (src/frontend/static/bulma): https://github.com/jgthms/bulma/blob/master/LICENSE
 wgo.js (src/frontend/static/{css,js}/wgo*): http://wgo.waltheri.net/download/
