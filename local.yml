@@ -29,10 +29,12 @@ services:
       dockerfile: ./compose/local/postgres/Dockerfile
     image: katago_server_local_postgres
     volumes:
+      - ./compose/local/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - local_postgres_data:/var/lib/postgresql/data
       - local_postgres_data_backups:/backups
     env_file:
       - ./envs/local/postgres
+    command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
 
   mailhog:
     image: mailhog/mailhog:v1.0.0

@@ -25,6 +25,3 @@ class RatingGame(AbstractGame):
         # Ratings games must involve distinct networks
         if self.white_network == self.black_network:
             raise ValidationError("Ratings games cannot be between a network and itself")
-
-    def save(self, *args, **kwargs):
-        return super(RatingGame, self).save(*args, **kwargs)
