@@ -155,6 +155,3 @@ class Network(Model):
         no_model_file = not self.model_file or len(self.model_file) <= 0
         if no_model_file and not self.is_random:
             raise ValidationError("model_file is only allowed to be blank when is_random is True")
-
-    def save(self, *args, **kwargs):
-        return super(Network, self).save(*args, **kwargs)
