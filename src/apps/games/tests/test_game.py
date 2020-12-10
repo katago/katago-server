@@ -674,3 +674,329 @@ class TestPostGames:
         data = copy.deepcopy(response.data)
         assert str(data) == """{'detail': ErrorDetail(string='Authentication credentials were not provided.', code='not_authenticated')}"""
         assert response.status_code == 401
+
+
+class TestPostGamesWhitelist:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="abc", password="test")
+        self.u2 = User.objects.create_user(username="def", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+            restrict_to_user_whitelist=True,
+            user_whitelist="#abc\ndef\n",
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="postgame-network",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+        self.n2 = Network.objects.create(
+            run=self.r1,
+            name="postgame-network2",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        TrainingGame.objects.filter(run=self.r1).delete()
+        RatingGame.objects.filter(run=self.r1).delete()
+        self.n2.delete()
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+        self.u2.delete()
+
+    def test_post_training_game_whitelist(self):
+        client = APIClient()
+        client.login(username="def", password="test")
+        response = client.post("/api/games/training/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "training_data_file": SimpleUploadedFile(name='game.npz', content=base64.decodebytes(goodnpzbase64), content_type='application/octet-stream'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        data["url"] = data["url"][:33] + "..."
+        data["id"] = 0
+        data["sgf_file"] = data["sgf_file"][:50] + "..."
+        data["training_data_file"] = data["training_data_file"][:60] + "..."
+        data["created_at"] = "...";
+        assert str(data) == """{'url': 'http://testserver/api/games/train...', 'id': 0, 'run': 'http://testserver/api/runs/testrun/', 'created_at': '...', 'board_size_x': 8, 'board_size_y': 8, 'handicap': 0, 'komi': '7.0', 'gametype': 'normal', 'rules': {}, 'extra_metadata': {}, 'winner': 'B', 'score': '0.0', 'resigned': False, 'game_length': 0, 'white_network': 'http://testserver/api/networks/postgame-network/', 'black_network': 'http://testserver/api/networks/postgame-network/', 'sgf_file': 'http://testserver/media/games/testrun/postgame-net...', 'training_data_file': 'http://testserver/media/training_npz/testrun/postgame-networ...', 'num_training_rows': 0, 'kg_game_uid': '12341234ABCDABCD'}"""
+        assert response.status_code == 201
+
+    def test_post_training_game_nonwhitelist(self):
+        client = APIClient()
+        client.login(username="abc", password="test")
+        response = client.post("/api/games/training/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "training_data_file": SimpleUploadedFile(name='game.npz', content=base64.decodebytes(goodnpzbase64), content_type='application/octet-stream'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        assert str(data) == """{'non_field_errors': [ErrorDetail(string='Run is currently closed except for private testing', code='invalid')]}"""
+        assert response.status_code == 400
+
+    def test_post_rating_game_whitelist(self):
+        client = APIClient()
+        client.login(username="def", password="test")
+        response = client.post("/api/games/rating/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network2/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        data["url"] = data["url"][:33] + "..."
+        data["id"] = 0
+        data["sgf_file"] = data["sgf_file"][:50] + "..."
+        data["created_at"] = "...";
+        assert str(data) == """{'url': 'http://testserver/api/games/ratin...', 'id': 0, 'run': 'http://testserver/api/runs/testrun/', 'created_at': '...', 'board_size_x': 8, 'board_size_y': 8, 'handicap': 0, 'komi': '7.0', 'gametype': 'normal', 'rules': {}, 'extra_metadata': {}, 'winner': 'B', 'score': '0.0', 'resigned': False, 'game_length': 0, 'white_network': 'http://testserver/api/networks/postgame-network2/', 'black_network': 'http://testserver/api/networks/postgame-network/', 'sgf_file': 'http://testserver/media/games/testrun/versus/postg...', 'kg_game_uid': '12341234ABCDABCD'}"""
+        assert response.status_code == 201
+
+
+    def test_post_rating_game_nonwhitelist(self):
+        client = APIClient()
+        client.login(username="abc", password="test")
+        response = client.post("/api/games/rating/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network2/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        assert str(data) == """{'non_field_errors': [ErrorDetail(string='Run is currently closed except for private testing', code='invalid')]}"""
+        assert response.status_code == 400
+
+
+class TestPostGamesRunStatus:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="abc", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+            restrict_to_user_whitelist=False,
+            user_whitelist="#abc\ndef\n",
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="postgame-network",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+        self.n2 = Network.objects.create(
+            run=self.r1,
+            name="postgame-network2",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        TrainingGame.objects.filter(run=self.r1).delete()
+        RatingGame.objects.filter(run=self.r1).delete()
+        self.n2.delete()
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_post_training_game_active(self):
+        client = APIClient()
+        run = Run.objects.select_current()
+        run.status = Run.RunStatus.ACTIVE
+        run.save()
+        client.login(username="abc", password="test")
+        response = client.post("/api/games/training/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "training_data_file": SimpleUploadedFile(name='game.npz', content=base64.decodebytes(goodnpzbase64), content_type='application/octet-stream'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        data["url"] = data["url"][:33] + "..."
+        data["id"] = 0
+        data["sgf_file"] = data["sgf_file"][:50] + "..."
+        data["training_data_file"] = data["training_data_file"][:60] + "..."
+        data["created_at"] = "...";
+        assert str(data) == """{'url': 'http://testserver/api/games/train...', 'id': 0, 'run': 'http://testserver/api/runs/testrun/', 'created_at': '...', 'board_size_x': 8, 'board_size_y': 8, 'handicap': 0, 'komi': '7.0', 'gametype': 'normal', 'rules': {}, 'extra_metadata': {}, 'winner': 'B', 'score': '0.0', 'resigned': False, 'game_length': 0, 'white_network': 'http://testserver/api/networks/postgame-network/', 'black_network': 'http://testserver/api/networks/postgame-network/', 'sgf_file': 'http://testserver/media/games/testrun/postgame-net...', 'training_data_file': 'http://testserver/media/training_npz/testrun/postgame-networ...', 'num_training_rows': 0, 'kg_game_uid': '12341234ABCDABCD'}"""
+        assert response.status_code == 201
+
+    def test_post_training_game_inactive(self):
+        client = APIClient()
+        run = Run.objects.select_current()
+        run.status = Run.RunStatus.INACTIVE
+        run.save()
+        client.login(username="abc", password="test")
+        response = client.post("/api/games/training/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "training_data_file": SimpleUploadedFile(name='game.npz', content=base64.decodebytes(goodnpzbase64), content_type='application/octet-stream'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        assert str(data) == """{'non_field_errors': [ErrorDetail(string='Run is not active', code='invalid')]}"""
+        assert response.status_code == 400
+
+    def test_post_rating_game_active(self):
+        client = APIClient()
+        run = Run.objects.select_current()
+        run.status = Run.RunStatus.ACTIVE
+        run.save()
+        client.login(username="abc", password="test")
+        response = client.post("/api/games/rating/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network2/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        data["url"] = data["url"][:33] + "..."
+        data["id"] = 0
+        data["sgf_file"] = data["sgf_file"][:50] + "..."
+        data["created_at"] = "...";
+        assert str(data) == """{'url': 'http://testserver/api/games/ratin...', 'id': 0, 'run': 'http://testserver/api/runs/testrun/', 'created_at': '...', 'board_size_x': 8, 'board_size_y': 8, 'handicap': 0, 'komi': '7.0', 'gametype': 'normal', 'rules': {}, 'extra_metadata': {}, 'winner': 'B', 'score': '0.0', 'resigned': False, 'game_length': 0, 'white_network': 'http://testserver/api/networks/postgame-network2/', 'black_network': 'http://testserver/api/networks/postgame-network/', 'sgf_file': 'http://testserver/media/games/testrun/versus/postg...', 'kg_game_uid': '12341234ABCDABCD'}"""
+        assert response.status_code == 201
+
+
+    def test_post_rating_game_inactive(self):
+        client = APIClient()
+        run = Run.objects.select_current()
+        run.status = Run.RunStatus.INACTIVE
+        run.save()
+        client.login(username="abc", password="test")
+        response = client.post("/api/games/rating/", {
+            "run": "http://testserver/api/runs/testrun/",
+            "winner": "B",
+            "board_size_x": "8",
+            "board_size_y": "8",
+            "handicap":"0",
+            "komi":"7",
+            "gametype":"normal",
+            "rules":"{}",
+            "extra_metadata":"{}",
+            "score":"0",
+            "resigned":"false",
+            "game_length":"0",
+            "black_network":"http://testserver/api/networks/postgame-network/",
+            "white_network":"http://testserver/api/networks/postgame-network2/",
+            "sgf_file": SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            "num_training_rows":0,
+            "kg_game_uid":"12341234ABCDABCD",
+        }, format='multipart')
+        data = copy.deepcopy(response.data)
+        assert str(data) == """{'non_field_errors': [ErrorDetail(string='Run is not active', code='invalid')]}"""
+        assert response.status_code == 400

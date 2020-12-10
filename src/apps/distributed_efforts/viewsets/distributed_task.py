@@ -35,23 +35,23 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         current_run = Run.objects.select_current()
         if current_run is None:
             return Response({"error": "No active run."}, status=404)
+        if not request.user:
+            return Response({"error": "Unknown user."}, status=403)
+        if not current_run.is_allowed_username(request.user.username):
+            return Response({"error": "This run is currently closed except for private testing."}, status=403)
 
         serializer = TaskCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        git_revision_hash_whitelist = current_run.git_revision_hash_whitelist
-        git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist.split("\n") if len(s) > 0]
-        git_revision_hash_whitelist = [s.split("#")[0].strip().lower() for s in git_revision_hash_whitelist]
-        git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
-        git_revision = str(data["git_revision"]).strip().lower()
+        git_revision = str(data["git_revision"])
         # Git revision hashes are at least 40 chars, we can also optionally allow plus revisions and other stuff
         if len(git_revision) < 40:
             return Response(
                 {"error": "This version of KataGo is not usable for distributed because either it's had custom modifications or has been compiled without version info."},
                 status=400,
             )
-        elif git_revision not in git_revision_hash_whitelist:
+        elif not current_run.is_git_in_whitelist(git_revision):
             return Response(
                 {"error": "This version of KataGo is not enabled for distributed. If this is an official version and/or you think this is an oversight, please ask server admins to enable the following version hash: " + git_revision},
                 status=400,
