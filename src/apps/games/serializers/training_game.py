@@ -5,6 +5,7 @@ from rest_framework.serializers import (
     CurrentUserDefault,
 )
 
+from src.apps.runs.models import Run
 from src.apps.games.models import TrainingGame, validate_game_npzdata
 from src.apps.trainings.serializers import NetworkSerializerForTasks
 from src.apps.users.serializers import LimitedUserSerializer
@@ -55,6 +56,12 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
         validate_game_npzdata(data["training_data_file"], data["run"])
         if not data["white_network"].training_games_enabled or not data["black_network"].training_games_enabled:
             raise ValidationError("Network is no longer enabled for training games")
+        if data["run"].status != Run.RunStatus.ACTIVE:
+            raise ValidationError("Run is not active")
+        if not data["submitted_by"]:
+            raise ValidationError("Unknown user")
+        if not data["run"].is_allowed_username(data["submitted_by"].username):
+            raise ValidationError("Run is currently closed except for private testing")
         return data
 
 

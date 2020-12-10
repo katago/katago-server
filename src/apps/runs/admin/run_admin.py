@@ -28,6 +28,8 @@ class RunAdmin(admin.ModelAdmin):
                     "selfplay_client_config",
                     "rating_client_config",
                     "git_revision_hash_whitelist",
+                    "restrict_to_user_whitelist",
+                    "user_whitelist",
                     "startpos_locked",
                     "startpos_total_weight",
                 )

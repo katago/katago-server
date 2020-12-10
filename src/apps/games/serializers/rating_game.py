@@ -5,6 +5,7 @@ from rest_framework.serializers import (
     CurrentUserDefault,
 )
 
+from src.apps.runs.models import Run
 from src.apps.games.models import RatingGame
 from src.apps.trainings.serializers import NetworkSerializerForTasks
 from src.apps.users.serializers import LimitedUserSerializer
@@ -54,6 +55,12 @@ class RatingGameCreateSerializer(HyperlinkedModelSerializer):
             raise ValidationError("Ratings games cannot be between a network and itself")
         if not data["white_network"].rating_games_enabled or not data["black_network"].rating_games_enabled:
             raise ValidationError("Network is no longer enabled for rating games")
+        if data["run"].status != Run.RunStatus.ACTIVE:
+            raise ValidationError("Run is not active")
+        if not data["submitted_by"]:
+            raise ValidationError("Unknown user")
+        if not data["run"].is_allowed_username(data["submitted_by"].username):
+            raise ValidationError("Run is currently closed except for private testing")
         return data
 
 # Use as read only serializer

@@ -158,6 +158,12 @@ class Run(Model):
     selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games."), default="FILL ME",)
     rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games."), default="FILL ME",)
     git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes, hash comments."), default="",)
+    restrict_to_user_whitelist = BooleanField(
+        _("Restrict contributors?"),
+        help_text=_("If true, restrict to specified allowed contributors."),
+        default=False,
+    )
+    user_whitelist = TextField(_("Allowed contrbutors"), help_text=_("Newline-separated whitelist of usernames to allow, hash comments."), default="",)
     startpos_locked = BooleanField(
         _("StartPoses being updated?"),
         help_text=_("Are startposes in the middle of being updated?."),
@@ -171,3 +177,22 @@ class Run(Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def is_allowed_username(self, username):
+        if not self.restrict_to_user_whitelist:
+            return True
+        user_whitelist = self.user_whitelist
+        user_whitelist = [s for s in user_whitelist.split("\n") if len(s) > 0]
+        user_whitelist = [s.split("#")[0].strip() for s in user_whitelist]
+        user_whitelist = [s for s in user_whitelist if len(s) > 0]
+        username = username.strip()
+        return (username in user_whitelist)
+
+    def is_git_in_whitelist(self, git_revision_hash):
+        git_revision_hash_whitelist = self.git_revision_hash_whitelist
+        git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist.split("\n") if len(s) > 0]
+        git_revision_hash_whitelist = [s.split("#")[0].strip().lower() for s in git_revision_hash_whitelist]
+        git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
+        git_revision_hash = git_revision_hash.strip().lower()
+        return (git_revision_hash in git_revision_hash_whitelist)
+

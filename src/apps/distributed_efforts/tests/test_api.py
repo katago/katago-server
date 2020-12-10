@@ -1245,3 +1245,114 @@ class TestStartPoses:
         self.r1.refresh_from_db()
         assert(self.r1.startpos_total_weight == 17.625)
 
+
+class TestGetTaskActive:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.5,
+            status="Inactive",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-randomnetwork",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_get_job_fail(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.status = "Inactive"
+        self.r1.save()
+        response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890", "allow_rating_task":False},format="multipart")
+        data = copy.deepcopy(response.data)
+        assert (str(data) == """{'error': 'No active run.'}""")
+        assert response.status_code == 404
+
+    def test_get_job_success(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.status = "Active"
+        self.r1.save()
+        response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890", "allow_rating_task":False},format="multipart")
+        data = copy.deepcopy(response.data)
+        data["network"]["created_at"] = None # Suppress timestamp for test
+        data["run"]["id"] = None # Suppress id for test
+        assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
+        assert response.status_code == 200
+
+
+class TestGetTaskWhiteList:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.u2 = User.objects.create_user(username="tester", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.5,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+            restrict_to_user_whitelist=False,
+            user_whitelist="#test\ntester#test"
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-randomnetwork",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+        self.u2.delete()
+
+    def test_get_job_fail_whitelist(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.restrict_to_user_whitelist = True
+        self.r1.save()
+        response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890", "allow_rating_task":False},format="multipart")
+        data = copy.deepcopy(response.data)
+        assert (str(data) == """{'error': 'This run is currently closed except for private testing.'}""")
+        assert response.status_code == 403
+
+    def test_get_job_okay_whitelist(self):
+        client = APIClient()
+        client.login(username="tester", password="test")
+        self.r1.restrict_to_user_whitelist = True
+        self.r1.save()
+        response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890", "allow_rating_task":False},format="multipart")
+        data = copy.deepcopy(response.data)
+        data["network"]["created_at"] = None # Suppress timestamp for test
+        data["run"]["id"] = None # Suppress id for test
+        assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
+        assert response.status_code == 200
+
+    def test_get_job_okay_without_whitelist(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        self.r1.restrict_to_user_whitelist = False
+        self.r1.save()
+        response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890", "allow_rating_task":False},format="multipart")
+        data = copy.deepcopy(response.data)
+        data["network"]["created_at"] = None # Suppress timestamp for test
+        data["run"]["id"] = None # Suppress id for test
+        assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
+        assert response.status_code == 200
