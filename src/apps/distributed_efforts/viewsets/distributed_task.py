@@ -53,7 +53,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
             )
         elif not current_run.is_git_in_whitelist(git_revision):
             return Response(
-                {"error": "This version of KataGo is not enabled for distributed. If this is an official version and/or you think this is an oversight, please ask server admins to enable the following version hash: " + git_revision},
+                {"error": "This version of KataGo is not enabled for distributed. If this exact version was working previously, then changes in the run require a newer version - please update KataGo to the latest version or release. But if this is already the official newest version of KataGo, or you think that not enabling this version is an oversight, please ask server admins to enable the following version hash: " + git_revision},
                 status=400,
             )
 
