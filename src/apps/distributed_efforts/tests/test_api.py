@@ -82,7 +82,7 @@ class TestGetSelfplayTask:
         client.login(username="test", password="test")
         response = client.post("/api/tasks/", {"git_revision":"0000111122223333444455556666777788889999"})
         assert response.status_code == 400
-        assert str(response.data) == """{'error': 'This version of KataGo is not enabled for distributed. If this is an official version and/or you think this is an oversight, please ask server admins to enable the following version hash: 0000111122223333444455556666777788889999'}"""
+        assert str(response.data) == """{'error': 'This version of KataGo is not enabled for distributed. If this exact version was working previously, then changes in the run require a newer version - please update KataGo to the latest version or release. But if this is already the official newest version of KataGo, or you think that not enabling this version is an oversight, please ask server admins to enable the following version hash: 0000111122223333444455556666777788889999'}"""
 
     def test_get_job_authenticated_valid_git_revision1(self):
         client = APIClient()
