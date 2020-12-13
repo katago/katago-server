@@ -10,7 +10,7 @@ spec:
     app: celery-flower
     {{- include "katago-server.selectorLabels" . | nindent 4 }}
   ports:
-  - name: celery-flower-service-port
+  - name: http-celery-flower
     protocol: TCP
     port: {{.Values.celeryFlower.servicePort}}
     targetPort: {{.Values.celeryFlower.containerPort}}

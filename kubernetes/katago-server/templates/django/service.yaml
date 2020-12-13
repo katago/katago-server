@@ -10,7 +10,7 @@ spec:
     app: django
     {{- include "katago-server.selectorLabels" . | nindent 4 }}
   ports:
-  - name: django-service-port
+  - name: http-django
     protocol: TCP
     port: {{.Values.django.servicePort}}
     targetPort: {{.Values.django.containerPort}}
