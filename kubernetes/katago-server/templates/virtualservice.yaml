@@ -39,6 +39,8 @@ kind: VirtualService
 metadata:
   name: katago-server
   namespace: {{.Values.global.namespace}}
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   hosts:
   - {{.Values.global.domainName}}
@@ -62,6 +64,8 @@ kind: VirtualService
 metadata:
   name: katago-server
   namespace: {{.Values.global.namespace}}
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   hosts:
   - {{.Values.global.flowerDomainName}}
