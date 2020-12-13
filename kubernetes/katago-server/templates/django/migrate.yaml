@@ -12,6 +12,9 @@ metadata:
 spec:
   backoffLimit: 2
   template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
     spec:
       restartPolicy: Never
       containers:
