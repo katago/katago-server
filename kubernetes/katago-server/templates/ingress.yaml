@@ -13,8 +13,7 @@ metadata:
 
 spec:
   rules:
-  - host: *
-    http:
+  - http:
       paths:
       - backend: 
           serviceName: istio-ingressgateway
