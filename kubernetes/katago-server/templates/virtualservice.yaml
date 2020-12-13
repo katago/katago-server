@@ -37,7 +37,7 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: katago-server
+  name: katago-server-api-and-media
   namespace: {{.Values.global.namespace}}
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
@@ -47,14 +47,15 @@ spec:
   http:
   - name: "media-files"
     match:
-    - uri: "/media"
+    - uri:
+        prefix: "/media"
     route:
     - destination:
         host: "nginx-service.{{.Values.global.namespace}}.svc.cluster.local"
-        port: 
   - name: "django"
     match:
-    - uri: "/"
+    - uri:
+        prefix: "/"
     route:
     - destination:
         host: "django-service.{{.Values.global.namespace}}.svc.cluster.local"
@@ -62,7 +63,7 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: katago-server
+  name: katago-server-flower
   namespace: {{.Values.global.namespace}}
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
@@ -72,7 +73,8 @@ spec:
   http:
   - name: "flower"
     match:
-    - uri: "/"
+    - uri:
+        prefix: "/"
     route:
     - destination:
         host: "celery-flower-service.{{.Values.global.namespace}}.svc.cluster.local"
