@@ -1,0 +1,10 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: katago-server-backend-config
+  namespace: istio-system
+  labels:
+    {{- include "katago-server.labels" . | nindent 4 }}
+spec:
+  securityPolicy:
+    name: katago-server-policy
