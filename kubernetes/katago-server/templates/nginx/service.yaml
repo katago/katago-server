@@ -10,7 +10,7 @@ spec:
     app: nginx
     {{- include "katago-server.selectorLabels" . | nindent 4 }}
   ports:
-  - name: http-nginx-service
+  - name: http-nginx
     protocol: TCP
     port: {{.Values.nginx.servicePort}}
     targetPort: {{.Values.nginx.containerPort}}
