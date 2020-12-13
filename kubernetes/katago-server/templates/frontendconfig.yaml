@@ -2,7 +2,7 @@ apiVersion: networking.gke.io/v1beta1
 kind: FrontendConfig
 metadata:
   name: katago-server-frontend-config
-  namespace: {{.Values.global.namespace}}
+  namespace: istio-system
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:
