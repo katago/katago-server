@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: katago-gce-ingress
-  namespace: {{.Values.global.namespace}}
+  namespace: istio-system
   labels:
     {{- include "katago-server.labels" . | nindent 4 }}
   annotations:
@@ -13,21 +13,10 @@ metadata:
 
 spec:
   rules:
-  - host: {{.Values.global.domainName}}
+  - host: *
     http:
       paths:
-      - path: /media/*
-        backend:
-          serviceName: nginx-service
-          servicePort: {{.Values.nginx.servicePort}}
-      - path: /*
-        backend:
-          serviceName: django-service
-          servicePort: {{.Values.django.servicePort}}
-  - host: {{.Values.global.flowerDomainName}}
-    http:
-      paths:
-      - path: /*
-        backend:
-          serviceName: celery-flower-service
-          servicePort: {{.Values.celeryFlower.servicePort}}
+      - backend: 
+          serviceName: istio-ingressgateway
+          servicePort: 80
+
