@@ -11,14 +11,13 @@ We run it on:
 
 ## Expected machine for the run
 
-TODO: describe what kind of instance we used for GKE, cloudSQL, and memestore
+TODO: describe what kind of instance we used for GKE, CloudSQL, and memstore
 
 ## Istio specific config
 
-
 We want istio to be run behind Ingress, to use NativeIngress and cloud armor
 
-We thus need top patch it:
+We thus need top patch it (by default GKE istio expose gateway service as TCP loadbalancer):
 
 ```bash
 cat <<EOF > istio-ingress-patch.json
@@ -26,7 +25,7 @@ cat <<EOF > istio-ingress-patch.json
   {
     "op": "add",
     "path": "/metadata/annotations/cloud.google.com~1neg",
-    "value": "{"exposed_ports": {"80":{}}, \"ingress\": true}" 
+    "value": "{\"exposed_ports\": {\"80\":{}}, \"ingress\": true}" 
   },
   {
     "op": "replace",
@@ -40,7 +39,7 @@ cat <<EOF > istio-ingress-patch.json
   {    
     "op": "add",
     "path": "/metadata/annotations/cloud.google.com~1backend-config",
-    "value": "{"ports": {"80":"katago-server-backend-config"}}"
+    "value": "{\"ports\": {\"80\":\"katago-server-backend-config\"}}"
   }
 ]
 EOF
