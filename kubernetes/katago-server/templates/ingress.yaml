@@ -10,12 +10,10 @@ metadata:
     networking.gke.io/managed-certificates: {{.Values.global.managedCertName}}
     kubernetes.io/ingress.class: "gce"
     networking.gke.io/v1beta1.FrontendConfig: "katago-server-frontend-config"
-
 spec:
   rules:
   - http:
       paths:
-      - backend: 
+      - backend:
           serviceName: istio-ingressgateway
           servicePort: 80
-
