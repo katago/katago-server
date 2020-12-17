@@ -43,7 +43,7 @@ metadata:
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   gateways:
-  - istio-default-gateway
+  - istio-system/istio-default-gateway
   hosts:
   - {{.Values.global.domainName}}
   http:
@@ -75,7 +75,7 @@ metadata:
     {{- include "katago-server.labels" . | nindent 4 }}
 spec:
   gateways:
-  - istio-default-gateway
+  - istio-system/istio-default-gateway
   hosts:
   - {{.Values.global.flowerDomainName}}
   http:
