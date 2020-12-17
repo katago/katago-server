@@ -54,6 +54,8 @@ spec:
     route:
     - destination:
         host: "nginx-service.{{.Values.global.namespace}}.svc.cluster.local"
+        port:
+          number: {{.Values.nginx.servicePort}}
   - name: "django"
     match:
     - uri:
@@ -61,6 +63,8 @@ spec:
     route:
     - destination:
         host: "django-service.{{.Values.global.namespace}}.svc.cluster.local"
+        port:
+          number: {{.Values.django.servicePort}}
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -82,3 +86,6 @@ spec:
     route:
     - destination:
         host: "celery-flower-service.{{.Values.global.namespace}}.svc.cluster.local"
+        port:
+          number: {{.Values.celeryFlower.servicePort}}
+
