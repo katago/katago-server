@@ -110,7 +110,8 @@ def add_run_stats_context(run, context):
 
   context["num_recent_training_rows_this_run"] = default_zero(recent_games_stats["total_num_training_rows"])
   context["num_recent_training_games_this_run"] = default_zero(recent_games_stats["total_num_training_games"])
-  context["num_recent_rating_games_this_run"] = default_zero(recent_games_stats["total_num_rating_games"])
+  # Divide by 2 because each rating game appears twice, once for each network that played it
+  context["num_recent_rating_games_this_run"] = default_zero(recent_games_stats["total_num_rating_games"]) // 2
 
   context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run,is_random=False).count()
 
