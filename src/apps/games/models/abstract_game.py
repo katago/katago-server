@@ -130,7 +130,7 @@ class AbstractGame(Model):
     )
 
     sgf_file = VariableStorageFileField(_("SGF file"), upload_to=upload_sgf_to, validators=[validate_sgf], max_length=200, storage=sgf_filestorage_class(),)
-    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True,)
+    kg_game_uid = CharField(_("KG game uid"), max_length=48, default="", help_text=_("Game uid from KataGo client"), db_index=True, unique=True)
 
     @property
     def result_text(self):

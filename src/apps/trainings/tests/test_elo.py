@@ -108,7 +108,7 @@ class TestEloTwoNetworksNoGames:
         assert(self.n2.log_gamma_uncertainty == pytest.approx(0.4))
 
 
-def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults):
+def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults,uidprefix):
     black = RatingGame.GamesResult.BLACK
     white = RatingGame.GamesResult.WHITE
     draw = RatingGame.GamesResult.DRAW
@@ -121,6 +121,7 @@ def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults):
             winner=black,
             black_network=n1,
             white_network=n2,
+            kg_game_uid=uidprefix+"n1w"+str(i),
         ))
     for i in range(n2wins):
         games.append(RatingGame(
@@ -129,6 +130,7 @@ def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults):
             winner=white,
             black_network=n1,
             white_network=n2,
+            kg_game_uid=uidprefix+"n2w"+str(i),
         ))
     for i in range(draws):
         games.append(RatingGame(
@@ -137,6 +139,7 @@ def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults):
             winner=draw,
             black_network=n1,
             white_network=n2,
+            kg_game_uid=uidprefix+"d"+str(i),
         ))
     for i in range(noresults):
         games.append(RatingGame(
@@ -145,6 +148,7 @@ def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults):
             winner=noresult,
             black_network=n1,
             white_network=n2,
+            kg_game_uid=uidprefix+"nr"+str(i),
         ))
     return games
 
@@ -185,7 +189,7 @@ class TestEloTwoNetworksSomeGames:
         # Also, if you work it out, you get that the precision per game is
         # 1/(sqrt2 + (1/sqrt2))^2 = 1/(2+2+0.5) 1/4.5, which with 18 games comes out to exactly precision 4,
         # and therefore uncertainty 0.5.
-        self.games = make_games(self.r1,self.u1,self.n1,self.n2,4,10,0,0)
+        self.games = make_games(self.r1,self.u1,self.n1,self.n2,4,10,0,0,uidprefix="a")
         RatingGame.objects.bulk_create(self.games)
 
     def teardown_method(self):
@@ -244,7 +248,7 @@ class TestEloTwoNetworksSomeGamesWithDraws:
         # Also, if you work it out, you get that the precision per game is
         # 1/(sqrt3 + (1/sqrt3))^2 = 1/(3+2+1/3) 1/(16/3) = 3/16, which with 48 games comes out to
         # precision 9, and therefore uncertainty 1/3
-        self.games = make_games(self.r1,self.u1,self.n1,self.n2,8,32,3,1)
+        self.games = make_games(self.r1,self.u1,self.n1,self.n2,8,32,3,1,uidprefix="a")
         RatingGame.objects.bulk_create(self.games)
 
     def teardown_method(self):
@@ -333,10 +337,10 @@ class TestEloChain:
         # 1/(sqrt5 + (1/sqrt5))^2 = 1/(5+2+1/5) 1/(36/5) = 5/36, which with 48 games comes out to
         # precision 20/3, and therefore uncertainty sqrt(3/20)
         self.games = []
-        self.games.extend(make_games(self.r1,self.u1,self.n1,self.n2,10,4,0,0)) # 18 games with prior
-        self.games.extend(make_games(self.r1,self.u1,self.n1,self.n3,0,6,5,3))  # 18 games with prior
-        self.games.extend(make_games(self.r1,self.u1,self.n3,self.n4,5,17,3,7)) # 36 games with prior
-        self.games.extend(make_games(self.r1,self.u1,self.n4,self.n5,6,38,0,0)) # 48 games with prior
+        self.games.extend(make_games(self.r1,self.u1,self.n1,self.n2,10,4,0,0,uidprefix="a")) # 18 games with prior
+        self.games.extend(make_games(self.r1,self.u1,self.n1,self.n3,0,6,5,3,uidprefix="b"))  # 18 games with prior
+        self.games.extend(make_games(self.r1,self.u1,self.n3,self.n4,5,17,3,7,uidprefix="c")) # 36 games with prior
+        self.games.extend(make_games(self.r1,self.u1,self.n4,self.n5,6,38,0,0,uidprefix="d")) # 48 games with prior
         RatingGame.objects.bulk_create(self.games)
 
     def teardown_method(self):
