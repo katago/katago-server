@@ -26,3 +26,25 @@ class TestUserCreationForm:
         assert not form.is_valid()
         assert len(form.errors) == 1
         assert "username" in form.errors
+
+
+    def test_long_username(self):
+        proto_user = UserFactory.build()
+
+        # okay
+        username = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd"
+        form = UserCreationForm({"username": username, "password1": proto_user._password, "password2": proto_user._password,})
+        assert form.is_valid()
+        assert form.clean_username() == username
+
+        # Creating a user.
+        form.save()
+
+        # bad
+        username = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcda"
+        form = UserCreationForm({"username": username, "password1": proto_user._password, "password2": proto_user._password,})
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert "username" in form.errors
+        assert "at most 60" in form.errors["username"][0]
+

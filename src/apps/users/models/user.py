@@ -1,10 +1,10 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db.models import CharField, UUIDField
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-
 
 class User(AbstractUser):
     """
@@ -18,4 +18,11 @@ class User(AbstractUser):
     # Uses uuid for security
     id = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = CharField(_("Name of User"), blank=True, max_length=255)
-
+    username = CharField(
+        _("username"),
+        error_messages={'unique': _("A user with that username already exists.")},
+        help_text='Required. 60 characters or fewer. Letters, digits and @/./+/-/_ only.',
+        max_length=60,
+        unique=True,
+        validators=[UnicodeUsernameValidator()]
+    )
