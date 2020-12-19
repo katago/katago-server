@@ -3,7 +3,7 @@ import math
 from django.db.models import Sum, Count, Q
 from django.shortcuts import get_object_or_404
 
-from src.apps.games.models import GameCountByNetwork, GameCountByUser, RecentGameCountByUser
+from src.apps.games.models import GameCountByNetwork, GameCountByUser, RecentGameCountByUser, DayGameCountByUser
 from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 
@@ -40,6 +40,19 @@ def add_run_stats_context(run, context):
 
   context["top_recent_user_list"] = (
     RecentGameCountByUser
+    .objects
+    .filter(run=run)
+    .values("username")
+    .annotate(
+      total_num_training_rows=Sum("total_num_training_rows"),
+      total_num_training_games=Sum("total_num_training_games"),
+      total_num_rating_games=Sum("total_num_rating_games"),
+    )
+    .order_by("-total_num_training_rows")
+    .all()[:15]
+  )
+  context["top_day_user_list"] = (
+    DayGameCountByUser
     .objects
     .filter(run=run)
     .values("username")
@@ -102,6 +115,13 @@ def add_run_stats_context(run, context):
 
   context["num_recent_contributors_this_run"] = (
     RecentGameCountByUser
+    .objects
+    .filter(run=run)
+    .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+    .values("username").distinct().count()
+  )
+  context["num_day_contributors_this_run"] = (
+    DayGameCountByUser
     .objects
     .filter(run=run)
     .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))

@@ -6,6 +6,7 @@ from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 from src.apps.users.models import User
 
+__ALL__ = ["GameCountByNetwork", "GameCountByUser", "RecentGameCountByUser", "DayGameCountByUser"]
 
 class GameCountByNetwork(pg.MaterializedView):
     """
@@ -145,15 +146,17 @@ class GameCountByUser(pg.MaterializedView):
         db_table = "games_gamecountbyuser"
 
 
-class RecentGameCountByUser(pg.MaterializedView):
+class TimeSpanGameCountByUser(pg.MaterializedView):
     """
     A materialized view that serves extremely fast access to slightly-outdated counts of rating and games by user
-    in the last week.
+    in the last certain amount of time.
     """
 
     concurrent_index = "id"
 
-    sql = """
+    @staticmethod
+    def make_sql(sql_interval_str):
+        return """
     SELECT
       counts.*,
       CONCAT(counts.run_id, '|', counts.user_id) as id,
@@ -172,7 +175,7 @@ class RecentGameCountByUser(pg.MaterializedView):
         count(*) as total_num_training_games,
         sum(num_training_rows) as total_num_training_rows
         FROM games_traininggame
-        WHERE created_at >= NOW() - INTERVAL '1 week'
+        WHERE created_at >= NOW() - INTERVAL '%s'
         GROUP BY submitted_by_id, run_id
       ) trainingcounts
       FULL OUTER JOIN
@@ -182,7 +185,7 @@ class RecentGameCountByUser(pg.MaterializedView):
         run_id,
         count(*) as total_num_rating_games
         FROM games_ratinggame
-        WHERE created_at >= NOW() - INTERVAL '1 week'
+        WHERE created_at >= NOW() - INTERVAL '%s'
         GROUP BY submitted_by_id, run_id
       ) ratingcounts
       ON trainingcounts.submitted_by_id = ratingcounts.submitted_by_id
@@ -191,7 +194,7 @@ class RecentGameCountByUser(pg.MaterializedView):
     INNER JOIN
     users_user
     ON counts.user_id = users_user.id
-    """
+    """ % (sql_interval_str,sql_interval_str)
 
     # Django insists on having a single primary key field. So we smash user and run together
     # to make this single field to make django happy
@@ -206,5 +209,16 @@ class RecentGameCountByUser(pg.MaterializedView):
     total_num_rating_games = IntegerField(null=False, db_index=True)
 
     class Meta:
+        abstract = True
+
+class RecentGameCountByUser(TimeSpanGameCountByUser):
+    sql = TimeSpanGameCountByUser.make_sql("1 week")
+    class Meta:
         managed = False
         db_table = "games_recentgamecountbyuser"
+
+class DayGameCountByUser(TimeSpanGameCountByUser):
+    sql = TimeSpanGameCountByUser.make_sql("1 day")
+    class Meta:
+        managed = False
+        db_table = "games_daygamecountbyuser"

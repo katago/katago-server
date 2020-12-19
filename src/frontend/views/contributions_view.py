@@ -2,7 +2,7 @@ from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 
-from src.apps.games.models import GameCountByUser, RecentGameCountByUser
+from src.apps.games.models import GameCountByUser, RecentGameCountByUser, DayGameCountByUser
 from src.apps.runs.models import Run
 
 from . import view_utils
@@ -29,6 +29,19 @@ class ContributionsView(ListView):
     context["has_multiple_runs"] = Run.objects.count() > 1
     context["top_recent_user_list"] = (
       RecentGameCountByUser \
+      .objects \
+      .all() \
+      .values("username") \
+      .annotate(
+        total_num_training_rows=Sum("total_num_training_rows"),
+        total_num_training_games=Sum("total_num_training_games"),
+        total_num_rating_games=Sum("total_num_rating_games"),
+      ) \
+      .order_by("-total_num_training_rows")
+      .all()[:30]
+    )
+    context["top_day_user_list"] = (
+      DayGameCountByUser \
       .objects \
       .all() \
       .values("username") \
@@ -67,6 +80,19 @@ class ContributionsByRunView(ListView):
     context = super().get_context_data(**kwargs)
     context["top_recent_user_list"] = (
       RecentGameCountByUser \
+      .objects \
+      .filter(run=self.run) \
+      .values("username") \
+      .annotate(
+        total_num_training_rows=Sum("total_num_training_rows"),
+        total_num_training_games=Sum("total_num_training_games"),
+        total_num_rating_games=Sum("total_num_rating_games"),
+      ) \
+      .order_by("-total_num_training_rows")
+      .all()[:30]
+    )
+    context["top_day_user_list"] = (
+      DayGameCountByUser \
       .objects \
       .filter(run=self.run) \
       .values("username") \
