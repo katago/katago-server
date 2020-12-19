@@ -70,3 +70,4 @@ spec:
       - name: nginx-fileserver-storage
         persistentVolumeClaim:
           claimName: fileserver-claim-{{.Values.fileserver.pvcVersion}}
+      serviceAccountName: {{.Values.serviceAccounts.monitoringMetricsWriter}}
