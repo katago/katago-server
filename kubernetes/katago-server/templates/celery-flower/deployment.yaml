@@ -55,3 +55,4 @@ spec:
         resources:
           limits:
             cpu: 100m
+      serviceAccountName: {{.Values.serviceAccounts.monitoringMetricsWriter}}
