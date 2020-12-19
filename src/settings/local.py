@@ -27,6 +27,8 @@ DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 MEDIA_ROOT = "/data"
 MEDIA_URL = "/media/"
 
+NETWORK_USE_PROXY_DOWNLOAD = False
+
 NETWORK_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 SGF_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 NPZ_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"

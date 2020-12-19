@@ -150,6 +150,37 @@ class Network(Model):
     def rating(self):
         return f"{self.elo} ± {2 * self.elo_uncertainty}"
 
+    @property
+    def model_download_url(self):
+        if not self.model_file or not self.model_file.name or len(self.model_file.name) <= 0:
+            return None
+        if settings.NETWORK_USE_PROXY_DOWNLOAD:
+            return settings.NETWORK_PROXY_DOWNLOAD_URL_BASE + self.model_file.name
+        else:
+            try:
+                url = self.model_file.url
+            except AttributeError:
+                return None
+            except NotImplementedError:
+                return self.model_file.name
+            return url
+
+    @property
+    def model_zip_download_url(self):
+        if not self.model_zip_file or not self.model_zip_file.name or len(self.model_zip_file.name) <= 0:
+            return None
+        if settings.NETWORK_USE_PROXY_DOWNLOAD:
+            return settings.NETWORK_PROXY_DOWNLOAD_URL_BASE + self.model_zip_file.name
+        else:
+            try:
+                url = self.model_zip_file.url
+            except AttributeError:
+                return None
+            except NotImplementedError:
+                return self.model_zip_file.name
+            return url
+
+
     def clean(self):
         # Allow blank file only if random
         no_model_file = not self.model_file or len(self.model_file) <= 0
