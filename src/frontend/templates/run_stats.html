@@ -65,8 +65,40 @@ Click and drag to zoom. Double-click or click on a button to reset zoom.
 See <a href="{{ contributions_url }}">here</a> for a full list of contributors for {{ run_name }}.
 {% endblocktrans %}
 
+{% if num_day_contributors_this_run > 0 %}
+<h4 class="is-size-4 mt-4"> {% blocktrans %} In the Last 24h {% endblocktrans %} </h4>
+
+<table class="table">
+  <tr>
+    <th> {% trans "User" %} </th>
+    <th class="has-text-right">
+      {% trans "Training Rows" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Data rows that KataGo learns from, each is a position sampled from training games, weighted towards more interesting positions."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Training Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games that KataGo plays against itself to generate training rows."></i>
+    </th>
+    <th class="has-text-right">
+      {% trans "Rating Games" %}
+      <i class="fas fa-info-circle info-circle-light" tabindex="-1" title="Games between different networks to measure strength and compute Elo ratings."></i>
+    </th>
+  </tr>
+  {% for user in top_day_user_list %}
+  <tr>
+    <td> {{ user.username }} </td>
+    <td class="has-text-right"> {{ user.total_num_training_rows|as_n_training_rows_str }} </td>
+    <td class="has-text-right"> {{ user.total_num_training_games|as_n_training_games_str }} </td>
+    <td class="has-text-right"> {{ user.total_num_rating_games|as_n_rating_games_str }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endif %}
+
+
 {% if num_recent_contributors_this_run > 0 %}
-<h4 class="is-size-4 mt-4"> {% blocktrans %} In The Last Week {% endblocktrans %} </h4>
+<h4 class="is-size-4 mt-4"> {% blocktrans %} In the Last Week {% endblocktrans %} </h4>
 
 <table class="table">
   <tr>
