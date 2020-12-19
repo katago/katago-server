@@ -36,3 +36,10 @@ def file_download_link_html(uploaded_file_obj):
         return f'<a href="{uploaded_file_obj.url}">[{download_translated}]</a>'
     return ""
 
+@register.filter
+def download_link_html(file_url):
+    if file_url:
+        return f'<a href="{file_url}">[{download_translated}]</a>'
+    return ""
+
+

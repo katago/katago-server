@@ -55,8 +55,8 @@ Elo ratings are approximate and are *not* necessarily comparable to the Elos fro
     </td>
     <td> {{ network.created_at|isotimestr }} </td>
     <td> {{ network.rating }} - ({{ network.log_gamma_game_count|as_n_games_str }}) </td>
-    <td> {{ network.model_file|file_download_link_html|safe }} </td>
-    <td> {{ network.model_zip_file|file_download_link_html|safe }} </td>
+    <td> {{ network.model_download_url|download_link_html|safe }} </td>
+    <td> {{ network.model_zip_download_url|download_link_html|safe }} </td>
   </tr>
   {% endfor %}
 </table>

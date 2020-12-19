@@ -39,6 +39,7 @@ NETWORK_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 SGF_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 NPZ_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
+NETWORK_USE_PROXY_DOWNLOAD = False
 
 # Your stuff...
 # ------------------------------------------------------------------------------

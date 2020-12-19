@@ -6,6 +6,7 @@ import numpy as np
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from rest_framework.test import APIClient
 
 from src.apps.runs.models import Run
@@ -1356,3 +1357,114 @@ class TestGetTaskWhiteList:
         data["run"]["id"] = None # Suppress id for test
         assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
         assert response.status_code == 200
+
+
+class TestGetSelfplayTaskWithNetworkFile:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-randomnetwork",
+            model_file=SimpleUploadedFile("abc.bin.gz", base64.decodebytes(b"H4sICAthWF8AA2FiYy50eHQAAwAAAAAAAAAAAA=="), content_type="application/gzip"),
+            model_file_bytes=28,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            log_gamma_uncertainty=1.5,
+            log_gamma_lower_confidence=-3.0,
+            log_gamma_upper_confidence=4.0,
+            log_gamma_game_count = 5,
+            is_random=False,
+        )
+
+    def teardown_method(self):
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_get_selfplay_task_with_network(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890"},format="multipart")
+        data = copy.deepcopy(response.data)
+        data["network"]["created_at"] = None # Suppress timestamp for test
+        data["run"]["id"] = None # Suppress id for test
+        assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': False, 'model_file': 'http://testserver/media/networks/models/testrun/testrun-randomnetwork.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
+        assert response.status_code == 200
+
+    def test_get_selfplay_task_with_network_proxy(self):
+        with override_settings(NETWORK_USE_PROXY_DOWNLOAD=True,NETWORK_PROXY_DOWNLOAD_URL_BASE="https://example.com/"):
+            client = APIClient()
+            client.login(username="test", password="test")
+            response = client.post("/api/tasks/", {"git_revision":"abcdef123456abcdef123456abcdef1234567890"},format="multipart")
+            data = copy.deepcopy(response.data)
+            data["network"]["created_at"] = None # Suppress timestamp for test
+            data["run"]["id"] = None # Suppress id for test
+            assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': False, 'model_file': 'https://example.com/networks/models/testrun/testrun-randomnetwork.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
+            assert response.status_code == 200
+
+
+class TestGetRatingTaskWithNetworkFile:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=1.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-network0",
+            model_file=SimpleUploadedFile("def.bin.gz", base64.decodebytes(b"H4sICAthWF8AA2FiYy50eHQAAwAAAAAAAAAAAA=="), content_type="application/gzip"),
+            model_file_bytes=28,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            log_gamma_uncertainty=1.5,
+            log_gamma_lower_confidence=-3.0,
+            log_gamma_upper_confidence=4.0,
+            log_gamma_game_count = 5,
+            is_random=False,
+        )
+        self.n2 = Network.objects.create(
+            run=self.r1,
+            name="testrun-network1",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+            log_gamma_uncertainty=1.5,
+            log_gamma_lower_confidence=-3.0,
+            log_gamma_upper_confidence=4.0,
+            log_gamma_game_count = 5,
+            network_size="random",
+        )
+
+    def teardown_method(self):
+        self.n2.delete()
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_get_rating_task_with_network(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+        data = copy.deepcopy(response.data)
+        data["white_network"]["created_at"] = None # Suppress timestamp for test
+        data["black_network"]["created_at"] = None # Suppress timestamp for test
+        data["run"]["id"] = None # Suppress id for test
+        assert (str(data) == """{'kind': 'rating', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'white_network': {'url': 'http://testserver/api/networks/testrun-network1/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network1', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'black_network': {'url': 'http://testserver/api/networks/testrun-network0/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network0', 'created_at': None, 'is_random': False, 'model_file': 'http://testserver/media/networks/models/testrun/testrun-network0.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}}""" or
+                str(data) == """{'kind': 'rating', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'white_network': {'url': 'http://testserver/api/networks/testrun-network0/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network0', 'created_at': None, 'is_random': False, 'model_file': 'http://testserver/media/networks/models/testrun/testrun-network0.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'black_network': {'url': 'http://testserver/api/networks/testrun-network1/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network1', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}}"""
+        )
+        assert response.status_code == 200
+
+

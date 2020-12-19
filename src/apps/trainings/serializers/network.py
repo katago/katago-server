@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.serializers import HyperlinkedModelSerializer
 from django.core.exceptions import ValidationError
 
@@ -66,6 +67,27 @@ class NetworkSerializer(HyperlinkedModelSerializer):
 
         return super().create(data)
 
+
+class NetworkDownloadField(serializers.Field):
+    def get_attribute(self, instance):
+        # Pass the entire object instance, not just the field
+        return instance
+
+    def to_representation(self, obj):
+        if not obj:
+            return None
+        url = obj.model_download_url
+        if not url:
+            return None
+        request = self.context.get('request', None)
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
+
+    def to_internal_value(self, data):
+        raise serializers.ValidationError("NetworkDownloadField only supports output serialization")
+
+
 class NetworkSerializerForTasks(HyperlinkedModelSerializer):
     """
     Serializer exposing only the fields of a network that a self-play client needs.
@@ -87,6 +109,9 @@ class NetworkSerializerForTasks(HyperlinkedModelSerializer):
             "url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
         }
+
+    model_file = NetworkDownloadField()
+
 
 class NetworkSerializerForElo(HyperlinkedModelSerializer):
     """

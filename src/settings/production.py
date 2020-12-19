@@ -87,6 +87,11 @@ if env.bool("NETWORK_USE_GOOGLE_CLOUD_STORAGE", default=False) or \
     GS_CACHE_CONTROL = "no-cache"
     GS_LOCATION = "uploaded/"
 
+NETWORK_USE_PROXY_DOWNLOAD = False
+if env.bool("NETWORK_USE_PROXY_DOWNLOAD"):
+    NETWORK_USE_PROXY_DOWNLOAD = True
+    NETWORK_PROXY_DOWNLOAD_URL_BASE = env("NETWORK_PROXY_DOWNLOAD_URL_BASE")
+
 NETWORK_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 if env.bool("NETWORK_USE_GOOGLE_CLOUD_STORAGE", default=False):
     NETWORK_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
