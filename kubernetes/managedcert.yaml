@@ -1,7 +1,7 @@
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: katago-managed-cert
+  name: katago-managed-cert-v2
   namespace: istio-system
 spec:
   domains:
