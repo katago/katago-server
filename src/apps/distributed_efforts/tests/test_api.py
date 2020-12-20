@@ -1468,3 +1468,146 @@ class TestGetRatingTaskWithNetworkFile:
         assert response.status_code == 200
 
 
+class TestGetSelfplayTaskWithLargeDelay:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=0.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+            min_network_usage_delay=100.0,
+            max_network_usage_delay=200.0,
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-randomnetwork",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_get_selfplay_task_with_large_delay(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+        data = response.data
+        assert str(data) == """{'error': 'No networks found for run enabled for training games.'}"""
+        assert response.status_code == 400
+
+
+class TestGetRatingTaskWithLargeDelay:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=1.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+            min_network_usage_delay=100.0,
+            max_network_usage_delay=200.0,
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-network0",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=-2.0,
+            log_gamma_upper_confidence=2.0,
+            log_gamma_game_count = 3,
+            is_random=True,
+        )
+        self.n2 = Network.objects.create(
+            run=self.r1,
+            name="testrun-network1",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=1,
+            log_gamma_uncertainty=1.5,
+            log_gamma_lower_confidence=-3.0,
+            log_gamma_upper_confidence=4.0,
+            log_gamma_game_count = 5,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n2.delete()
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_get_rating_task_with_large_delay(self):
+        client = APIClient()
+        client.login(username="test", password="test")
+        response = client.post("/api/tasks/", {"git_revision":"1111222233334444555566667777888899990000"})
+        data = response.data
+        # A little bit funny of an error message here, but still works
+        assert str(data) == """{'error': 'No networks found for run enabled for training games.'}"""
+        assert response.status_code == 400
+
+
+
+class TestGetNewestNetwork:
+
+    def setup_method(self):
+        self.u1 = User.objects.create_user(username="test", password="test")
+        self.r1 = Run.objects.create(
+            name="testrun",
+            rating_game_probability=1.0,
+            status="Active",
+            git_revision_hash_whitelist="abcdef123456abcdef123456abcdef1234567890\n\n1111222233334444555566667777888899990000",
+        )
+        self.n1 = Network.objects.create(
+            run=self.r1,
+            name="testrun-network0",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=0,
+            log_gamma_uncertainty=1,
+            log_gamma_lower_confidence=-2.0,
+            log_gamma_upper_confidence=2.0,
+            log_gamma_game_count = 3,
+            is_random=True,
+        )
+        self.n2 = Network.objects.create(
+            run=self.r1,
+            name="testrun-network1",
+            model_file="",
+            model_file_bytes=0,
+            model_file_sha256=fake_sha256,
+            log_gamma=1,
+            log_gamma_uncertainty=1.5,
+            log_gamma_lower_confidence=-3.0,
+            log_gamma_upper_confidence=4.0,
+            log_gamma_game_count = 5,
+            is_random=True,
+        )
+
+    def teardown_method(self):
+        self.n2.delete()
+        self.n1.delete()
+        self.r1.delete()
+        self.u1.delete()
+
+    def test_get_newest_network(self):
+        client = APIClient()
+        response = client.get("/api/networks/newest_training/")
+        data = copy.deepcopy(response.data)
+        data["created_at"] = None # Suppress timestamp for test
+        assert str(data) == """{'url': 'http://testserver/api/networks/testrun-network1/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network1', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}"""
+        assert response.status_code == 200
+

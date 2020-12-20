@@ -8,8 +8,9 @@ from src.apps.trainings.models import Network
 
 
 class RatingNetworkPairerService:
-    def __init__(self, run: Run):
+    def __init__(self, run: Run, network_delay):
         self.current_run = run
+        self.network_delay = network_delay
 
     def generate_pairing(self):
         """
@@ -48,7 +49,7 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_high_upper_confidence(self.current_run,for_rating_games=True)
+        reference_network = Network.objects.select_high_upper_confidence(self.current_run,for_rating_games=True,network_delay=self.network_delay)
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -63,7 +64,7 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_high_uncertainty(self.current_run,for_rating_games=True)
+        reference_network = Network.objects.select_high_uncertainty(self.current_run,for_rating_games=True,network_delay=self.network_delay)
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -78,7 +79,7 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_low_data(self.current_run,for_rating_games=True)
+        reference_network = Network.objects.select_low_data(self.current_run,for_rating_games=True,network_delay=self.network_delay)
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None

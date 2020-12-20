@@ -32,6 +32,8 @@ class RunAdmin(admin.ModelAdmin):
                     "user_whitelist",
                     "startpos_locked",
                     "startpos_total_weight",
+                    "min_network_usage_delay",
+                    "max_network_usage_delay",
                 )
             },
         ),

@@ -1,5 +1,7 @@
 import logging
 import random
+from struct import unpack
+from hashlib import md5
 
 from rest_framework import viewsets, serializers
 from rest_framework.permissions import IsAuthenticated
@@ -21,6 +23,7 @@ class TaskCreateSerializer(serializers.Serializer):
     allow_selfplay_task = serializers.BooleanField(default=True)
     task_rep_factor = serializers.IntegerField(default=1)
     git_revision = serializers.CharField(default="", allow_blank=True)
+    client_instance_id = serializers.CharField(default="", allow_blank=True)
 
     def validate(self, data):
         if not data.get('allow_rating_task') and not data.get('allow_selfplay_task'):
@@ -71,8 +74,19 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         run_content = RunSerializerForClient(current_run, context=serializer_context)
 
+        network_delay = None
+        if current_run.max_network_usage_delay > 0:
+            min_delay = current_run.min_network_usage_delay
+            max_delay = current_run.max_network_usage_delay
+            (min_delay,max_delay) = (min(min_delay,max_delay),max(min_delay,max_delay))
+            if min_delay < 0:
+                min_delay = 0
+            delay_seed = str(data["client_instance_id"]) + ":" + request.user.username
+            randval = float(unpack('L', md5(delay_seed.encode("utf-8")).digest()[:8])[0]) / 2**64
+            network_delay = min_delay + (max_delay - min_delay) * randval
+
         if not allow_selfplay_task or (allow_rating_task and random.random() < current_run.rating_game_probability):
-            pairer = RatingNetworkPairerService(current_run)
+            pairer = RatingNetworkPairerService(current_run, network_delay)
             pairing = pairer.generate_pairing()
             if pairing is not None:
                 (white_network, black_network) = pairing
@@ -95,7 +109,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                     start_poses.append(start_pos.data)
 
         try:
-            best_network = Network.objects.select_most_recent(current_run,for_training_games=True)
+            best_network = Network.objects.select_most_recent(current_run,for_training_games=True,network_delay=network_delay)
             if best_network is None:
                 return Response({"error": "No networks found for run enabled for training games."}, status=400)
         except Network.DoesNotExist:
