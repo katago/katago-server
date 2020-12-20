@@ -286,6 +286,7 @@ REST_FRAMEWORK = {
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",
     "ALLOWED_VERSIONS": ["1.2"],
     "DEFAULT_VERSION": "1.2",
+    'EXCEPTION_HANDLER': "src.contrib.drf_exception_handler.custom_exception_handler",
 }
 
 if env.bool("DJANGO_USE_REST_API_THROTTLES", default=False):
