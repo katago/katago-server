@@ -174,6 +174,16 @@ class Run(Model):
         help_text=_("Total cumulative weight of StartPoses last time they were updated."),
         default=-1,
     )
+    min_network_usage_delay = FloatField(
+        _("Min network usage delay"),
+        help_text=_("Minimum delay after upload in seconds to use networks for tasks. Randomized between min and max by client instance."),
+        default=0,
+    )
+    max_network_usage_delay = FloatField(
+        _("Max network usage delay"),
+        help_text=_("Maximum delay after upload in seconds to use networks for tasks. Randomized between min and max by client instance."),
+        default=0,
+    )
 
     def __str__(self):
         return f"{self.name}"

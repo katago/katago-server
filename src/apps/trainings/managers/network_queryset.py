@@ -2,6 +2,8 @@ import logging
 
 import numpy as np
 import scipy.stats
+from datetime import datetime, timedelta
+from django.utils import timezone
 from django.db.models import QuerySet
 
 from src.apps.runs.models import Run
@@ -18,9 +20,10 @@ def random_weighted_choice(networks):
 class NetworkQuerySet(QuerySet):
     """
     NetworkQuerySet helps selecting network that are either good or have a big uncertainty in their rating
+    network_delay indicates to only select networks older than this many seconds
     """
 
-    def select_networks_for_run(self, run: Run, for_training_games=False, for_rating_games=False):
+    def select_networks_for_run(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
         if for_training_games:
             if for_rating_games:
                 filtered = self.filter(run=run, training_games_enabled=True, rating_games_enabled=True)
@@ -31,32 +34,37 @@ class NetworkQuerySet(QuerySet):
                 filtered = self.filter(run=run, rating_games_enabled=True)
             else:
                 filtered = self.filter(run=run)
+
+        if network_delay is not None:
+            max_time = timezone.now() - timedelta(seconds=network_delay)
+            filtered = filtered.filter(created_at__lte=max_time)
+
         return filtered
 
-    def select_most_recent(self, run: Run, for_training_games=False, for_rating_games=False):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
+    def select_most_recent(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
+        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
         return filtered.latest("created_at")
 
-    def select_high_lower_confidence(self, run: Run, for_training_games=False, for_rating_games=False):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
+    def select_high_lower_confidence(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
+        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
         return filtered.order_by("-log_gamma_lower_confidence","?").first()
 
-    def select_high_upper_confidence(self, run: Run, for_training_games=False, for_rating_games=False):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
+    def select_high_upper_confidence(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
+        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
         best_networks = filtered.order_by("-log_gamma_upper_confidence","?")[:10]
         if len(best_networks) <= 0:
             return None
         return random_weighted_choice(best_networks)
 
-    def select_high_uncertainty(self, run: Run, for_training_games=False, for_rating_games=False):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
+    def select_high_uncertainty(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
+        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
         more_uncertain_networks = filtered.order_by("-log_gamma_uncertainty","?")[:10]
         if len(more_uncertain_networks) <= 0:
             return None
         return random_weighted_choice(more_uncertain_networks)
 
-    def select_low_data(self, run: Run, for_training_games=False, for_rating_games=False):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games)
+    def select_low_data(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
+        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
         low_data_networks = filtered.order_by("log_gamma_game_count","?")[:10]
         if len(low_data_networks) <= 0:
             return None
