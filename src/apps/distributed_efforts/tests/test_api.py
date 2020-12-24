@@ -13,6 +13,7 @@ from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
 from src.apps.startposes.models import StartPos
 from src.apps.startposes.tasks import recompute_startpos_cumulative_weights
+from src.apps.distributed_efforts.models import UserLastVersion
 
 pytestmark = pytest.mark.django_db
 
@@ -114,6 +115,7 @@ class TestGetSelfplayTask:
         data["run"]["id"] = None # Suppress id for test
         assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
         assert response.status_code == 200
+        assert(UserLastVersion.objects.filter(user__username="test").first().git_revision == "1111222233334444555566667777888899990000")
 
     def test_get_job_no_trailing_slash(self):
         client = APIClient()
@@ -1293,6 +1295,7 @@ class TestGetTaskActive:
         data["run"]["id"] = None # Suppress id for test
         assert str(data) == """{'kind': 'selfplay', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'network': {'url': 'http://testserver/api/networks/testrun-randomnetwork/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-randomnetwork', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'start_poses': []}"""
         assert response.status_code == 200
+        assert(UserLastVersion.objects.filter(user__username="test").first().git_revision == "abcdef123456abcdef123456abcdef1234567890")
 
 
 class TestGetTaskWhiteList:
@@ -1466,6 +1469,7 @@ class TestGetRatingTaskWithNetworkFile:
                 str(data) == """{'kind': 'rating', 'run': {'id': None, 'url': 'http://testserver/api/runs/testrun/', 'name': 'testrun', 'data_board_len': 19, 'inputs_version': 7, 'max_search_threads_allowed': 8}, 'config': 'FILL ME', 'white_network': {'url': 'http://testserver/api/networks/testrun-network0/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network0', 'created_at': None, 'is_random': False, 'model_file': 'http://testserver/media/networks/models/testrun/testrun-network0.bin.gz', 'model_file_bytes': 28, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}, 'black_network': {'url': 'http://testserver/api/networks/testrun-network1/', 'run': 'http://testserver/api/runs/testrun/', 'name': 'testrun-network1', 'created_at': None, 'is_random': True, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}}"""
         )
         assert response.status_code == 200
+        assert(UserLastVersion.objects.filter(user__username="test").first().git_revision == "1111222233334444555566667777888899990000")
 
 
 class TestGetSelfplayTaskWithLargeDelay:
