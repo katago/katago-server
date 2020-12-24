@@ -10,6 +10,9 @@
 var api_url = "{{networks_for_elo_list_url|escapejs}}";
 var run_name = "{{run.name|escapejs}}";
 
+// A reasonable number of data rows to use to compute a 'small' spacing or buffer for the X axis of data rows.
+const DATAROW_BUFFER_SCALE = 10000;
+
 function makeGraph() {
   d3.json(api_url + "?run__name=" + run_name).then(function(networks) {
     // Extract unique network sizes
@@ -43,7 +46,7 @@ function makeGraph() {
     if(!minDataRows)
       minDataRows = 0;
     if(!maxDataRows)
-      maxDataRows = 10000;
+      maxDataRows = DATAROW_BUFFER_SCALE;
 
     var eloGraphDiv = d3.select("#eloGraph");
 
@@ -104,7 +107,7 @@ function makeGraph() {
       xScaleIsLogDataRows = false;
 
       var buffer = 0.01 * (maxDataRows - minDataRows);
-      buffer += 10000; //10000 data rows
+      buffer += DATAROW_BUFFER_SCALE;
       xDomainMin = minDataRows-buffer;
       xDomainMax = maxDataRows+buffer*2;
       xScale =
@@ -120,11 +123,11 @@ function makeGraph() {
       xScaleIsDataRows = false;
       xScaleIsLogDataRows = true;
 
-      var maxDataRowsOr10k = Math.max(maxDataRows,10000);
+      var maxDataRowsLowerBounded = Math.max(maxDataRows,DATAROW_BUFFER_SCALE);
       var buffer = 0.2 * (maxDataRows - minDataRows);
-      buffer += 10000; //10000 data rows
-      xDomainMin = Math.min(minDataRows + 100000, maxDataRowsOr10k * 0.02);
-      xDomainMax = maxDataRowsOr10k + buffer;
+      buffer += DATAROW_BUFFER_SCALE;
+      xDomainMin = Math.min(minDataRows + DATAROW_BUFFER_SCALE * 10, maxDataRowsLowerBounded * 0.02);
+      xDomainMax = maxDataRowsLowerBounded + buffer;
       xScale =
         d3.scaleLog()
         .domain([xDomainMin, xDomainMax])
@@ -138,11 +141,11 @@ function makeGraph() {
       xScaleIsDataRows = false;
       xScaleIsLogDataRows = true;
 
-      var maxDataRowsOr10k = Math.max(maxDataRows,10000);
+      var maxDataRowsLowerBounded = Math.max(maxDataRows,DATAROW_BUFFER_SCALE);
       var buffer = 0.1 * (maxDataRows - minDataRows);
-      buffer += 10000; //10000 data rows
-      xDomainMin = maxDataRowsOr10k * 0.65;
-      xDomainMax = maxDataRowsOr10k + buffer;
+      buffer += DATAROW_BUFFER_SCALE;
+      xDomainMin = maxDataRowsLowerBounded * 0.65;
+      xDomainMax = maxDataRowsLowerBounded + buffer;
       xScale =
         d3.scaleLog()
         .domain([xDomainMin, xDomainMax])
