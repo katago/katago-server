@@ -3,6 +3,8 @@ import random
 from struct import unpack
 from hashlib import md5
 
+from django.db import IntegrityError
+
 from rest_framework import viewsets, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,6 +17,7 @@ from src.apps.runs.serializers import RunSerializerForClient
 from src.apps.trainings.models import Network
 from src.apps.trainings.serializers import NetworkSerializerForTasks
 from src.apps.startposes.models import StartPos
+from src.apps.distributed_efforts.models import UserLastVersion
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +52,7 @@ class DistributedTaskViewSet(viewsets.ViewSet):
 
         git_revision = str(data["git_revision"])
         # Git revision hashes are at least 40 chars, we can also optionally allow plus revisions and other stuff
-        if len(git_revision) < 40:
+        if len(git_revision) < 40 or len(git_revision) > 80:
             return Response(
                 {"error": "This version of KataGo is not usable for distributed because either it's had custom modifications or has been compiled without version info."},
                 status=400,
@@ -59,6 +62,16 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                 {"error": "This version of KataGo is not enabled for distributed. If this exact version was working previously, then changes in the run require a newer version - please update KataGo to the latest version or release. But if this is already the official newest version of KataGo, or you think that not enabling this version is an oversight, please ask server admins to enable the following version hash: " + git_revision},
                 status=400,
             )
+
+        # Update server records of what version of the client the user is using
+        try:
+            UserLastVersion.objects.update_or_create(
+                user=request.user,
+                defaults={"git_revision": git_revision}
+            )
+        # Make sure that on a db race between django instances, we don't fail, recording stuff in this table is only informational
+        except IntegrityError:
+            pass
 
         allow_rating_task = data["allow_rating_task"]
         allow_selfplay_task = data["allow_selfplay_task"]
