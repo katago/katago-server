@@ -1,6 +1,7 @@
 import pytest
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db.utils import DataError
 from django.db import transaction
 
@@ -22,5 +23,16 @@ class TestUsernameLen:
         with transaction.atomic():
             with pytest.raises(DataError):
                 self.users.append(User.objects.create_user(username="1234567890123456789012345678901234567890123456789012345678901", password="test"))
+        self.users.append(User.objects.create_user(username="123", password="test"))
+        self.users.append(User.objects.create_user(username="quertyexample.com", password="test"))
         for user in self.users:
             user.full_clean()
+        baduser0 = User.objects.create_user(username="12", password="test")
+        baduser1 = User.objects.create_user(username="querty@example.com", password="test")
+        self.users.append(baduser0)
+        self.users.append(baduser1)
+        with pytest.raises(ValidationError):
+            baduser0.full_clean()
+            baduser1.full_clean()
+
+
