@@ -201,10 +201,11 @@ function makeGraph() {
     // Colors
     var colorScale = d3.scaleSequential(d3.interpolateWarm).domain([0,networkSizes.length-1]);
     var colorDict = {};
-    var brighterColorDict = {};
+    var uncertaintyBarColorDict = {};
     for(var i = 0; i<networkSizes.length; i++) {
-      colorDict[networkSizes[i]] = colorScale(networkSizes.length-i-1);
-      brighterColorDict[networkSizes[i]] = d3.rgb(colorScale(networkSizes.length-i-1)).brighter(0.6);
+      var color = colorScale(networkSizes.length-i-1);
+      colorDict[networkSizes[i]] = color;
+      uncertaintyBarColorDict[networkSizes[i]] = d3.color(color).brighter(0.4).copy({opacity:0.8});
     }
 
     var escapeHtml = function(s) {
@@ -323,7 +324,7 @@ function makeGraph() {
 
     // Now add data points
     var baseDataRadius = 2;
-    var baseStrokeWidth = 1.5;
+    var baseStrokeWidth = 1.2;
     var largeRadiusBonus = 2;
     var largeStrokeWidthBonus = 1.5;
 
@@ -336,7 +337,7 @@ function makeGraph() {
       .append("line")
       .attr("class", network => "dataUncertainty " + "dataUncertainty_" + network["network_size"])
       .attr("stroke-width", curStrokeWidth)
-      .style("stroke", network => brighterColorDict[network["network_size"]])
+      .style("stroke", network => uncertaintyBarColorDict[network["network_size"]])
       .on("mouseover", toolTipMouseOver)
       .on("mousemove", toolTipMouseMove)
       .on("mouseleave", toolTipMouseLeave);
