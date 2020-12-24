@@ -123,7 +123,7 @@ function makeGraph() {
       var maxDataRowsOr10k = Math.max(maxDataRows,10000);
       var buffer = 0.2 * (maxDataRows - minDataRows);
       buffer += 10000; //10000 data rows
-      xDomainMin = Math.min(minDataRows + 500000, maxDataRowsOr10k * 0.02);
+      xDomainMin = Math.min(minDataRows + 100000, maxDataRowsOr10k * 0.02);
       xDomainMax = maxDataRowsOr10k + buffer;
       xScale =
         d3.scaleLog()
@@ -132,6 +132,24 @@ function makeGraph() {
       xAxis.scale(xScale).ticks(15,"~s");
       d3.selectAll(".eloGraphButton").classed("eloButtonHighlighted", false);
       d3.select("#eloGraphDataRowsLogButton").classed("eloButtonHighlighted", true);
+    };
+    var setXScaleAsDataRowsLogRecent = function() {
+      xScaleIsTime = false;
+      xScaleIsDataRows = false;
+      xScaleIsLogDataRows = true;
+
+      var maxDataRowsOr10k = Math.max(maxDataRows,10000);
+      var buffer = 0.1 * (maxDataRows - minDataRows);
+      buffer += 10000; //10000 data rows
+      xDomainMin = maxDataRowsOr10k * 0.65;
+      xDomainMax = maxDataRowsOr10k + buffer;
+      xScale =
+        d3.scaleLog()
+        .domain([xDomainMin, xDomainMax])
+        .range([0, graphSpaceWidth]);
+      xAxis.scale(xScale).ticks(15,"~s");
+      d3.selectAll(".eloGraphButton").classed("eloButtonHighlighted", false);
+      d3.select("#eloGraphDataRowsLogRecentButton").classed("eloButtonHighlighted", true);
     };
 
     setXScaleAsDataRowsLog();
@@ -412,6 +430,12 @@ function makeGraph() {
     });
     d3.select("#eloGraphDataRowsLogButton").on("click", function () {
       setXScaleAsDataRowsLog();
+      xAxis.scale(xScale);
+      yScale.domain(computeYDomainFromXDomain(xScale.domain()));
+      rerenderDataAfterScaling(0);
+    });
+    d3.select("#eloGraphDataRowsLogRecentButton").on("click", function () {
+      setXScaleAsDataRowsLogRecent();
       xAxis.scale(xScale);
       yScale.domain(computeYDomainFromXDomain(xScale.domain()));
       rerenderDataAfterScaling(0);
