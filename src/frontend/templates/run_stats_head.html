@@ -142,7 +142,7 @@ function makeGraph() {
       xScaleIsLogDataRows = true;
 
       var maxDataRowsLowerBounded = Math.max(maxDataRows,DATAROW_BUFFER_SCALE);
-      var buffer = 0.1 * (maxDataRows - minDataRows);
+      var buffer = 0.05 * (maxDataRows - minDataRows);
       buffer += DATAROW_BUFFER_SCALE;
       xDomainMin = maxDataRowsLowerBounded * 0.65;
       xDomainMax = maxDataRowsLowerBounded + buffer;
