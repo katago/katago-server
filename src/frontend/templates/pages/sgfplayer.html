@@ -89,7 +89,7 @@ window.addEventListener("load", function() {
 <li> <strong>{% trans "BoardSizeY" %}:</strong> {{ game.board_size_y }} </li>
 <li> <strong>{% trans "Handicap" %}:</strong> {{ game.handicap }} </li>
 <li> <strong>{% trans "Komi" %}:</strong> {{ game.komi }} </li>
-<li> <strong>{% trans "Rules" %}:</strong> {{ game.rules }} </li>
+<li> <strong>{% trans "Rules" %}:</strong> {{ game.rules }} <a href='https://lightvector.github.io/KataGo/rules.html'>{% trans "[rules explanation]" %}</a> </li>
 <li> <strong>{% trans "Game Type" %}:</strong> {{ game.gametype }} </li>
 <li> <strong>{% trans "Game Length (moves)" %}:</strong> {{ game.game_length }} </li>
 <li> <strong>{% trans "Extra Metadata" %}:</strong> {{ game.extra_metadata }} </li>
