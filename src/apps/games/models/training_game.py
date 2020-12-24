@@ -142,8 +142,7 @@ def validate_game_npzdata(training_data_file,run):
 def validate_num_training_rows(value):
     if value < 0 or value > 10000:
         raise ValidationError(
-            _('%(value)s must range from 0 to 10000'),
-            params={'value': value},
+            _('Number of training rows must range from 0 to 10000'),
         )
 
 def upload_training_data_to(instance: AbstractGame, _filename):
