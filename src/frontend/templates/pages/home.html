@@ -23,7 +23,21 @@
 
 <h2 class="is-size-2"> {% trans "How to Contribute" %} </h2>
 
-TODO :)
+First, create an account on the site. Then put a file named contribute.cfg into the same folder as the katago executable that has this info:
+
+<pre>
+serverUrl = https://katagotraining.org/
+username = PUT_USERNAME_HERE
+password = PUT_PASSWORD_HERE
+</pre>
+
+Then run the katago executable like so
+
+<pre>./katago contribute -config contribute.cfg</pre>
+
+Or like so on Windows
+
+<pre>katago.exe contribute -config contribute.cfg</pre>
 
 {% if run %}
 <h2 class="is-size-2 mt-4"> {% blocktrans with run_name=run.name %} Stats for {{run_name}} {% endblocktrans %} </h2>
