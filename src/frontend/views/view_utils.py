@@ -135,11 +135,5 @@ def add_run_stats_context(run, context):
   context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run,is_random=False).count()
 
   context["latest_network"] = Network.objects.filter(run=run).order_by("-created_at").first()
-  # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
-  max_uncertainty_elo = 100
-  context["strongest_confident_network"] = (
-    Network
-    .objects
-    .filter(run=run, log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e))))
-    .order_by("-log_gamma_lower_confidence").first()
-  )
+
+  context["strongest_confident_network"] = Network.objects.select_strongest_confident(run=run)
