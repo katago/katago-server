@@ -1,5 +1,6 @@
 import logging
 
+import math
 import numpy as np
 import scipy.stats
 from datetime import datetime, timedelta
@@ -69,3 +70,7 @@ class NetworkQuerySet(QuerySet):
         if len(low_data_networks) <= 0:
             return None
         return random_weighted_choice(low_data_networks)
+
+    # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
+    def select_strongest_confident(self,run: Run,max_uncertainty_elo=100):
+        return self.objects.filter(run=run, log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e)))).order_by("-log_gamma_lower_confidence").first()
