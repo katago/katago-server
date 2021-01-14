@@ -31,6 +31,17 @@ username = PUT_USERNAME_HERE
 password = PUT_PASSWORD_HERE
 </pre>
 
+Then clone katago and build the distributed branch.
+
+<pre>
+git checkout distributed
+cd cpp
+cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
+make -j16
+</pre>
+
+-j16 tells make to use 16 threads to build, use the number appropriate for your CPU (12 for 6 core with SMT, etc.)
+
 Then run the katago executable like so
 
 <pre>./katago contribute -config contribute.cfg</pre>
