@@ -112,7 +112,6 @@ class NetworkSerializerForTasks(HyperlinkedModelSerializer):
 
     model_file = NetworkDownloadField()
 
-
 class NetworkSerializerForElo(HyperlinkedModelSerializer):
     """
     Serializer exposing only the fields of a network for plotting the network strength over time
