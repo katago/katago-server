@@ -4,6 +4,7 @@ redis==3.5.3  # https://github.com/andymccurdy/redis-py
 hiredis==1.1.0  # https://github.com/redis/hiredis-py
 celery==4.4.6  # pyup: < 5.0,!=4.4.7  # https://github.com/celery/celery
 django-celery-beat==2.1.0  # https://github.com/celery/django-celery-beat
+django-timezone-field==4.0  # https://github.com/celery/django-celery-beat/pull/378
 # flower==0.9.5  # https://github.com/mher/flower
 # For unreleased healthcheck endpoint
 git+git://github.com/mher/flower@e64ceb0cbda515ee9dceb862a8c4b27d253d4800#egg=flower
