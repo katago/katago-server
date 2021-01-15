@@ -43,34 +43,36 @@ class NetworkQuerySet(QuerySet):
         return filtered
 
     def select_most_recent(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
+        filtered = self.select_networks_for_run(run, for_training_games=for_training_games, for_rating_games=for_rating_games, network_delay=network_delay)
         return filtered.latest("created_at")
 
     def select_high_lower_confidence(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
-        return filtered.order_by("-log_gamma_lower_confidence","?").first()
+        filtered = self.select_networks_for_run(run, for_training_games=for_training_games, for_rating_games=for_rating_games, network_delay=network_delay)
+        return filtered.order_by("-log_gamma_lower_confidence", "?").first()
 
     def select_high_upper_confidence(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
-        best_networks = filtered.order_by("-log_gamma_upper_confidence","?")[:10]
+        filtered = self.select_networks_for_run(run, for_training_games=for_training_games, for_rating_games=for_rating_games, network_delay=network_delay)
+        best_networks = filtered.order_by("-log_gamma_upper_confidence", "?")[:10]
         if len(best_networks) <= 0:
             return None
         return random_weighted_choice(best_networks)
 
     def select_high_uncertainty(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
-        more_uncertain_networks = filtered.order_by("-log_gamma_uncertainty","?")[:10]
+        filtered = self.select_networks_for_run(run, for_training_games=for_training_games, for_rating_games=for_rating_games, network_delay=network_delay)
+        more_uncertain_networks = filtered.order_by("-log_gamma_uncertainty", "?")[:10]
         if len(more_uncertain_networks) <= 0:
             return None
         return random_weighted_choice(more_uncertain_networks)
 
     def select_low_data(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
-        filtered = self.select_networks_for_run(run,for_training_games=for_training_games,for_rating_games=for_rating_games,network_delay=network_delay)
+        filtered = self.select_networks_for_run(run, for_training_games=for_training_games, for_rating_games=for_rating_games, network_delay=network_delay)
         low_data_networks = filtered.order_by("log_gamma_game_count","?")[:10]
         if len(low_data_networks) <= 0:
             return None
         return random_weighted_choice(low_data_networks)
 
     # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
-    def select_strongest_confident(self,run: Run,max_uncertainty_elo=100):
-        return self.objects.filter(run=run, log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e)))).order_by("-log_gamma_lower_confidence").first()
+    def select_strongest_confident(self, run: Run, max_uncertainty_elo=100):
+        filtered = self.select_networks_for_run(run=run, for_training_games=False, for_rating_games=False)
+        not_too_uncertain_networks = filtered.filter(log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e))))
+        return not_too_uncertain_networks.order_by("-log_gamma_lower_confidence").first()
