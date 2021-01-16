@@ -66,7 +66,7 @@ class NetworkQuerySet(QuerySet):
 
     def select_low_data(self, run: Run, for_training_games=False, for_rating_games=False, network_delay=None):
         filtered = self.select_networks_for_run(run, for_training_games=for_training_games, for_rating_games=for_rating_games, network_delay=network_delay)
-        low_data_networks = filtered.order_by("log_gamma_game_count","?")[:10]
+        low_data_networks = filtered.order_by("log_gamma_game_count", "?")[:10]
         if len(low_data_networks) <= 0:
             return None
         return random_weighted_choice(low_data_networks)
