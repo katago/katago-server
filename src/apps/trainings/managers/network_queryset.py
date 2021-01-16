@@ -72,7 +72,7 @@ class NetworkQuerySet(QuerySet):
         return random_weighted_choice(low_data_networks)
 
     # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
-    def select_strongest_confident(self, run: Run, max_uncertainty_elo=100):
-        filtered = self.select_networks_for_run(run=run, for_training_games=True, for_rating_games=False)
+    def select_strongest_confident(self, run: Run, for_training_games=True, for_rating_games=False, max_uncertainty_elo=100):
+        filtered = self.select_networks_for_run(run=run, for_training_games=for_training_games, for_rating_games=for_rating_games)
         not_too_uncertain_networks = filtered.filter(log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e))))
         return not_too_uncertain_networks.order_by("-log_gamma_lower_confidence").first()
