@@ -3,7 +3,6 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
@@ -23,6 +22,7 @@ class NetworkViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["GET"])
     def newest_training(self, request):
+        # TODO: (tychota) rename this action to "get_latest". Maybe later rename to "/api/networks?filter=latest" to reduce collision with a network called "get-latest"
         current_run = Run.objects.select_current()
         if current_run is None:
             return Response({"error": "No active run."}, status=404)
@@ -39,14 +39,15 @@ class NetworkViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=["GET"])
-    def strongest(self, request):
+    def get_strongest(self, request):
+        # TODO: (tychota) Maybe later rename to "/api/networks?filter=strongest  to reduce collision with a network called "get-strongest"
         current_run = Run.objects.select_current()
         if current_run is None:
             return Response({"error": "No active run."}, status=404)
         try:
             strongest_network = Network.objects.select_strongest_confident(run=current_run)
             if not strongest_network:
-              raise Network.DoesNotExist()
+                raise Network.DoesNotExist()
         except Network.DoesNotExist:
             return Response({"error": "No networks found for run enabled for training games."}, status=400)
 
