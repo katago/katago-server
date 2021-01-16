@@ -31,6 +31,7 @@ django-health-check==3.16.1 # https://pypi.org/project/django-health-check/
 django-bulma==0.8.1
 django-storages[google]==1.10.1  # https://github.com/jschneier/django-storages
 django-cleanup==5.1.0 # https://pypi.org/project/django-cleanup/
+django-timezone-field==4.0
 
 # Django REST Framework
 djangorestframework==3.12.2  # https://github.com/encode/django-rest-framework
