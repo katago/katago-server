@@ -15,7 +15,6 @@ fake_sha256 = "12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd"
 
 class TestGetStrongestNetwork:
     def setup_method(self):
-        self.u1 = User.objects.create_user(username="test", password="test")
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
@@ -86,11 +85,9 @@ class TestGetStrongestNetwork:
         self.n2.delete()
         self.n1.delete()
         self.r1.delete()
-        self.u1.delete()
 
     def test_get_strongest_network_anonymous(self):
         client = APIClient()
-        client.login(username="test", password="test")
         response = client.get("/api/networks/get_strongest/", {})
         data = copy.deepcopy(response.data)
         data["created_at"] = None  # Suppress timestamp for test
@@ -101,7 +98,6 @@ class TestGetStrongestNetwork:
 
 class TestGetStrongestNetworkNoSuitableNetwork:
     def setup_method(self):
-        self.u1 = User.objects.create_user(username="test", password="test")
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
@@ -124,11 +120,9 @@ class TestGetStrongestNetworkNoSuitableNetwork:
     def teardown_method(self):
         self.n1.delete()
         self.r1.delete()
-        self.u1.delete()
 
     def test_get_strongest_network_anonymous(self):
         client = APIClient()
-        client.login(username="test", password="test")
         response = client.get("/api/networks/get_strongest/", {})
         data = copy.deepcopy(response.data)
         assert str(data) == """{'error': 'No networks found for run enabled for training games.'}"""
@@ -136,15 +130,8 @@ class TestGetStrongestNetworkNoSuitableNetwork:
 
 
 class TestGetStrongestNetworkNoRun:
-    def setup_method(self):
-        self.u1 = User.objects.create_user(username="test", password="test")
-
-    def teardown_method(self):
-        self.u1.delete()
-
     def test_get_strongest_network_anonymous(self):
         client = APIClient()
-        client.login(username="test", password="test")
         response = client.get("/api/networks/get_strongest/", {})
         data = copy.deepcopy(response.data)
         assert str(data) == """{'error': 'No active run.'}"""
