@@ -278,6 +278,10 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = 10
 # Your stuff...
 # ------------------------------------------------------------------------------
 
+# Simple hacky switch for now so that having an acknowledgement in the footer needs to be deliberate,
+# in case the site is cloned for new runs where such acknowledgement isn't accurate.
+SHOW_FOOTER_ACKNOWLEDGEMENT = env.bool("DJANGO_SHOW_FOOTER_ACKNOWLEDGEMENT", False)
+
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.BasicAuthentication", "rest_framework.authentication.SessionAuthentication",],

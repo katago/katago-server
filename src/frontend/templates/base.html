@@ -152,6 +152,12 @@
           <strong><a href="https://github.com/katago/katago-server">Katago server <i class="fab fa-github"></i></a></strong> by <a href="https://github.com/lightvector">lightvector</a> and <a href="https://github.com/tychota">tychota</a>
           (<a href="http://opensource.org/licenses/mit-license.php">server code license</a>).
           {% endblocktrans %}
+          {% if settings.SHOW_FOOTER_ACKNOWLEDGEMENT %}
+          <br/>
+          {% blocktrans %}
+          Additional thanks to <a href="https://www.janestreet.com/">Jane Street</a> for supporting KataGo's earlier runs, and to <a href="https://gogodonline.co.uk/">GoGoD</a> and <a href="http://go4go.net/go/">Go4Go</a> for pro games for improving training.
+          {% endblocktrans %}
+          {% endif %}
         </p>
       </div>
     </div>
