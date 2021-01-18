@@ -80,6 +80,7 @@ LOCAL_APPS = [
     "src.apps.distributed_efforts.apps.DistributedEffortsConfig",
     "src.apps.runs.apps.RunsConfig",
     "src.apps.startposes.apps.StartPosesConfig",
+    "src.apps.announcements.apps.AnnouncementsConfig",
     "src.frontend.templatehelpers.apps.TemplateHelpersConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
