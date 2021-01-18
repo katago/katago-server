@@ -24,10 +24,17 @@
 {% url 'runs' as older_url %}
 {% include 'handle_multiple_runs.html' %}
 
+{% if latest_network %}
 {% blocktrans with run_name=run.name run_created_at=run.created_at|isotimestr latest_network_at=latest_network.created_at|isotimestr %}
 <p>
 The run {{run_name}} began at {{ run_created_at }} and its latest network was uploaded at {{ latest_network_at }}.
 {% endblocktrans %}
+{% else %}
+{% blocktrans with run_name=run.name run_created_at=run.created_at|isotimestr %}
+<p>
+The run {{run_name}} began at {{ run_created_at }}.
+{% endblocktrans %}
+{% endif %}
 
 {% include 'run_stats.html' %}
 

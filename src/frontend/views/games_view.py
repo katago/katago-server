@@ -7,6 +7,7 @@ from src.apps.games.models import TrainingGame, RatingGame, GameCountByNetwork
 from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
 from src.apps.users.models import User
+from src.frontend.utils import parse_util
 
 from . import view_utils
 
@@ -37,6 +38,8 @@ class GamesListByNetworkView(ListView):
   def get_queryset(self):
     self.run = get_object_or_404(Run, name=self.kwargs["run"])
     self.network = get_object_or_404(Network, name=self.kwargs["network"])
+    if self.network.run != self.run:
+      raise Http404("Network exists but is from the wrong run")
 
     if self.kwargs["kind"] == "training":
       games = TrainingGame.objects.filter(white_network=self.network).order_by("-created_at").prefetch_related("submitted_by")
@@ -94,10 +97,11 @@ class SgfDetailView(DetailView):
   context_object_name = "game"
 
   def get_object(self, **kwargs):
+    id = parse_util.parse_int_or_404(self.kwargs["id"])
     if self.kwargs["kind"] == "training":
-      return get_object_or_404(TrainingGame, id=self.kwargs["id"])
+      return get_object_or_404(TrainingGame, id=id)
     else:
-      return get_object_or_404(RatingGame, id=self.kwargs["id"])
+      return get_object_or_404(RatingGame, id=id)
 
   def get_context_data(self, **kwargs):
       context = super().get_context_data(**kwargs)
