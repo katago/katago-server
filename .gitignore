@@ -5,8 +5,7 @@
 
 
 data/*
-!
-datad/.gitkeep
+!datad/.gitkeep
 
 
 ### Python template

@@ -25,7 +25,16 @@ class StartPosAdmin(admin.ModelAdmin):
     ordering = ("created_at",)
     fieldsets = (
         (None, {"fields": (("id", "created_at"), "run")}),
-        (_("Weight"), {"fields": (("weight", "cumulative_weight"),)},),
-        (_("Data"), {"fields": (("data"),)},),
-        (_("Notes"), {"fields": (("notes"),)},),
+        (
+            _("Weight"),
+            {"fields": (("weight", "cumulative_weight"),)},
+        ),
+        (
+            _("Data"),
+            {"fields": (("data"),)},
+        ),
+        (
+            _("Notes"),
+            {"fields": (("notes"),)},
+        ),
     )

@@ -38,7 +38,7 @@ LOCALE_PATHS = [ROOT_DIR.path("locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL",default="")}
+DATABASES = {"default": env.db("DATABASE_URL", default="")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
@@ -127,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
-    "allow_cidr.middleware.AllowCIDRMiddleware", # must be in front!
+    "allow_cidr.middleware.AllowCIDRMiddleware",  # must be in front!
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -174,7 +174,10 @@ TEMPLATES = [
         "OPTIONS": {
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
             # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
-            "loaders": ["django.template.loaders.filesystem.Loader", "django.template.loaders.app_directories.Loader",],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -232,7 +235,13 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
-    "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose",}},
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        }
+    },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
@@ -284,27 +293,30 @@ SHOW_FOOTER_ACKNOWLEDGEMENT = env.bool("DJANGO_SHOW_FOOTER_ACKNOWLEDGEMENT", Fal
 
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
-    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.BasicAuthentication", "rest_framework.authentication.SessionAuthentication",],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",
     "ALLOWED_VERSIONS": ["1.2"],
     "DEFAULT_VERSION": "1.2",
-    'EXCEPTION_HANDLER': "src.contrib.drf_exception_handler.custom_exception_handler",
+    "EXCEPTION_HANDLER": "src.contrib.drf_exception_handler.custom_exception_handler",
 }
 
 if env.bool("DJANGO_USE_REST_API_THROTTLES", default=False):
     REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = [
-        'src.settings.throttles.BurstRateThrottleUser',
-        'src.settings.throttles.SustainedRateThrottleUser',
-        'src.settings.throttles.BurstRateThrottleAnon',
-        'src.settings.throttles.SustainedRateThrottleAnon',
+        "src.settings.throttles.BurstRateThrottleUser",
+        "src.settings.throttles.SustainedRateThrottleUser",
+        "src.settings.throttles.BurstRateThrottleAnon",
+        "src.settings.throttles.SustainedRateThrottleAnon",
     ]
     REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
-        'burstuser': env("DJANGO_REST_API_BURST_USER_THROTTLE"),
-        'burstanon': env("DJANGO_REST_API_BURST_ANON_THROTTLE"),
-        'sustaineduser': env("DJANGO_REST_API_SUSTAINED_USER_THROTTLE"),
-        'sustainedanon': env("DJANGO_REST_API_SUSTAINED_ANON_THROTTLE"),
+        "burstuser": env("DJANGO_REST_API_BURST_USER_THROTTLE"),
+        "burstanon": env("DJANGO_REST_API_BURST_ANON_THROTTLE"),
+        "sustaineduser": env("DJANGO_REST_API_SUSTAINED_USER_THROTTLE"),
+        "sustainedanon": env("DJANGO_REST_API_SUSTAINED_ANON_THROTTLE"),
     }
     REST_FRAMEWORK["NUM_PROXIES"] = env.int("DJANGO_REST_NUM_PROXIES")

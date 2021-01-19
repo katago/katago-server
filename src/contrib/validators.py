@@ -1,11 +1,10 @@
 import logging
+import zipfile
 
 import magic
-import zipfile
 from django.core.exceptions import ValidationError
-
-from django.utils.deconstruct import deconstructible
 from django.template.defaultfilters import filesizeformat
+from django.utils.deconstruct import deconstructible
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +41,7 @@ class FileValidator(object):
 
         # # Special detectors for specific types that don't give false-negatives (libmagic can be flakey)
         if "application/gzip" in self.content_types:
-            good = data.read(2) == b'\x1f\x8b'
+            good = data.read(2) == b"\x1f\x8b"
             data.seek(0)
             if good:
                 return

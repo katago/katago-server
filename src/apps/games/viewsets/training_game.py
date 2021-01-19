@@ -1,13 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
 
-from src.contrib.permission import ReadOrAuthCreateOnly
-
 from src.apps.games.models import TrainingGame
-from src.apps.games.serializers import (
-    TrainingGameCreateSerializer,
-    TrainingGameListSerializer,
-)
+from src.apps.games.serializers import TrainingGameCreateSerializer, TrainingGameListSerializer
+from src.contrib.permission import ReadOrAuthCreateOnly
 
 
 class TrainingGameViewSet(viewsets.ModelViewSet):

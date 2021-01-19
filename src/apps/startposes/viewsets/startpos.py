@@ -3,7 +3,6 @@ from rest_framework.permissions import IsAdminUser
 
 from src.apps.startposes.models import StartPos
 from src.apps.startposes.serializers import StartPosSerializer
-from src.apps.runs.models import Run
 
 
 class StartPosViewSet(viewsets.ModelViewSet):
@@ -14,7 +13,6 @@ class StartPosViewSet(viewsets.ModelViewSet):
     queryset = StartPos.objects.all()
     permission_classes = [IsAdminUser]
     serializer_class = StartPosSerializer
-
 
     def get_serializer(self, *args, **kwargs):
         # Make it so that if the user is uploading a list of stuff instead of a single json object

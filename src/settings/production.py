@@ -1,11 +1,9 @@
 import logging
 
 import sentry_sdk
-
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-
 
 from .base import *  # noqa
 from .base import env
@@ -25,8 +23,8 @@ ALLOWED_CIDR_NETS = env.list("DJANGO_ALLOWED_CIDR_NETS", default=[])
 # the site is built with these values, which is used in a production setting for full absolute URL building and
 # other such stuff.
 # See src/contrib/sites/migrations/0003_set_site_domain_and_name.py
-SITE_DOMAIN_FOR_MIGRATION=env("DJANGO_SITE_DOMAIN_FOR_MIGRATION")
-SITE_NAME_FOR_MIGRATION=env("DJANGO_SITE_NAME_FOR_MIGRATION")
+SITE_DOMAIN_FOR_MIGRATION = env("DJANGO_SITE_DOMAIN_FOR_MIGRATION")
+SITE_NAME_FOR_MIGRATION = env("DJANGO_SITE_NAME_FOR_MIGRATION")
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -62,7 +60,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
-SECURE_HSTS_SECONDS = (15552000 if env.bool("DJANGO_SECURE_HSTS_LONG", default=False) else 60)
+SECURE_HSTS_SECONDS = 15552000 if env.bool("DJANGO_SECURE_HSTS_LONG", default=False) else 60
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True)
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-preload
@@ -77,13 +75,15 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA STORAGE
 # ------------------------------------------------------------------------------
 
-if env.bool("NETWORK_USE_GOOGLE_CLOUD_STORAGE", default=False) or \
-   env.bool("SGF_USE_GOOGLE_CLOUD_STORAGE", default=False) or \
-   env.bool("NPZ_USE_GOOGLE_CLOUD_STORAGE", default=False):
+if (
+    env.bool("NETWORK_USE_GOOGLE_CLOUD_STORAGE", default=False)
+    or env.bool("SGF_USE_GOOGLE_CLOUD_STORAGE", default=False)
+    or env.bool("NPZ_USE_GOOGLE_CLOUD_STORAGE", default=False)
+):
     GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
     GS_DEFAULT_ACL = "publicRead"
     GS_FILE_OVERWRITE = False
-    GS_BLOB_CHUNK_SIZE = 1024 * 1024 * 5   # 5 MB
+    GS_BLOB_CHUNK_SIZE = 1024 * 1024 * 5  # 5 MB
     GS_CACHE_CONTROL = "no-cache"
     GS_LOCATION = "uploaded/"
 
@@ -113,7 +113,13 @@ MEDIA_URL = "/media/"
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa F405
-    ("django.template.loaders.cached.Loader", ["django.template.loaders.filesystem.Loader", "django.template.loaders.app_directories.Loader",],)
+    (
+        "django.template.loaders.cached.Loader",
+        [
+            "django.template.loaders.filesystem.Loader",
+            "django.template.loaders.app_directories.Loader",
+        ],
+    )
 ]
 
 # EMAIL
@@ -152,13 +158,27 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
-    "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        }
+    },
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
-        "django.db.backends": {"level": "ERROR", "handlers": ["console"], "propagate": False},
+        "django.db.backends": {
+            "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
+        },
         # Errors logged by the SDK itself
         "sentry_sdk": {"level": "ERROR", "handlers": ["console"], "propagate": False},
-        "django.security.DisallowedHost": {"level": "ERROR", "handlers": ["console"], "propagate": False},
+        "django.security.DisallowedHost": {
+            "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
+        },
     },
 }
 
@@ -168,7 +188,7 @@ SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_LOG_LEVEL = env.int("DJANGO_SENTRY_LOG_LEVEL", logging.INFO)
 
 sentry_logging = LoggingIntegration(
-    level=SENTRY_LOG_LEVEL,     # Capture info and above as breadcrumbs
+    level=SENTRY_LOG_LEVEL,  # Capture info and above as breadcrumbs
     event_level=logging.ERROR,  # Send errors as events
 )
 sentry_sdk.init(
@@ -186,4 +206,3 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 2500000
 
 # Installed LAST, as recommended by https://github.com/un1t/django-cleanup
 INSTALLED_APPS += ["django_cleanup.apps.CleanupConfig"]
-

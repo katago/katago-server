@@ -1,6 +1,6 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework.serializers import HyperlinkedModelSerializer
-from django.core.exceptions import ValidationError
 
 from src.apps.trainings.models import Network
 
@@ -39,7 +39,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
         extra_kwargs = {
             "url": {"lookup_field": "name"},
             "run": {"lookup_field": "name"},
-            "parent_network": {"lookup_field": "name"}
+            "parent_network": {"lookup_field": "name"},
         }
 
     def validate(self, data):
@@ -79,7 +79,7 @@ class NetworkDownloadField(serializers.Field):
         url = obj.model_download_url
         if not url:
             return None
-        request = self.context.get('request', None)
+        request = self.context.get("request", None)
         if request is not None:
             return request.build_absolute_uri(url)
         return url
@@ -111,6 +111,7 @@ class NetworkSerializerForTasks(HyperlinkedModelSerializer):
         }
 
     model_file = NetworkDownloadField()
+
 
 class NetworkSerializerForElo(HyperlinkedModelSerializer):
     """

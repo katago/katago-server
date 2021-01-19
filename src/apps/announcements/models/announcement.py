@@ -1,16 +1,8 @@
-import markdown
 import bleach
-
-from django.db.models import (
-    Model,
-    BooleanField,
-    CharField,
-    DateTimeField,
-    IntegerField,
-    TextField,
-    BigAutoField,
-)
+import markdown
+from django.db.models import BigAutoField, BooleanField, CharField, DateTimeField, IntegerField, Model, TextField
 from django.utils.translation import gettext_lazy as _
+
 
 class Announcement(Model):
     """
@@ -54,7 +46,12 @@ class Announcement(Model):
         db_index=True,
     )
     notes = TextField(
-        _("notes"), max_length=1024, null=False, blank=True, help_text=_("Private notes about this announcement"), db_index=False,
+        _("notes"),
+        max_length=1024,
+        null=False,
+        blank=True,
+        help_text=_("Private notes about this announcement"),
+        db_index=False,
     )
 
     @property

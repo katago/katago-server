@@ -189,6 +189,3 @@ lightvector: This bit is leftover from the django cookiecutter readme, I'm not s
      With MailHog running, to view messages that are sent by your application, open your browser and go to ``http://127.0.0.1:8025``
 
      .. _mailhog: https://github.com/mailhog/MailHog
-
-
-

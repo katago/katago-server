@@ -14,4 +14,3 @@ spec:
     protocol: TCP
     port: {{.Values.celeryFlower.servicePort}}
     targetPort: {{.Values.celeryFlower.containerPort}}
-

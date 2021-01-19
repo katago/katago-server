@@ -1,22 +1,18 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MinLengthValidator, RegexValidator
-from django.core.exceptions import ValidationError
 from django.db.models import CharField, UUIDField
-from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
 from django.utils.deconstruct import deconstructible
+from django.utils.translation import ugettext_lazy as _
+
 
 @deconstructible
 class UnicodeUsernameValidatorNoAtSymbol(RegexValidator):
-    regex = r'^[\w.+-]+\Z'
-    message = _(
-        'Enter a valid username. This value may contain only letters, '
-        'numbers, and ./+/-/_ characters.'
-    )
+    regex = r"^[\w.+-]+\Z"
+    message = _("Enter a valid username. This value may contain only letters, " "numbers, and ./+/-/_ characters.")
     flags = 0
+
 
 class User(AbstractUser):
     """
@@ -32,12 +28,12 @@ class User(AbstractUser):
     name = CharField(_("Name of User"), blank=True, max_length=255)
     username = CharField(
         _("username"),
-        error_messages={'unique': _("A user with that username already exists.")},
-        help_text='Required. 60 characters or fewer. Letters, digits and ./+/-/_ only.',
+        error_messages={"unique": _("A user with that username already exists.")},
+        help_text="Required. 60 characters or fewer. Letters, digits and ./+/-/_ only.",
         max_length=60,
         unique=True,
         validators=[
             UnicodeUsernameValidatorNoAtSymbol(),
             MinLengthValidator(3),
-        ]
+        ],
     )

@@ -28,11 +28,14 @@ class NetworkViewSet(viewsets.ModelViewSet):
             return Response({"error": "No active run."}, status=404)
 
         try:
-            network = Network.objects.select_most_recent(current_run,for_training_games=True)
+            network = Network.objects.select_most_recent(current_run, for_training_games=True)
             if not network:
                 raise Network.DoesNotExist()
         except Network.DoesNotExist:
-            return Response({"error": "No networks found for run enabled for training games."}, status=400)
+            return Response(
+                {"error": "No networks found for run enabled for training games."},
+                status=400,
+            )
 
         serializer_context = {"request": request}  # Used by serialize hyperlinked field to build and url ref
         serializer = NetworkSerializerForTasks(network, context=serializer_context)
@@ -49,7 +52,10 @@ class NetworkViewSet(viewsets.ModelViewSet):
             if not strongest_network:
                 raise Network.DoesNotExist()
         except Network.DoesNotExist:
-            return Response({"error": "No networks found for run enabled for training games."}, status=400)
+            return Response(
+                {"error": "No networks found for run enabled for training games."},
+                status=400,
+            )
 
         serializer_context = {"request": request}  # Used by serialize hyperlinked field to build and url ref
         serializer = NetworkSerializerForTasks(strongest_network, context=serializer_context)
@@ -68,5 +74,3 @@ class NetworkViewSetForElo(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("run__name",)
     pagination_class = None
-
-

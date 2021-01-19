@@ -1,12 +1,17 @@
-from django.db.models import CharField, DateTimeField, IntegerField, ForeignKey, OneToOneField, DO_NOTHING
-
+from django.db.models import DO_NOTHING, CharField, DateTimeField, ForeignKey, IntegerField, OneToOneField
 from django_pgviews import view as pg
 
-from src.apps.trainings.models import Network
 from src.apps.runs.models import Run
+from src.apps.trainings.models import Network
 from src.apps.users.models import User
 
-__ALL__ = ["GameCountByNetwork", "GameCountByUser", "RecentGameCountByUser", "DayGameCountByUser"]
+__ALL__ = [
+    "GameCountByNetwork",
+    "GameCountByUser",
+    "RecentGameCountByUser",
+    "DayGameCountByUser",
+]
+
 
 class GameCountByNetwork(pg.MaterializedView):
     """
@@ -69,7 +74,13 @@ class GameCountByNetwork(pg.MaterializedView):
     ON counts.network_id = trainings_network.id
     """
 
-    network = OneToOneField(Network, primary_key=True, db_index=True, db_constraint=False, on_delete=DO_NOTHING)
+    network = OneToOneField(
+        Network,
+        primary_key=True,
+        db_index=True,
+        db_constraint=False,
+        on_delete=DO_NOTHING,
+    )
     run = ForeignKey(Run, db_index=True, db_constraint=False, on_delete=DO_NOTHING)
     network_name = CharField(max_length=128, db_index=True)
     network_created_at = DateTimeField(db_index=True)
@@ -194,7 +205,10 @@ class TimeSpanGameCountByUser(pg.MaterializedView):
     INNER JOIN
     users_user
     ON counts.user_id = users_user.id
-    """ % (sql_interval_str,sql_interval_str)
+    """ % (
+            sql_interval_str,
+            sql_interval_str,
+        )
 
     # Django insists on having a single primary key field. So we smash user and run together
     # to make this single field to make django happy
@@ -211,14 +225,18 @@ class TimeSpanGameCountByUser(pg.MaterializedView):
     class Meta:
         abstract = True
 
+
 class RecentGameCountByUser(TimeSpanGameCountByUser):
     sql = TimeSpanGameCountByUser.make_sql("1 week")
+
     class Meta:
         managed = False
         db_table = "games_recentgamecountbyuser"
 
+
 class DayGameCountByUser(TimeSpanGameCountByUser):
     sql = TimeSpanGameCountByUser.make_sql("1 day")
+
     class Meta:
         managed = False
         db_table = "games_daygamecountbyuser"
