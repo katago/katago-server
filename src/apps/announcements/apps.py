@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 class AnnouncementsConfig(AppConfig):
     """
-    Katago Announcments app handles some messages for the front page of the site
+    Katago Announcements app handles some messages for the front page of the site
     """
 
     name = "src.apps.announcements"
