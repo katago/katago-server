@@ -21,12 +21,12 @@ class TestAnnouncements:
         assert(response.status_code == 200)
         content = response.content.decode("utf-8")
         assert("Test Announcement Title" not in content)
-        assert("Here are some test contents and some <strong>test html</strong>" not in content)
+        assert("Here are some test contents" not in content)
         assert("Test Announcement Title Disabled" not in content)
         assert("This message should not show up" not in content)
         self.announcements.append(Announcement.objects.create(
             title="Test Announcement Title",
-            contents = "Yay: Here are some test contents and some <strong>test html</strong> :)",
+            contents = "Here are some test contents! And an <div>attempted div</div> and [link](https://example.com) :)",
             display_order = 10,
             enabled = True,
             notes = "",
@@ -42,6 +42,9 @@ class TestAnnouncements:
         assert(response.status_code == 200)
         content = response.content.decode("utf-8")
         assert("Test Announcement Title" in content)
-        assert("Here are some test contents and some <strong>test html</strong>" in content)
+        assert("Here are some test contents" in content)
+        assert("<div>attempted div</div>" not in content)
+        assert("&lt;div&gt;attempted div&lt;/div&gt;" in content)
+        assert('<a href="https://example.com">link</a>' in content)
         assert("Test Announcement Title Disabled" not in content)
         assert("This message should not show up" not in content)

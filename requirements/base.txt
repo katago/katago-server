@@ -12,6 +12,8 @@ uvicorn[standard]==0.12.2 # https://github.com/encode/uvicorn
 gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
 uuid==1.30
 python-magic==0.4.18
+Markdown==3.3.3
+bleach==3.2.1
 
 # TODO HACK - remove this when python package maintainers fix their incompatibilities
 # https://github.com/microsoft/onefuzz/issues/284

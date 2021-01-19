@@ -23,7 +23,7 @@
 
 {% for announcement in announcements %}
 <h2 class="is-size-2"> {{ announcement.title }} </h2>
-{{ announcement.contents|safe }}
+{{ announcement.rendered_contents_safe|safe }}
 {% endfor %}
 
 {% if run %}

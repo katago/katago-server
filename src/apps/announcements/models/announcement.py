@@ -1,3 +1,5 @@
+import markdown
+import bleach
 
 from django.db.models import (
     Model,
@@ -29,14 +31,13 @@ class Announcement(Model):
         blank=False,
         max_length=240,
         help_text=_("Title of the announcement section."),
-        db_index=True,
         unique=True,
     )
     contents = TextField(
         _("contents"),
         null=False,
         blank=True,
-        help_text=_("HTML contents of the announcement section."),
+        help_text=_("Markdown contents of the announcement section."),
         db_index=False,
     )
     display_order = IntegerField(
@@ -56,3 +57,6 @@ class Announcement(Model):
         _("notes"), max_length=1024, null=False, blank=True, help_text=_("Private notes about this announcement"), db_index=False,
     )
 
+    @property
+    def rendered_contents_safe(self):
+        return bleach.clean(markdown.markdown(self.contents))
