@@ -1,1 +1,0 @@
-from .startpos import StartPosSerializer
