@@ -155,7 +155,7 @@ function makeGraph() {
       d3.select("#eloGraphDataRowsLogRecentButton").classed("eloButtonHighlighted", true);
     };
 
-    setXScaleAsDataRowsLog();
+    setXScaleAsDataRowsLogRecent();
 
     var xAxisContent = graphSpace.append("g").attr("transform", "translate(0," + graphSpaceHeight + ")");
     xAxis(xAxisContent);
