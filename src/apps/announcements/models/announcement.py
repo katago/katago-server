@@ -59,4 +59,4 @@ class Announcement(Model):
 
     @property
     def rendered_contents_safe(self):
-        return bleach.clean(markdown.markdown(self.contents))
+        return bleach.clean(markdown.markdown(self.contents), tags = bleach.sanitizer.ALLOWED_TAGS + ["p","br"])

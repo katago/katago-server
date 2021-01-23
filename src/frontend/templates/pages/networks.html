@@ -36,6 +36,15 @@ If you are a casual user, you want "Network File" - you can directly use this .b
 Elo ratings are approximate and are *not* necessarily comparable to the Elos from any other bot or run. Uncertainty radius displayed is approximately two sigmas.
 {% endblocktrans %}
 
+<p>
+{% if latest_network and latest_network.model_file %}
+<span class="has-text-weight-medium">{% trans "Latest network" %}:</span> <a href="{{ latest_network.model_download_url }}">{{ latest_network.name }}</a>
+{% endif %}
+<p>
+{% if strongest_confident_network and strongest_confident_network.model_file %}
+<span class="has-text-weight-medium">{% trans "Strongest confidently-rated network" %}:</span> <a href="{{ strongest_confident_network.model_download_url }}">{{ strongest_confident_network.name }}</a>
+{% endif %}
+
 <table class="table mt-3">
   <tr>
     <th> {% trans "Name" %} <i class="fas fa-info-circle" tabindex="-1" title="{% trans "b = number of blocks, c = number of channels, s = number of training sample steps, d = latest data rows in the run this net trained on" %}"></i>
