@@ -24,4 +24,6 @@ class NetworksView(ListView):
         context["current_run"] = self.current_run
         context["is_older_run"] = self.run != self.current_run
         context["show_older_runs"] = Run.objects.count() > 1
+        context["latest_network"] = Network.objects.filter(run=self.run).order_by("-created_at").first()
+        context["strongest_confident_network"] = Network.objects.select_strongest_confident(run=self.run)
         return context
