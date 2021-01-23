@@ -1,2 +1,2 @@
-from .training_game import TrainingGameCreateSerializer, TrainingGameListSerializer
 from .rating_game import RatingGameCreateSerializer, RatingGameListSerializer
+from .training_game import TrainingGameCreateSerializer, TrainingGameListSerializer

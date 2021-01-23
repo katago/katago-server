@@ -1,25 +1,24 @@
 import logging
 import random
-from struct import unpack
 from hashlib import md5
+from struct import unpack
 
 from django.db import IntegrityError
-
-from rest_framework import viewsets, serializers
+from rest_framework import serializers, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from src.contrib.permission import AuthOnly
-
+from src.apps.distributed_efforts.models import UserLastVersion
 from src.apps.distributed_efforts.services import RatingNetworkPairerService
 from src.apps.runs.models import Run
 from src.apps.runs.serializers import RunSerializerForClient
+from src.apps.startposes.models import StartPos
 from src.apps.trainings.models import Network
 from src.apps.trainings.serializers import NetworkSerializerForTasks
-from src.apps.startposes.models import StartPos
-from src.apps.distributed_efforts.models import UserLastVersion
+from src.contrib.permission import AuthOnly
 
 logger = logging.getLogger(__name__)
+
 
 class TaskCreateSerializer(serializers.Serializer):
     allow_rating_task = serializers.BooleanField(default=True)
@@ -29,9 +28,10 @@ class TaskCreateSerializer(serializers.Serializer):
     client_instance_id = serializers.CharField(default="", allow_blank=True)
 
     def validate(self, data):
-        if not data.get('allow_rating_task') and not data.get('allow_selfplay_task'):
-            raise Response({"error": "allow_rating_task and allow_selfplay_task are both false"},status=400)
+        if not data.get("allow_rating_task") and not data.get("allow_selfplay_task"):
+            raise Response({"error": "allow_rating_task and allow_selfplay_task are both false"}, status=400)
         return data
+
 
 class DistributedTaskViewSet(viewsets.ViewSet):
     permission_classes = [AuthOnly]
@@ -54,21 +54,23 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         # Git revision hashes are at least 40 chars, we can also optionally allow plus revisions and other stuff
         if len(git_revision) < 40 or len(git_revision) > 80:
             return Response(
-                {"error": "This version of KataGo is not usable for distributed because either it's had custom modifications or has been compiled without version info."},
+                {
+                    "error": "This version of KataGo is not usable for distributed because either it's had custom modifications or has been compiled without version info."
+                },
                 status=400,
             )
         elif not current_run.is_git_in_whitelist(git_revision):
             return Response(
-                {"error": "This version of KataGo is not enabled for distributed. If this exact version was working previously, then changes in the run require a newer version - please update KataGo to the latest version or release. But if this is already the official newest version of KataGo, or you think that not enabling this version is an oversight, please ask server admins to enable the following version hash: " + git_revision},
+                {
+                    "error": "This version of KataGo is not enabled for distributed. If this exact version was working previously, then changes in the run require a newer version - please update KataGo to the latest version or release. But if this is already the official newest version of KataGo, or you think that not enabling this version is an oversight, please ask server admins to enable the following version hash: "
+                    + git_revision
+                },
                 status=400,
             )
 
         # Update server records of what version of the client the user is using
         try:
-            UserLastVersion.objects.update_or_create(
-                user=request.user,
-                defaults={"git_revision": git_revision}
-            )
+            UserLastVersion.objects.update_or_create(user=request.user, defaults={"git_revision": git_revision})
         # Make sure that on a db race between django instances, we don't fail, recording stuff in this table is only informational
         except IntegrityError:
             pass
@@ -76,13 +78,19 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         allow_rating_task = data["allow_rating_task"]
         allow_selfplay_task = data["allow_selfplay_task"]
         if not allow_rating_task and current_run.rating_game_probability >= 1.0:
-            return Response({"error": "allow_rating_task is false but this server is only serving rating games right now"},status=400)
+            return Response(
+                {"error": "allow_rating_task is false but this server is only serving rating games right now"},
+                status=400,
+            )
         if not allow_selfplay_task and current_run.rating_game_probability <= 0.0:
-            return Response({"error": "allow_selfplay_task is false but this server is only serving selfplay games right now"},status=400)
+            return Response(
+                {"error": "allow_selfplay_task is false but this server is only serving selfplay games right now"},
+                status=400,
+            )
 
         task_rep_factor = data["task_rep_factor"]
         if task_rep_factor < 1 or task_rep_factor > 64:
-            return Response({"error": "task_rep_factor was not an integer from 1 to 64"},status=400)
+            return Response({"error": "task_rep_factor was not an integer from 1 to 64"}, status=400)
 
         serializer_context = {"request": request}  # Used by NetworkSerializer hyperlinked field to build and url ref
         run_content = RunSerializerForClient(current_run, context=serializer_context)
@@ -91,11 +99,11 @@ class DistributedTaskViewSet(viewsets.ViewSet):
         if current_run.max_network_usage_delay > 0:
             min_delay = current_run.min_network_usage_delay
             max_delay = current_run.max_network_usage_delay
-            (min_delay,max_delay) = (min(min_delay,max_delay),max(min_delay,max_delay))
+            (min_delay, max_delay) = (min(min_delay, max_delay), max(min_delay, max_delay))
             if min_delay < 0:
                 min_delay = 0
             delay_seed = str(data["client_instance_id"]) + ":" + request.user.username
-            randval = float(unpack('L', md5(delay_seed.encode("utf-8")).digest()[:8])[0]) / 2**64
+            randval = float(unpack("L", md5(delay_seed.encode("utf-8")).digest()[:8])[0]) / 2 ** 64
             network_delay = min_delay + (max_delay - min_delay) * randval
 
         if not allow_selfplay_task or (allow_rating_task and random.random() < current_run.rating_game_probability):
@@ -122,7 +130,9 @@ class DistributedTaskViewSet(viewsets.ViewSet):
                     start_poses.append(start_pos.data)
 
         try:
-            best_network = Network.objects.select_most_recent(current_run,for_training_games=True,network_delay=network_delay)
+            best_network = Network.objects.select_most_recent(
+                current_run, for_training_games=True, network_delay=network_delay
+            )
             if best_network is None:
                 return Response({"error": "No networks found for run enabled for training games."}, status=400)
         except Network.DoesNotExist:

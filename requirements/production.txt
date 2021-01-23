@@ -8,5 +8,3 @@ sentry-sdk==0.19.2  # https://github.com/getsentry/sentry-python
 # Django
 # ------------------------------------------------------------------------------
 django-anymail[mailgun]==8.1  # https://github.com/anymail/django-anymail
-
-

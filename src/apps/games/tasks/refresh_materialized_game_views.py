@@ -1,6 +1,5 @@
 from src import celery_app
-
-from src.apps.games.models import GameCountByNetwork, GameCountByUser, RecentGameCountByUser, DayGameCountByUser
+from src.apps.games.models import DayGameCountByUser, GameCountByNetwork, GameCountByUser, RecentGameCountByUser
 
 
 @celery_app.task()

@@ -179,5 +179,3 @@ services:
       traefik.http.routers.flowerroute.tls.certresolver: "letsencrypt"
       traefik.http.routers.flowerroute.priority: 10
       traefik.http.services.flowerroute.loadbalancer.server.port: 5555
-
-

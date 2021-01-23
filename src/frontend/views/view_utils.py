@@ -1,139 +1,126 @@
 import math
 
-from django.db.models import Sum, Count, Q
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404
 
-from src.apps.games.models import GameCountByNetwork, GameCountByUser, RecentGameCountByUser, DayGameCountByUser
-from src.apps.trainings.models import Network
+from src.apps.games.models import DayGameCountByUser, GameCountByNetwork, GameCountByUser, RecentGameCountByUser
 from src.apps.runs.models import Run
+from src.apps.trainings.models import Network
+
 
 def set_current_run_or_run_from_url_for_view_get_queryset(view):
-  """Helper for implementing get_queryset in a view that cares about the run.
+    """Helper for implementing get_queryset in a view that cares about the run.
 
-  Sets view.current_run to the current active or latest run, if any.
+    Sets view.current_run to the current active or latest run, if any.
 
-  Sets view.run to:
-    * The run specified by the url (from view.kwargs)
-    * Or else, the current run.
-    * Or else, None
+    Sets view.run to:
+      * The run specified by the url (from view.kwargs)
+      * Or else, the current run.
+      * Or else, None
 
-  Sets view.run_specified_in_url to True if the run was in the url, else False.
-  """
-  view.current_run = Run.objects.select_current_or_latest()
-  if view.kwargs["run"] is None:
-    view.run = view.current_run
-    view.run_specified_in_url = False
-  else:
-    view.run = get_object_or_404(Run, name=view.kwargs["run"])
-    view.run_specified_in_url = True
+    Sets view.run_specified_in_url to True if the run was in the url, else False.
+    """
+    view.current_run = Run.objects.select_current_or_latest()
+    if view.kwargs["run"] is None:
+        view.run = view.current_run
+        view.run_specified_in_url = False
+    else:
+        view.run = get_object_or_404(Run, name=view.kwargs["run"])
+        view.run_specified_in_url = True
+
 
 def default_zero(x):
-  if x is None:
-    return 0
-  return x
+    if x is None:
+        return 0
+    return x
+
 
 def add_run_stats_context(run, context):
-  """Add all the detailed summary stats about a run and its networks and games.
-  For use on homepage or run detail view."""
+    """Add all the detailed summary stats about a run and its networks and games.
+    For use on homepage or run detail view."""
 
-  context["run"] = run
+    context["run"] = run
 
-  context["top_recent_user_list"] = (
-    RecentGameCountByUser
-    .objects
-    .filter(run=run)
-    .values("username")
-    .annotate(
-      total_num_training_rows=Sum("total_num_training_rows"),
-      total_num_training_games=Sum("total_num_training_games"),
-      total_num_rating_games=Sum("total_num_rating_games"),
+    context["top_recent_user_list"] = (
+        RecentGameCountByUser.objects.filter(run=run)
+        .values("username")
+        .annotate(
+            total_num_training_rows=Sum("total_num_training_rows"),
+            total_num_training_games=Sum("total_num_training_games"),
+            total_num_rating_games=Sum("total_num_rating_games"),
+        )
+        .order_by("-total_num_training_rows")
+        .all()[:15]
     )
-    .order_by("-total_num_training_rows")
-    .all()[:15]
-  )
-  context["top_day_user_list"] = (
-    DayGameCountByUser
-    .objects
-    .filter(run=run)
-    .values("username")
-    .annotate(
-      total_num_training_rows=Sum("total_num_training_rows"),
-      total_num_training_games=Sum("total_num_training_games"),
-      total_num_rating_games=Sum("total_num_rating_games"),
+    context["top_day_user_list"] = (
+        DayGameCountByUser.objects.filter(run=run)
+        .values("username")
+        .annotate(
+            total_num_training_rows=Sum("total_num_training_rows"),
+            total_num_training_games=Sum("total_num_training_games"),
+            total_num_rating_games=Sum("total_num_rating_games"),
+        )
+        .order_by("-total_num_training_rows")
+        .all()[:15]
     )
-    .order_by("-total_num_training_rows")
-    .all()[:15]
-  )
-  context["top_total_user_list"] = (
-    GameCountByUser
-    .objects
-    .filter(run=run)
-    .values("username")
-    .annotate(
-      total_num_training_rows=Sum("total_num_training_rows"),
-      total_num_training_games=Sum("total_num_training_games"),
-      total_num_rating_games=Sum("total_num_rating_games"),
+    context["top_total_user_list"] = (
+        GameCountByUser.objects.filter(run=run)
+        .values("username")
+        .annotate(
+            total_num_training_rows=Sum("total_num_training_rows"),
+            total_num_training_games=Sum("total_num_training_games"),
+            total_num_rating_games=Sum("total_num_rating_games"),
+        )
+        .order_by("-total_num_training_rows")
+        .all()[:15]
     )
-    .order_by("-total_num_training_rows")
-    .all()[:15]
-  )
 
-  all_games_stats = (
-    GameCountByNetwork
-    .objects
-    .filter(run=run)
-    .aggregate(
-      total_num_training_rows=Sum("total_num_training_rows"),
-      total_num_training_games=Sum("total_num_training_games"),
-      total_num_rating_games=Sum("total_num_rating_games"),
+    all_games_stats = GameCountByNetwork.objects.filter(run=run).aggregate(
+        total_num_training_rows=Sum("total_num_training_rows"),
+        total_num_training_games=Sum("total_num_training_games"),
+        total_num_rating_games=Sum("total_num_rating_games"),
     )
-  )
 
-  context["num_total_contributors_this_run"] = (
-    GameCountByUser
-    .objects
-    .filter(run=run)
-    .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
-    .values("username").distinct().count()
-  )
-
-  context["total_num_training_rows_this_run"] = default_zero(all_games_stats["total_num_training_rows"])
-  context["total_num_training_games_this_run"] = default_zero(all_games_stats["total_num_training_games"])
-  # Divide by 2 because each rating game appears twice, once for each network that played it
-  context["total_num_rating_games_this_run"] = default_zero(all_games_stats["total_num_rating_games"]) // 2
-
-  recent_games_stats = (
-    RecentGameCountByUser
-    .objects
-    .filter(run=run)
-    .aggregate(
-      total_num_training_rows=Sum("total_num_training_rows"),
-      total_num_training_games=Sum("total_num_training_games"),
-      total_num_rating_games=Sum("total_num_rating_games"),
+    context["num_total_contributors_this_run"] = (
+        GameCountByUser.objects.filter(run=run)
+        .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+        .values("username")
+        .distinct()
+        .count()
     )
-  )
 
-  context["num_recent_contributors_this_run"] = (
-    RecentGameCountByUser
-    .objects
-    .filter(run=run)
-    .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
-    .values("username").distinct().count()
-  )
-  context["num_day_contributors_this_run"] = (
-    DayGameCountByUser
-    .objects
-    .filter(run=run)
-    .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
-    .values("username").distinct().count()
-  )
+    context["total_num_training_rows_this_run"] = default_zero(all_games_stats["total_num_training_rows"])
+    context["total_num_training_games_this_run"] = default_zero(all_games_stats["total_num_training_games"])
+    # Divide by 2 because each rating game appears twice, once for each network that played it
+    context["total_num_rating_games_this_run"] = default_zero(all_games_stats["total_num_rating_games"]) // 2
 
-  context["num_recent_training_rows_this_run"] = default_zero(recent_games_stats["total_num_training_rows"])
-  context["num_recent_training_games_this_run"] = default_zero(recent_games_stats["total_num_training_games"])
-  context["num_recent_rating_games_this_run"] = default_zero(recent_games_stats["total_num_rating_games"])
+    recent_games_stats = RecentGameCountByUser.objects.filter(run=run).aggregate(
+        total_num_training_rows=Sum("total_num_training_rows"),
+        total_num_training_games=Sum("total_num_training_games"),
+        total_num_rating_games=Sum("total_num_rating_games"),
+    )
 
-  context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run,is_random=False).count()
+    context["num_recent_contributors_this_run"] = (
+        RecentGameCountByUser.objects.filter(run=run)
+        .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+        .values("username")
+        .distinct()
+        .count()
+    )
+    context["num_day_contributors_this_run"] = (
+        DayGameCountByUser.objects.filter(run=run)
+        .filter(Q(total_num_training_games__gt=0) | Q(total_num_rating_games__gt=0))
+        .values("username")
+        .distinct()
+        .count()
+    )
 
-  context["latest_network"] = Network.objects.filter(run=run).order_by("-created_at").first()
+    context["num_recent_training_rows_this_run"] = default_zero(recent_games_stats["total_num_training_rows"])
+    context["num_recent_training_games_this_run"] = default_zero(recent_games_stats["total_num_training_games"])
+    context["num_recent_rating_games_this_run"] = default_zero(recent_games_stats["total_num_rating_games"])
 
-  context["strongest_confident_network"] = Network.objects.select_strongest_confident(run=run)
+    context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run, is_random=False).count()
+
+    context["latest_network"] = Network.objects.filter(run=run).order_by("-created_at").first()
+
+    context["strongest_confident_network"] = Network.objects.select_strongest_confident(run=run)

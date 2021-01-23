@@ -29,8 +29,20 @@ class AnnouncementAdmin(admin.ModelAdmin):
     ordering = ("display_order",)
     fieldsets = (
         (None, {"fields": (("id", "created_at", "updated_at"),)}),
-        (_("Metadata"), {"fields": ("display_order","enabled")},),
-        (_("Title"), {"fields": ("title",)},),
-        (_("Contents"), {"fields": (("contents"),)},),
-        (_("Notes"), {"fields": (("notes"),)},),
+        (
+            _("Metadata"),
+            {"fields": ("display_order", "enabled")},
+        ),
+        (
+            _("Title"),
+            {"fields": ("title",)},
+        ),
+        (
+            _("Contents"),
+            {"fields": (("contents"),)},
+        ),
+        (
+            _("Notes"),
+            {"fields": (("notes"),)},
+        ),
     )

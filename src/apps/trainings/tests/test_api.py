@@ -1,6 +1,6 @@
-import pytest
 import copy
 
+import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
@@ -12,6 +12,7 @@ pytestmark = pytest.mark.django_db
 User = get_user_model()
 
 fake_sha256 = "12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd"
+
 
 class TestGetStrongestNetwork:
     def setup_method(self):
@@ -31,7 +32,7 @@ class TestGetStrongestNetwork:
             log_gamma_uncertainty=0.02,
             log_gamma_lower_confidence=0 - 2 * 0.02,
             is_random=True,
-            training_games_enabled=True
+            training_games_enabled=True,
         )
         self.n2 = Network.objects.create(
             run=self.r1,
@@ -42,7 +43,7 @@ class TestGetStrongestNetwork:
             log_gamma=35,
             log_gamma_uncertainty=0.05,
             log_gamma_lower_confidence=35 - 2 * 0.05,
-            training_games_enabled=True
+            training_games_enabled=True,
         )
         self.n3 = Network.objects.create(
             run=self.r1,
@@ -53,7 +54,7 @@ class TestGetStrongestNetwork:
             log_gamma=45,
             log_gamma_uncertainty=0.07,
             log_gamma_lower_confidence=45 - 2 * 0.07,
-            training_games_enabled=True
+            training_games_enabled=True,
         )
         self.n4 = Network.objects.create(
             run=self.r1,
@@ -64,7 +65,7 @@ class TestGetStrongestNetwork:
             log_gamma=60,
             log_gamma_uncertainty=0.77,
             log_gamma_lower_confidence=60 - 2 * 0.77,
-            training_games_enabled=True
+            training_games_enabled=True,
         )
         self.n5 = Network.objects.create(
             run=self.r1,
@@ -75,7 +76,7 @@ class TestGetStrongestNetwork:
             log_gamma=45.1,
             log_gamma_uncertainty=0.45,
             log_gamma_lower_confidence=45.1 - 2 * 0.45,
-            training_games_enabled=True
+            training_games_enabled=True,
         )
 
     def teardown_method(self):
@@ -92,7 +93,10 @@ class TestGetStrongestNetwork:
         data = copy.deepcopy(response.data)
         data["created_at"] = None  # Suppress timestamp for test
         data["run"] = None  # Suppress id for test
-        assert str(data) == """{'url': 'http://testserver/api/networks/net-3/', 'run': None, 'name': 'net-3', 'created_at': None, 'is_random': False, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}"""
+        assert (
+            str(data)
+            == """{'url': 'http://testserver/api/networks/net-3/', 'run': None, 'name': 'net-3', 'created_at': None, 'is_random': False, 'model_file': None, 'model_file_bytes': 0, 'model_file_sha256': '12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd'}"""
+        )
         assert response.status_code == 200
 
 
@@ -114,7 +118,7 @@ class TestGetStrongestNetworkNoSuitableNetwork:
             log_gamma_uncertainty=0.02,
             log_gamma_lower_confidence=0 - 2 * 0.02,
             is_random=True,
-            training_games_enabled=False
+            training_games_enabled=False,
         )
 
     def teardown_method(self):

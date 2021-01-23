@@ -1,14 +1,14 @@
-import pytest
 import base64
 
-from django.test import Client
+import pytest
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client
 
+from src.apps.games.models import GameCountByNetwork, GameCountByUser, RatingGame, TrainingGame
+from src.apps.games.tests.test_game import goodnpzbase64
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
-from src.apps.games.models import RatingGame, TrainingGame, GameCountByNetwork, GameCountByUser
-from src.apps.games.tests.test_game import goodnpzbase64
 
 pytestmark = pytest.mark.django_db
 
@@ -16,8 +16,8 @@ User = get_user_model()
 
 fake_sha256 = "12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd"
 
-class TestUrlsEmptySite:
 
+class TestUrlsEmptySite:
     def setup_method(self):
         pass
 
@@ -26,52 +26,51 @@ class TestUrlsEmptySite:
 
     def test_urls(self):
         client = Client()
-        assert(client.get('/').status_code == 200)
-        assert(client.get('/healthz/').status_code == 200)
-        assert(client.get('/runs/').status_code == 200)
-        assert(client.get('/runs//').status_code == 404)
-        assert(client.get('/runs/123/').status_code == 404)
-        assert(client.get('/runs/run0/').status_code == 404)
-        assert(client.get('/networks/').status_code == 200)
-        assert(client.get('/networks/run0/').status_code == 404)
-        assert(client.get('/networks/run0/run0-foo/').status_code == 404)
-        assert(client.get('/networks/run0/run0-foo/rating-games/').status_code == 404)
-        assert(client.get('/networks/run0/run0-foo/training-games/').status_code == 404)
-        assert(client.get('/networks/').status_code == 200)
-        assert(client.get('/games/').status_code == 200)
-        assert(client.get('/games/run0/').status_code == 404)
-        assert(client.get('/contributions/').status_code == 200)
-        assert(client.get('/contributions/run0/').status_code == 404)
-        assert(client.get('/contributions/run1/').status_code == 404)
-        assert(client.get('/contributions/abc/').status_code == 404)
-        assert(client.get('/contributions/abc/training-games/').status_code == 404)
-        assert(client.get('/contributions/abc/rating-games/').status_code == 404)
-        assert(client.get('/sgfplayer/').status_code == 404)
-        assert(client.get('/sgfplayer/training-games/').status_code == 404)
-        assert(client.get('/sgfplayer/rating-games/').status_code == 404)
-        assert(client.get('/sgfplayer/training-games/10/').status_code == 404)
-        assert(client.get('/sgfplayer/rating-games/10/').status_code == 404)
-        assert(client.get('/sgfplayer/training-games/abc/').status_code == 404)
-        assert(client.get('/sgfplayer/rating-games/abc/').status_code == 404)
+        assert client.get("/").status_code == 200
+        assert client.get("/healthz/").status_code == 200
+        assert client.get("/runs/").status_code == 200
+        assert client.get("/runs//").status_code == 404
+        assert client.get("/runs/123/").status_code == 404
+        assert client.get("/runs/run0/").status_code == 404
+        assert client.get("/networks/").status_code == 200
+        assert client.get("/networks/run0/").status_code == 404
+        assert client.get("/networks/run0/run0-foo/").status_code == 404
+        assert client.get("/networks/run0/run0-foo/rating-games/").status_code == 404
+        assert client.get("/networks/run0/run0-foo/training-games/").status_code == 404
+        assert client.get("/networks/").status_code == 200
+        assert client.get("/games/").status_code == 200
+        assert client.get("/games/run0/").status_code == 404
+        assert client.get("/contributions/").status_code == 200
+        assert client.get("/contributions/run0/").status_code == 404
+        assert client.get("/contributions/run1/").status_code == 404
+        assert client.get("/contributions/abc/").status_code == 404
+        assert client.get("/contributions/abc/training-games/").status_code == 404
+        assert client.get("/contributions/abc/rating-games/").status_code == 404
+        assert client.get("/sgfplayer/").status_code == 404
+        assert client.get("/sgfplayer/training-games/").status_code == 404
+        assert client.get("/sgfplayer/rating-games/").status_code == 404
+        assert client.get("/sgfplayer/training-games/10/").status_code == 404
+        assert client.get("/sgfplayer/rating-games/10/").status_code == 404
+        assert client.get("/sgfplayer/training-games/abc/").status_code == 404
+        assert client.get("/sgfplayer/rating-games/abc/").status_code == 404
 
 
 class TestUrlsSimpleSite:
-
     def setup_method(self):
         self.u0 = User.objects.create_user(username="abc", password="test")
         self.r0 = Run.objects.create(
             name="run0",
             rating_game_probability=0.0,
             status="Inactive",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=4.0,
         )
         self.r1 = Run.objects.create(
             name="run1",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=4.0,
         )
         self.n0 = Network.objects.create(
             run=self.r1,
@@ -108,8 +107,14 @@ class TestUrlsSimpleSite:
             game_length=120,
             black_network=self.n1,
             white_network=self.n1,
-            sgf_file = SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
-            training_data_file=SimpleUploadedFile(name='game.npz', content=base64.decodebytes(goodnpzbase64), content_type='application/octet-stream'),
+            sgf_file=SimpleUploadedFile(
+                name="game.sgf",
+                content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])",
+                content_type="text/plain",
+            ),
+            training_data_file=SimpleUploadedFile(
+                name="game.npz", content=base64.decodebytes(goodnpzbase64), content_type="application/octet-stream"
+            ),
             num_training_rows=5,
             kg_game_uid="1234abcd",
         )
@@ -129,7 +134,11 @@ class TestUrlsSimpleSite:
             game_length=120,
             black_network=self.n1,
             white_network=self.n0,
-            sgf_file = SimpleUploadedFile(name='game.sgf', content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])", content_type='text/plain'),
+            sgf_file=SimpleUploadedFile(
+                name="game.sgf",
+                content=b"(;GM[1]FF[4]CA[UTF-8]ST[2]RU[Japanese]SZ[19]KM[0])",
+                content_type="text/plain",
+            ),
             kg_game_uid="2345abcd",
         )
 
@@ -145,51 +154,51 @@ class TestUrlsSimpleSite:
 
     def test_urls(self):
         client = Client()
-        assert(client.get('/').status_code == 200)
-        assert(client.get('/healthz/').status_code == 200)
-        assert(client.get('/runs/').status_code == 200)
-        assert(client.get('/runs//').status_code == 404)
-        assert(client.get('/runs/123/').status_code == 404)
-        assert(client.get('/runs/run0/').status_code == 200)
-        assert(client.get('/runs/run1/').status_code == 200)
-        assert(client.get('/runs/run2/').status_code == 404)
-        assert(client.get('/networks/').status_code == 200)
-        assert(client.get('/networks/run0/').status_code == 200)
-        assert(client.get('/networks/run1/').status_code == 200)
-        assert(client.get('/networks/run2/').status_code == 404)
-        assert(client.get('/networks/run0/run0-foo/').status_code == 404)
-        assert(client.get('/networks/run0/run1-foo/').status_code == 404)
-        assert(client.get('/networks/run1/run1-foo/').status_code == 404)
-        assert(client.get('/networks/run1/run1-bar/').status_code == 404)
-        assert(client.get('/networks/run1/run1-fooo/').status_code == 404)
-        assert(client.get('/networks/run0/run0-foo/rating-games/').status_code == 404)
-        assert(client.get('/networks/run0/run1-foo/rating-games/').status_code == 404)
-        assert(client.get('/networks/run1/run1-foo/rating-games/').status_code == 200)
-        assert(client.get('/networks/run1/run1-bar/rating-games/').status_code == 200)
-        assert(client.get('/networks/run1/run1-fooo/rating-games/').status_code == 404)
-        assert(client.get('/networks/run0/run0-foo/training-games/').status_code == 404)
-        assert(client.get('/networks/run0/run1-foo/training-games/').status_code == 404)
-        assert(client.get('/networks/run1/run1-foo/training-games/').status_code == 200)
-        assert(client.get('/networks/run1/run1-bar/training-games/').status_code == 200)
-        assert(client.get('/networks/run1/run1-fooo/training-games/').status_code == 404)
-        assert(client.get('/networks/').status_code == 200)
-        assert(client.get('/games/').status_code == 200)
-        assert(client.get('/games//').status_code == 404)
-        assert(client.get('/games/run0/').status_code == 200)
-        assert(client.get('/games/run1/').status_code == 200)
-        assert(client.get('/contributions/').status_code == 200)
-        assert(client.get('/contributions/run0/').status_code == 200)
-        assert(client.get('/contributions/run1/').status_code == 200)
-        assert(client.get('/contributions/abc/').status_code == 404)
-        assert(client.get('/contributions/run0/training-games/').status_code == 404)
-        assert(client.get('/contributions/run1/training-games/').status_code == 404)
-        assert(client.get('/contributions/abc/training-games/').status_code == 200)
-        assert(client.get('/contributions/abc/rating-games/').status_code == 200)
-        assert(client.get('/sgfplayer/').status_code == 404)
-        assert(client.get('/sgfplayer/training-games/').status_code == 404)
-        assert(client.get('/sgfplayer/rating-games/').status_code == 404)
-        assert(client.get('/sgfplayer/training-games/%d/' % self.g0.id).status_code == 200)
-        assert(client.get('/sgfplayer/rating-games/%d/' % self.g0.id).status_code == 404)
-        assert(client.get('/sgfplayer/training-games/%d/' % self.g1.id).status_code == 404)
-        assert(client.get('/sgfplayer/rating-games/%d/' % self.g1.id).status_code == 200)
-        assert(client.get('/sgfplayer/training-games/abc/').status_code == 404)
+        assert client.get("/").status_code == 200
+        assert client.get("/healthz/").status_code == 200
+        assert client.get("/runs/").status_code == 200
+        assert client.get("/runs//").status_code == 404
+        assert client.get("/runs/123/").status_code == 404
+        assert client.get("/runs/run0/").status_code == 200
+        assert client.get("/runs/run1/").status_code == 200
+        assert client.get("/runs/run2/").status_code == 404
+        assert client.get("/networks/").status_code == 200
+        assert client.get("/networks/run0/").status_code == 200
+        assert client.get("/networks/run1/").status_code == 200
+        assert client.get("/networks/run2/").status_code == 404
+        assert client.get("/networks/run0/run0-foo/").status_code == 404
+        assert client.get("/networks/run0/run1-foo/").status_code == 404
+        assert client.get("/networks/run1/run1-foo/").status_code == 404
+        assert client.get("/networks/run1/run1-bar/").status_code == 404
+        assert client.get("/networks/run1/run1-fooo/").status_code == 404
+        assert client.get("/networks/run0/run0-foo/rating-games/").status_code == 404
+        assert client.get("/networks/run0/run1-foo/rating-games/").status_code == 404
+        assert client.get("/networks/run1/run1-foo/rating-games/").status_code == 200
+        assert client.get("/networks/run1/run1-bar/rating-games/").status_code == 200
+        assert client.get("/networks/run1/run1-fooo/rating-games/").status_code == 404
+        assert client.get("/networks/run0/run0-foo/training-games/").status_code == 404
+        assert client.get("/networks/run0/run1-foo/training-games/").status_code == 404
+        assert client.get("/networks/run1/run1-foo/training-games/").status_code == 200
+        assert client.get("/networks/run1/run1-bar/training-games/").status_code == 200
+        assert client.get("/networks/run1/run1-fooo/training-games/").status_code == 404
+        assert client.get("/networks/").status_code == 200
+        assert client.get("/games/").status_code == 200
+        assert client.get("/games//").status_code == 404
+        assert client.get("/games/run0/").status_code == 200
+        assert client.get("/games/run1/").status_code == 200
+        assert client.get("/contributions/").status_code == 200
+        assert client.get("/contributions/run0/").status_code == 200
+        assert client.get("/contributions/run1/").status_code == 200
+        assert client.get("/contributions/abc/").status_code == 404
+        assert client.get("/contributions/run0/training-games/").status_code == 404
+        assert client.get("/contributions/run1/training-games/").status_code == 404
+        assert client.get("/contributions/abc/training-games/").status_code == 200
+        assert client.get("/contributions/abc/rating-games/").status_code == 200
+        assert client.get("/sgfplayer/").status_code == 404
+        assert client.get("/sgfplayer/training-games/").status_code == 404
+        assert client.get("/sgfplayer/rating-games/").status_code == 404
+        assert client.get("/sgfplayer/training-games/%d/" % self.g0.id).status_code == 200
+        assert client.get("/sgfplayer/rating-games/%d/" % self.g0.id).status_code == 404
+        assert client.get("/sgfplayer/training-games/%d/" % self.g1.id).status_code == 404
+        assert client.get("/sgfplayer/rating-games/%d/" % self.g1.id).status_code == 200
+        assert client.get("/sgfplayer/training-games/abc/").status_code == 404

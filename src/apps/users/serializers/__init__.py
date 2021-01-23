@@ -1,1 +1,1 @@
-from .user import LimitedUserSerializer, FullUserSerializer
+from .user import FullUserSerializer, LimitedUserSerializer

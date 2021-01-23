@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
 
-from src.contrib.permission import ReadOnly
 from src.apps.users.models import User
 from src.apps.users.serializers import FullUserSerializer, LimitedUserSerializer
+from src.contrib.permission import ReadOnly
 
 
 class UserViewSet(viewsets.ModelViewSet):

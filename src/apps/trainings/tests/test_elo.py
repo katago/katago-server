@@ -1,10 +1,10 @@
-import pytest
 import math
 
+import pytest
 from django.contrib.auth import get_user_model
 
-from src.apps.runs.models import Run
 from src.apps.games.models import RatingGame
+from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
 from src.apps.trainings.tasks import update_bayesian_rating
 
@@ -14,15 +14,15 @@ User = get_user_model()
 
 fake_sha256 = "12341234abcdabcd56785678abcdabcd12341234abcdabcd56785678abcdabcd"
 
-class TestEloNoNetwork:
 
+class TestEloNoNetwork:
     def setup_method(self):
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=4.0,
         )
 
     def teardown_method(self):
@@ -33,14 +33,13 @@ class TestEloNoNetwork:
 
 
 class TestEloLoneNetwork:
-
     def setup_method(self):
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=4.0,
         )
         self.n1 = Network.objects.create(
             run=self.r1,
@@ -59,19 +58,18 @@ class TestEloLoneNetwork:
     def test_elos(self):
         update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
-        assert(self.n1.log_gamma == 0)
-        assert(self.n1.log_gamma_uncertainty == 0)
+        assert self.n1.log_gamma == 0
+        assert self.n1.log_gamma_uncertainty == 0
 
 
 class TestEloTwoNetworksNoGames:
-
     def setup_method(self):
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 25.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=25.0,
         )
         self.n1 = Network.objects.create(
             run=self.r1,
@@ -102,66 +100,74 @@ class TestEloTwoNetworksNoGames:
         update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
-        assert(self.n1.log_gamma == 0)
-        assert(self.n2.log_gamma == 0)
-        assert(self.n1.log_gamma_uncertainty == pytest.approx(0.4))
-        assert(self.n2.log_gamma_uncertainty == pytest.approx(0.4))
+        assert self.n1.log_gamma == 0
+        assert self.n2.log_gamma == 0
+        assert self.n1.log_gamma_uncertainty == pytest.approx(0.4)
+        assert self.n2.log_gamma_uncertainty == pytest.approx(0.4)
 
 
-def make_games(run,user,n1,n2,n1wins,n2wins,draws,noresults,uidprefix):
+def make_games(run, user, n1, n2, n1wins, n2wins, draws, noresults, uidprefix):
     black = RatingGame.GamesResult.BLACK
     white = RatingGame.GamesResult.WHITE
     draw = RatingGame.GamesResult.DRAW
     noresult = RatingGame.GamesResult.NO_RESULT
     games = []
     for i in range(n1wins):
-        games.append(RatingGame(
-            run=run,
-            submitted_by=user,
-            winner=black,
-            black_network=n1,
-            white_network=n2,
-            kg_game_uid=uidprefix+"n1w"+str(i),
-        ))
+        games.append(
+            RatingGame(
+                run=run,
+                submitted_by=user,
+                winner=black,
+                black_network=n1,
+                white_network=n2,
+                kg_game_uid=uidprefix + "n1w" + str(i),
+            )
+        )
     for i in range(n2wins):
-        games.append(RatingGame(
-            run=run,
-            submitted_by=user,
-            winner=white,
-            black_network=n1,
-            white_network=n2,
-            kg_game_uid=uidprefix+"n2w"+str(i),
-        ))
+        games.append(
+            RatingGame(
+                run=run,
+                submitted_by=user,
+                winner=white,
+                black_network=n1,
+                white_network=n2,
+                kg_game_uid=uidprefix + "n2w" + str(i),
+            )
+        )
     for i in range(draws):
-        games.append(RatingGame(
-            run=run,
-            submitted_by=user,
-            winner=draw,
-            black_network=n1,
-            white_network=n2,
-            kg_game_uid=uidprefix+"d"+str(i),
-        ))
+        games.append(
+            RatingGame(
+                run=run,
+                submitted_by=user,
+                winner=draw,
+                black_network=n1,
+                white_network=n2,
+                kg_game_uid=uidprefix + "d" + str(i),
+            )
+        )
     for i in range(noresults):
-        games.append(RatingGame(
-            run=run,
-            submitted_by=user,
-            winner=noresult,
-            black_network=n1,
-            white_network=n2,
-            kg_game_uid=uidprefix+"nr"+str(i),
-        ))
+        games.append(
+            RatingGame(
+                run=run,
+                submitted_by=user,
+                winner=noresult,
+                black_network=n1,
+                white_network=n2,
+                kg_game_uid=uidprefix + "nr" + str(i),
+            )
+        )
     return games
 
-class TestEloTwoNetworksSomeGames:
 
+class TestEloTwoNetworksSomeGames:
     def setup_method(self):
         self.u1 = User.objects.create_user(username="test", password="test")
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=4.0,
         )
         self.n1 = Network.objects.create(
             run=self.r1,
@@ -189,7 +195,7 @@ class TestEloTwoNetworksSomeGames:
         # Also, if you work it out, you get that the precision per game is
         # 1/(sqrt2 + (1/sqrt2))^2 = 1/(2+2+0.5) 1/4.5, which with 18 games comes out to exactly precision 4,
         # and therefore uncertainty 0.5.
-        self.games = make_games(self.r1,self.u1,self.n1,self.n2,4,10,0,0,uidprefix="a")
+        self.games = make_games(self.r1, self.u1, self.n1, self.n2, 4, 10, 0, 0, uidprefix="a")
         RatingGame.objects.bulk_create(self.games)
 
     def teardown_method(self):
@@ -204,23 +210,23 @@ class TestEloTwoNetworksSomeGames:
         update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
-        assert(self.n1.log_gamma == pytest.approx(0.0))
-        assert(self.n2.log_gamma == pytest.approx(math.log(2)))
-        assert(self.n1.log_gamma_uncertainty == pytest.approx(0.5))
-        assert(self.n2.log_gamma_uncertainty == pytest.approx(0.5))
-        assert(self.n1.log_gamma_game_count == 14)
-        assert(self.n2.log_gamma_game_count == 14)
+        assert self.n1.log_gamma == pytest.approx(0.0)
+        assert self.n2.log_gamma == pytest.approx(math.log(2))
+        assert self.n1.log_gamma_uncertainty == pytest.approx(0.5)
+        assert self.n2.log_gamma_uncertainty == pytest.approx(0.5)
+        assert self.n1.log_gamma_game_count == 14
+        assert self.n2.log_gamma_game_count == 14
+
 
 class TestEloTwoNetworksSomeGamesWithDraws:
-
     def setup_method(self):
         self.u1 = User.objects.create_user(username="test", password="test")
         self.r1 = Run.objects.create(
             name="testrun",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 50,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=50,
+            virtual_draw_strength=4.0,
         )
         self.n1 = Network.objects.create(
             run=self.r1,
@@ -248,7 +254,7 @@ class TestEloTwoNetworksSomeGamesWithDraws:
         # Also, if you work it out, you get that the precision per game is
         # 1/(sqrt3 + (1/sqrt3))^2 = 1/(3+2+1/3) 1/(16/3) = 3/16, which with 48 games comes out to
         # precision 9, and therefore uncertainty 1/3
-        self.games = make_games(self.r1,self.u1,self.n1,self.n2,8,32,3,1,uidprefix="a")
+        self.games = make_games(self.r1, self.u1, self.n1, self.n2, 8, 32, 3, 1, uidprefix="a")
         RatingGame.objects.bulk_create(self.games)
 
     def teardown_method(self):
@@ -263,12 +269,12 @@ class TestEloTwoNetworksSomeGamesWithDraws:
         update_bayesian_rating(for_tests=True)
         self.n1.refresh_from_db()
         self.n2.refresh_from_db()
-        assert(self.n1.log_gamma == pytest.approx(0.0))
-        assert(self.n2.log_gamma == pytest.approx(math.log(3)))
-        assert(self.n1.log_gamma_uncertainty == pytest.approx(1/3))
-        assert(self.n2.log_gamma_uncertainty == pytest.approx(1/3))
-        assert(self.n1.log_gamma_game_count == 44)
-        assert(self.n2.log_gamma_game_count == 44)
+        assert self.n1.log_gamma == pytest.approx(0.0)
+        assert self.n2.log_gamma == pytest.approx(math.log(3))
+        assert self.n1.log_gamma_uncertainty == pytest.approx(1 / 3)
+        assert self.n2.log_gamma_uncertainty == pytest.approx(1 / 3)
+        assert self.n1.log_gamma_game_count == 44
+        assert self.n2.log_gamma_game_count == 44
 
 
 class TestEloChain:
@@ -280,8 +286,8 @@ class TestEloChain:
             name="testrun",
             rating_game_probability=0.0,
             status="Active",
-            elo_number_of_iterations = 100,
-            virtual_draw_strength = 4.0,
+            elo_number_of_iterations=100,
+            virtual_draw_strength=4.0,
         )
         self.n1 = Network.objects.create(
             run=self.r1,
@@ -337,10 +343,18 @@ class TestEloChain:
         # 1/(sqrt5 + (1/sqrt5))^2 = 1/(5+2+1/5) 1/(36/5) = 5/36, which with 48 games comes out to
         # precision 20/3, and therefore uncertainty sqrt(3/20)
         self.games = []
-        self.games.extend(make_games(self.r1,self.u1,self.n1,self.n2,10,4,0,0,uidprefix="a")) # 18 games with prior
-        self.games.extend(make_games(self.r1,self.u1,self.n1,self.n3,0,6,5,3,uidprefix="b"))  # 18 games with prior
-        self.games.extend(make_games(self.r1,self.u1,self.n3,self.n4,5,17,3,7,uidprefix="c")) # 36 games with prior
-        self.games.extend(make_games(self.r1,self.u1,self.n4,self.n5,6,38,0,0,uidprefix="d")) # 48 games with prior
+        self.games.extend(
+            make_games(self.r1, self.u1, self.n1, self.n2, 10, 4, 0, 0, uidprefix="a")
+        )  # 18 games with prior
+        self.games.extend(
+            make_games(self.r1, self.u1, self.n1, self.n3, 0, 6, 5, 3, uidprefix="b")
+        )  # 18 games with prior
+        self.games.extend(
+            make_games(self.r1, self.u1, self.n3, self.n4, 5, 17, 3, 7, uidprefix="c")
+        )  # 36 games with prior
+        self.games.extend(
+            make_games(self.r1, self.u1, self.n4, self.n5, 6, 38, 0, 0, uidprefix="d")
+        )  # 48 games with prior
         RatingGame.objects.bulk_create(self.games)
 
     def teardown_method(self):
@@ -361,18 +375,18 @@ class TestEloChain:
         self.n3.refresh_from_db()
         self.n4.refresh_from_db()
         self.n5.refresh_from_db()
-        assert(self.n1.log_gamma == pytest.approx(0.0))
-        assert(self.n2.log_gamma == pytest.approx(-math.log(2)))
-        assert(self.n3.log_gamma == pytest.approx(math.log(2)))
-        assert(self.n4.log_gamma == pytest.approx(math.log(2)*2))
-        assert(self.n5.log_gamma == pytest.approx(math.log(2)*2+math.log(5)))
-        assert(self.n1.log_gamma_uncertainty == pytest.approx(0.5/math.sqrt(2)))
-        assert(self.n2.log_gamma_uncertainty == pytest.approx(0.5))
-        assert(self.n3.log_gamma_uncertainty == pytest.approx(math.sqrt(1/(4+8))))
-        assert(self.n4.log_gamma_uncertainty == pytest.approx(math.sqrt(1/(20/3 + 8))))
-        assert(self.n5.log_gamma_uncertainty == pytest.approx(math.sqrt(3/20)))
-        assert(self.n1.log_gamma_game_count == 28)
-        assert(self.n2.log_gamma_game_count == 14)
-        assert(self.n3.log_gamma_game_count == 46)
-        assert(self.n4.log_gamma_game_count == 76)
-        assert(self.n5.log_gamma_game_count == 44)
+        assert self.n1.log_gamma == pytest.approx(0.0)
+        assert self.n2.log_gamma == pytest.approx(-math.log(2))
+        assert self.n3.log_gamma == pytest.approx(math.log(2))
+        assert self.n4.log_gamma == pytest.approx(math.log(2) * 2)
+        assert self.n5.log_gamma == pytest.approx(math.log(2) * 2 + math.log(5))
+        assert self.n1.log_gamma_uncertainty == pytest.approx(0.5 / math.sqrt(2))
+        assert self.n2.log_gamma_uncertainty == pytest.approx(0.5)
+        assert self.n3.log_gamma_uncertainty == pytest.approx(math.sqrt(1 / (4 + 8)))
+        assert self.n4.log_gamma_uncertainty == pytest.approx(math.sqrt(1 / (20 / 3 + 8)))
+        assert self.n5.log_gamma_uncertainty == pytest.approx(math.sqrt(3 / 20))
+        assert self.n1.log_gamma_game_count == 28
+        assert self.n2.log_gamma_game_count == 14
+        assert self.n3.log_gamma_game_count == 46
+        assert self.n4.log_gamma_game_count == 76
+        assert self.n5.log_gamma_game_count == 44

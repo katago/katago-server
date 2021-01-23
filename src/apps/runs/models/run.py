@@ -1,20 +1,20 @@
 import numpy as np
-
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db.models import (
-    Model,
+    AutoField,
     BooleanField,
     CharField,
-    IntegerField,
-    FloatField,
-    TextField,
     DateTimeField,
-    TextChoices,
-    AutoField,
+    FloatField,
+    IntegerField,
+    Model,
     QuerySet,
+    TextChoices,
+    TextField,
 )
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import RegexValidator
-from django.core.exceptions import ValidationError
+
 
 class RunQuerySet(QuerySet):
     def select_current(self):
@@ -42,23 +42,26 @@ alphanumeric = RegexValidator(r"^[0-9a-zA-Z]*$", "Only alphanumeric characters a
 def validate_probability(value):
     if np.isnan(value) or value < 0 or value > 1:
         raise ValidationError(
-            _('%(value)s must range from 0 to 1'),
-            params={'value': value},
+            _("%(value)s must range from 0 to 1"),
+            params={"value": value},
         )
+
 
 def validate_positive(value):
     if np.isnan(value) or value < 0:
         raise ValidationError(
-            _('%(value)s must be positive'),
-            params={'value': value},
+            _("%(value)s must be positive"),
+            params={"value": value},
         )
+
 
 def validate_non_negative(value):
     if np.isnan(value) or value < 0:
         raise ValidationError(
-            _('%(value)s must be nonnegative'),
-            params={'value': value},
+            _("%(value)s must be nonnegative"),
+            params={"value": value},
         )
+
 
 class Run(Model):
     """
@@ -78,7 +81,13 @@ class Run(Model):
 
     id = AutoField(primary_key=True)
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
-    status = CharField(_("run status"), max_length=15, choices=RunStatus.choices, db_index=True, default=RunStatus.INACTIVE,)
+    status = CharField(
+        _("run status"),
+        max_length=15,
+        choices=RunStatus.choices,
+        db_index=True,
+        default=RunStatus.INACTIVE,
+    )
     name = CharField(
         _("name"),
         max_length=16,
@@ -139,13 +148,17 @@ class Run(Model):
     )
     rating_game_variability_scale = FloatField(
         _("Rating game variability scale"),
-        help_text=_("Rating games normally choose opponent proportional to variance of predicted result, set larger to add more variability, smaller to scale it down."),
+        help_text=_(
+            "Rating games normally choose opponent proportional to variance of predicted result, set larger to add more variability, smaller to scale it down."
+        ),
         default=1.0,
         validators=[validate_positive],
     )
     virtual_draw_strength = FloatField(
         _("Virtual draw strength"),
-        help_text=_("Between networks and parent networks, add a prior of equal Elo with strength equal to this many virtual draws."),
+        help_text=_(
+            "Between networks and parent networks, add a prior of equal Elo with strength equal to this many virtual draws."
+        ),
         default=4.0,
         validators=[validate_positive],
     )
@@ -155,15 +168,31 @@ class Run(Model):
         default=10,
         validators=[validate_positive],
     )
-    selfplay_client_config = TextField(_("Selfplay game config"), help_text=_("Client config for selfplay games."), default="FILL ME",)
-    rating_client_config = TextField(_("Rating game config"), help_text=_("Client config for rating games."), default="FILL ME",)
-    git_revision_hash_whitelist = TextField(_("Allowed client git revisions"), help_text=_("Newline-separated whitelist of allowed client git revision hashes, hash comments."), default="",)
+    selfplay_client_config = TextField(
+        _("Selfplay game config"),
+        help_text=_("Client config for selfplay games."),
+        default="FILL ME",
+    )
+    rating_client_config = TextField(
+        _("Rating game config"),
+        help_text=_("Client config for rating games."),
+        default="FILL ME",
+    )
+    git_revision_hash_whitelist = TextField(
+        _("Allowed client git revisions"),
+        help_text=_("Newline-separated whitelist of allowed client git revision hashes, hash comments."),
+        default="",
+    )
     restrict_to_user_whitelist = BooleanField(
         _("Restrict contributors?"),
         help_text=_("If true, restrict to specified allowed contributors."),
         default=False,
     )
-    user_whitelist = TextField(_("Allowed contrbutors"), help_text=_("Newline-separated whitelist of usernames to allow, hash comments."), default="",)
+    user_whitelist = TextField(
+        _("Allowed contrbutors"),
+        help_text=_("Newline-separated whitelist of usernames to allow, hash comments."),
+        default="",
+    )
     startpos_locked = BooleanField(
         _("StartPoses being updated?"),
         help_text=_("Are startposes in the middle of being updated?."),
@@ -176,12 +205,16 @@ class Run(Model):
     )
     min_network_usage_delay = FloatField(
         _("Min network usage delay"),
-        help_text=_("Minimum delay after upload in seconds to use networks for tasks. Randomized between min and max by client instance."),
+        help_text=_(
+            "Minimum delay after upload in seconds to use networks for tasks. Randomized between min and max by client instance."
+        ),
         default=0,
     )
     max_network_usage_delay = FloatField(
         _("Max network usage delay"),
-        help_text=_("Maximum delay after upload in seconds to use networks for tasks. Randomized between min and max by client instance."),
+        help_text=_(
+            "Maximum delay after upload in seconds to use networks for tasks. Randomized between min and max by client instance."
+        ),
         default=0,
     )
 
@@ -196,7 +229,7 @@ class Run(Model):
         user_whitelist = [s.split("#")[0].strip() for s in user_whitelist]
         user_whitelist = [s for s in user_whitelist if len(s) > 0]
         username = username.strip()
-        return (username in user_whitelist)
+        return username in user_whitelist
 
     def is_git_in_whitelist(self, git_revision_hash):
         git_revision_hash_whitelist = self.git_revision_hash_whitelist
@@ -204,5 +237,4 @@ class Run(Model):
         git_revision_hash_whitelist = [s.split("#")[0].strip().lower() for s in git_revision_hash_whitelist]
         git_revision_hash_whitelist = [s for s in git_revision_hash_whitelist if len(s) > 0]
         git_revision_hash = git_revision_hash.strip().lower()
-        return (git_revision_hash in git_revision_hash_whitelist)
-
+        return git_revision_hash in git_revision_hash_whitelist

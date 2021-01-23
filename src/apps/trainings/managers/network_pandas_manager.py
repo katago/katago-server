@@ -1,5 +1,5 @@
 import logging
-from math import log10, e
+from math import e, log10
 
 import numpy as np
 from django.db.models import Manager
@@ -29,7 +29,11 @@ class NetworkPandasManager(Manager):
         return NetworkPandasQuerySet(self.model, using=self._db)
 
     def get_ratings_dataframe(self, run):
-        rating_qs = self.filter(run=run).values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty", "log_gamma_game_count").all()
+        rating_qs = (
+            self.filter(run=run)
+            .values("id", "parent_network__pk", "log_gamma", "log_gamma_uncertainty", "log_gamma_game_count")
+            .all()
+        )
         rating = read_frame(rating_qs)
         rating = rating.set_index("id")
         rating = rating.sort_index()
@@ -58,5 +62,12 @@ class NetworkPandasManager(Manager):
                 network_db.log_gamma_game_count = dataframe.loc[network_db.id, "log_gamma_game_count"]
 
         self.bulk_update(
-            networks_db, ["log_gamma", "log_gamma_uncertainty", "log_gamma_upper_confidence", "log_gamma_lower_confidence", "log_gamma_game_count"],
+            networks_db,
+            [
+                "log_gamma",
+                "log_gamma_uncertainty",
+                "log_gamma_upper_confidence",
+                "log_gamma_lower_confidence",
+                "log_gamma_game_count",
+            ],
         )

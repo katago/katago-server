@@ -14,4 +14,3 @@ spec:
     protocol: TCP
     port: {{.Values.nginx.servicePort}}
     targetPort: {{.Values.nginx.containerPort}}
-

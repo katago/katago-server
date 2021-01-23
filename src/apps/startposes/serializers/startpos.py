@@ -1,5 +1,6 @@
-from rest_framework.serializers import HyperlinkedModelSerializer, ListSerializer
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from rest_framework.serializers import HyperlinkedModelSerializer, ListSerializer
 
 from src.apps.startposes.models import StartPos
 
@@ -13,11 +14,12 @@ class BulkStartPosSerializer(ListSerializer):
         result = [self.child.create(elt) for elt in validated_data]
 
         try:
-            StartPos.objects.bulk_create(result,batch_size=1000)
+            StartPos.objects.bulk_create(result, batch_size=1000)
         except IntegrityError as e:
             raise ValidationError(e)
 
         return result
+
 
 class StartPosSerializer(HyperlinkedModelSerializer):
     """
@@ -39,12 +41,12 @@ class StartPosSerializer(HyperlinkedModelSerializer):
         }
         list_serializer_class = BulkStartPosSerializer
 
-
-    def validate(self,data):
+    def validate(self, data):
         if not data["run"].startpos_locked:
-            raise ValidationError("Can only upload while run startPoses are locked to prevent startpos races from clients.")
+            raise ValidationError(
+                "Can only upload while run startPoses are locked to prevent startpos races from clients."
+            )
         return data
-
 
     def create(self, validated_data):
         instance = StartPos(**validated_data)

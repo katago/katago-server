@@ -1,16 +1,15 @@
 import pytest
-
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.db.utils import DataError
 from django.db import transaction
+from django.db.utils import DataError
 
 pytestmark = pytest.mark.django_db
 
 User = get_user_model()
 
-class TestUsernameLen:
 
+class TestUsernameLen:
     def setup_method(self):
         self.users = []
         self.bad_users = []
@@ -22,10 +21,18 @@ class TestUsernameLen:
             user.delete()
 
     def test_username_len(self):
-        self.users.append(User.objects.create_user(username="123456789012345678901234567890123456789012345678901234567890", password="test"))
+        self.users.append(
+            User.objects.create_user(
+                username="123456789012345678901234567890123456789012345678901234567890", password="test"
+            )
+        )
         with transaction.atomic():
             with pytest.raises(DataError):
-                self.users.append(User.objects.create_user(username="1234567890123456789012345678901234567890123456789012345678901", password="test"))
+                self.users.append(
+                    User.objects.create_user(
+                        username="1234567890123456789012345678901234567890123456789012345678901", password="test"
+                    )
+                )
 
         self.users.append(User.objects.create_user(username="123", password="test"))
         self.users.append(User.objects.create_user(username="quertyexample.com", password="test"))
@@ -55,5 +62,3 @@ class TestUsernameLen:
         with transaction.atomic():
             with pytest.raises(ValueError):
                 self.bad_users.append(User.objects.create_user(username="bob\x00", password="test"))
-
-
