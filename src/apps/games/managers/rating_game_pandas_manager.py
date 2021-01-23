@@ -1,9 +1,10 @@
 import logging
+from datetime import timedelta
+
 import pandas
 from django.db.models import Manager
-from django_pandas.io import read_frame
-from datetime import datetime, timedelta
 from django.utils import timezone
+from django_pandas.io import read_frame
 
 from src.apps.games.managers.rating_game_pandas_queryset import RatingGamePandasQuerySet
 from src.apps.runs.models import Run
@@ -49,34 +50,34 @@ class RatingGamePandasManager(Manager):
 
         queryset = self.get_queryset()
 
-        tournament_results = read_frame(queryset.get_total_games_count_as_white(run,before_time))
+        tournament_results = read_frame(queryset.get_total_games_count_as_white(run, before_time))
         tournament_results = pandas.merge(
             tournament_results,
-            read_frame(queryset.get_total_games_count_as_black(run,before_time)),
+            read_frame(queryset.get_total_games_count_as_black(run, before_time)),
             how="outer",
             on=["reference_network", "opponent_network"],
         )
         tournament_results = pandas.merge(
             tournament_results,
-            read_frame(queryset.get_total_wins_count_as_white(run,before_time)),
+            read_frame(queryset.get_total_wins_count_as_white(run, before_time)),
             how="outer",
             on=["reference_network", "opponent_network"],
         )
         tournament_results = pandas.merge(
             tournament_results,
-            read_frame(queryset.get_total_wins_count_as_black(run,before_time)),
+            read_frame(queryset.get_total_wins_count_as_black(run, before_time)),
             how="outer",
             on=["reference_network", "opponent_network"],
         )
         tournament_results = pandas.merge(
             tournament_results,
-            read_frame(queryset.get_total_draw_or_no_result_as_white(run,before_time)),
+            read_frame(queryset.get_total_draw_or_no_result_as_white(run, before_time)),
             how="outer",
             on=["reference_network", "opponent_network"],
         )
         tournament_results = pandas.merge(
             tournament_results,
-            read_frame(queryset.get_total_draw_or_no_result_as_black(run,before_time)),
+            read_frame(queryset.get_total_draw_or_no_result_as_black(run, before_time)),
             how="outer",
             on=["reference_network", "opponent_network"],
         )

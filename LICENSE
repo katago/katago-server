@@ -25,5 +25,3 @@ d3 (src/frontend/static/js/d3*.js): https://github.com/d3/d3/blob/master/LICENSE
 
 Additionally, this project was initially bootstrapped from django-cookiecutter:
 https://github.com/pydanny/cookiecutter-django
-
-

@@ -28,7 +28,7 @@ class NetworkViewSet(viewsets.ModelViewSet):
             return Response({"error": "No active run."}, status=404)
 
         try:
-            network = Network.objects.select_most_recent(current_run,for_training_games=True)
+            network = Network.objects.select_most_recent(current_run, for_training_games=True)
             if not network:
                 raise Network.DoesNotExist()
         except Network.DoesNotExist:
@@ -68,5 +68,3 @@ class NetworkViewSetForElo(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("run__name",)
     pagination_class = None
-
-

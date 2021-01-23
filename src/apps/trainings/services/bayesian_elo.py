@@ -1,5 +1,5 @@
-from math import exp, log, sqrt
 import logging
+from math import exp, log, sqrt
 
 import numpy as np
 import pandas
@@ -10,8 +10,10 @@ pandas_utils = PandasUtilsService()
 
 logger = logging.getLogger(__name__)
 
+
 class BayesEloInconsistentDataError(Exception):
     pass
+
 
 class BayesianRatingService:
     """
@@ -26,7 +28,7 @@ class BayesianRatingService:
         network_ratings: pandas.DataFrame,
         network_anchor_id,
         detailed_tournament_results: pandas.DataFrame,
-        virtual_draw_strength
+        virtual_draw_strength,
     ):
         self._network_ratings = network_ratings
         self._network_anchor_id = network_anchor_id
@@ -50,7 +52,7 @@ class BayesianRatingService:
 
         for iteration_index in range(number_of_iterations):
             for network_id in reversed(self._network_ratings.index):
-                network_log_gamma = self._network_ratings.loc[network_id,"log_gamma"]
+                network_log_gamma = self._network_ratings.loc[network_id, "log_gamma"]
                 self._update_specific_network_log_gamma(network_id, network_log_gamma)
             self._reset_anchor_log_gamma()
 
@@ -70,28 +72,33 @@ class BayesianRatingService:
             if network_id not in real_game_count_by_network.index:
                 self._network_ratings.loc[network_id, "log_gamma_game_count"] = 0
             else:
-                self._network_ratings.loc[network_id, "log_gamma_game_count"] = real_game_count_by_network.loc[network_id,"nb_games"]
+                self._network_ratings.loc[network_id, "log_gamma_game_count"] = real_game_count_by_network.loc[
+                    network_id, "nb_games"
+                ]
 
         return self._network_ratings
 
     def _assert_detailed_tournament_results_consistency(self):
         # Something is wrong if the total number of wins and draws summed across everything is inconsistent with the number of games
         game_count_times_two_via_results = (
-            2 * np.sum(self._detailed_tournament_results["total_wins_white"]) +
-            2 * np.sum(self._detailed_tournament_results["total_wins_black"]) +
-            np.sum(self._detailed_tournament_results["total_draw_or_no_result_white"]) +
-            np.sum(self._detailed_tournament_results["total_draw_or_no_result_black"])
+            2 * np.sum(self._detailed_tournament_results["total_wins_white"])
+            + 2 * np.sum(self._detailed_tournament_results["total_wins_black"])
+            + np.sum(self._detailed_tournament_results["total_draw_or_no_result_white"])
+            + np.sum(self._detailed_tournament_results["total_draw_or_no_result_black"])
         )
-        game_count_times_two_via_games = (
-            np.sum(self._detailed_tournament_results["total_games_white"]) +
-            np.sum(self._detailed_tournament_results["total_games_black"])
+        game_count_times_two_via_games = np.sum(self._detailed_tournament_results["total_games_white"]) + np.sum(
+            self._detailed_tournament_results["total_games_black"]
         )
         if game_count_times_two_via_results != game_count_times_two_via_games:
-            raise BayesEloInconsistentDataError("Inconsistent rating games results in Elo calculation: wins != games summed across networks")
+            raise BayesEloInconsistentDataError(
+                "Inconsistent rating games results in Elo calculation: wins != games summed across networks"
+            )
 
     def _assert_simplified_tournament_results_consistency(self):
         if np.min(self._simplified_tournament_results["nb_games"] - self._simplified_tournament_results["nb_wins"]) < 0:
-            raise BayesEloInconsistentDataError("Inconsistent rating games results in Elo calculation: simplified wins > games for some network")
+            raise BayesEloInconsistentDataError(
+                "Inconsistent rating games results in Elo calculation: simplified wins > games for some network"
+            )
 
     def _get_games_played_by_specific_network(self, network_id):
         """
@@ -105,9 +112,9 @@ class BayesianRatingService:
 
     def _add_virtual_draws(self):
         """
-         Whenever a NEW player is added to the above, it is necessary to add a Bayesian prior to obtain good results
-         and keep the math from blowing up.
-         A reasonable prior is to add some number of "virtual draws" between the new player and the immediately previous neural net version.
+        Whenever a NEW player is added to the above, it is necessary to add a Bayesian prior to obtain good results
+        and keep the math from blowing up.
+        A reasonable prior is to add some number of "virtual draws" between the new player and the immediately previous neural net version.
         """
         virtual_draws_src = []
         network_ids = list(self._network_ratings.index)
@@ -153,10 +160,17 @@ class BayesianRatingService:
                             virtual_draws_src.append(draw1)
                             virtual_draws_src.append(draw2)
 
-        virtual_draw = pandas.DataFrame(virtual_draws_src,columns=["reference_network","opponent_network","total_bayesian_virtual_draws"])
+        virtual_draw = pandas.DataFrame(
+            virtual_draws_src, columns=["reference_network", "opponent_network", "total_bayesian_virtual_draws"]
+        )
         # logger.warning(virtual_draw.to_string())
 
-        tournament_results = pandas.merge(self._detailed_tournament_results, virtual_draw, how="outer", on=["reference_network", "opponent_network"],)
+        tournament_results = pandas.merge(
+            self._detailed_tournament_results,
+            virtual_draw,
+            how="outer",
+            on=["reference_network", "opponent_network"],
+        )
         # panda_utils.print_data_frame(tournament_results)
         tournament_results.fillna(0, inplace=True)
         self._detailed_tournament_results = tournament_results
@@ -255,7 +269,7 @@ class BayesianRatingService:
         uncertainty = sqrt(1.0 / precision)
         # Cap the amount of uncertainty, so that if we nearly divide by 0, we don't end up with a totally ridiculous number
         # for user display and game matching and other such purposes.
-        uncertainty = min(uncertainty,10.0)
+        uncertainty = min(uncertainty, 10.0)
         self._network_ratings.loc[network_id, "log_gamma_uncertainty"] = uncertainty
 
     def _calculate_specific_network_precision(self, network_id, network_log_gamma):
@@ -279,4 +293,3 @@ class BayesianRatingService:
             # logger.warning(repr(game) + " " + str(this_game_precision) + " " + str(game.nb_games))
 
         return total_precision
-

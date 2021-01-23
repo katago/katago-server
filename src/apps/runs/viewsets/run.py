@@ -1,12 +1,11 @@
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
-from src.contrib.permission import ReadOnly
-
 from src.apps.runs.models import Run
 from src.apps.runs.serializers import RunSerializer, RunSerializerForClient
+from src.contrib.permission import ReadOnly
 
 
 class RunViewSet(viewsets.ModelViewSet):

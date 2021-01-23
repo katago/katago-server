@@ -1,7 +1,7 @@
 import random
+from math import e, exp, log1p, log10
 
 import numpy as np
-from math import log10, e, exp, log1p
 
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
@@ -49,7 +49,9 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_high_upper_confidence(self.current_run,for_rating_games=True,network_delay=self.network_delay)
+        reference_network = Network.objects.select_high_upper_confidence(
+            self.current_run, for_rating_games=True, network_delay=self.network_delay
+        )
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -64,7 +66,9 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_high_uncertainty(self.current_run,for_rating_games=True,network_delay=self.network_delay)
+        reference_network = Network.objects.select_high_uncertainty(
+            self.current_run, for_rating_games=True, network_delay=self.network_delay
+        )
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -79,7 +83,9 @@ class RatingNetworkPairerService:
 
         :return: Tuple of (white_network,black_network), or None if no pairing could be generated
         """
-        reference_network = Network.objects.select_low_data(self.current_run,for_rating_games=True,network_delay=self.network_delay)
+        reference_network = Network.objects.select_low_data(
+            self.current_run, for_rating_games=True, network_delay=self.network_delay
+        )
         opponent_network = self._choose_opponent(reference_network)
         if reference_network is None or opponent_network is None:
             return None
@@ -103,15 +109,27 @@ class RatingNetworkPairerService:
 
         # Vary the reference net's log gamma so that networks that are uncertain will play a greater variety of opponents
         # based on that uncertainty
-        ref_net_log_gamma = reference_network.log_gamma + np.random.normal() * reference_network.log_gamma_uncertainty * self.current_run.rating_game_variability_scale
+        ref_net_log_gamma = (
+            reference_network.log_gamma
+            + np.random.normal()
+            * reference_network.log_gamma_uncertainty
+            * self.current_run.rating_game_variability_scale
+        )
 
-        log_gamma_search_range = 1200 / (400 * log10(e))  # Hardcoded window of 1200 Elo, we could dehardcode if needed in the future
+        log_gamma_search_range = 1200 / (
+            400 * log10(e)
+        )  # Hardcoded window of 1200 Elo, we could dehardcode if needed in the future
         log_gamma_lower_bound = ref_net_log_gamma - log_gamma_search_range
         log_gamma_upper_bound = ref_net_log_gamma + log_gamma_search_range
 
         nearby_networks = (
             Network.objects.exclude(pk=reference_network.pk)
-            .filter(run=self.current_run, rating_games_enabled=True, log_gamma__lte=log_gamma_upper_bound, log_gamma__gte=log_gamma_lower_bound,)
+            .filter(
+                run=self.current_run,
+                rating_games_enabled=True,
+                log_gamma__lte=log_gamma_upper_bound,
+                log_gamma__gte=log_gamma_lower_bound,
+            )
             .all()
         )
         if len(nearby_networks) < 4:
@@ -133,12 +151,15 @@ class RatingNetworkPairerService:
             return np.random.choice(nearby_networks)
 
         log_variances = [
-            self._log_variance_of_gamma_difference((opp_net.log_gamma - ref_net_log_gamma) / self.current_run.rating_game_variability_scale) for opp_net in nearby_networks
+            self._log_variance_of_gamma_difference(
+                (opp_net.log_gamma - ref_net_log_gamma) / self.current_run.rating_game_variability_scale
+            )
+            for opp_net in nearby_networks
         ]
         max_log_variance = max(log_variances)
         # Subtract out the max to make sure that we're near 0, for numerical stability
-        log_variances = [ log_variance - max_log_variance for log_variance in log_variances ]
-        variances = [ exp(log_variance) for log_variance in log_variances ]
+        log_variances = [log_variance - max_log_variance for log_variance in log_variances]
+        variances = [exp(log_variance) for log_variance in log_variances]
         # print(log_variances)
         # print(variances)
         return np.random.choice(nearby_networks, p=variances / np.sum(variances))
@@ -153,4 +174,3 @@ class RatingNetworkPairerService:
         if x >= 40:
             return x
         return log1p(exp(x))
-

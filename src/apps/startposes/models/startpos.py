@@ -1,23 +1,13 @@
-import os
-import numpy as np
 import random
 
-from django.core.validators import RegexValidator
-from django.db.models import (
-    Model,
-    CharField,
-    DateTimeField,
-    FloatField,
-    ForeignKey,
-    PROTECT,
-    BigAutoField,
-    QuerySet,
-)
+import numpy as np
 from django.contrib.postgres.fields import JSONField
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.db.models import PROTECT, BigAutoField, CharField, DateTimeField, FloatField, ForeignKey, Model, QuerySet
+from django.utils.translation import gettext_lazy as _
 
 from src.apps.runs.models import Run
+
 
 class StartPosQuerySet(QuerySet):
     def select_weighted_random(self):
@@ -30,14 +20,16 @@ class StartPosQuerySet(QuerySet):
         if total_weight <= 0:
             return None
         r = random.random() * total_weight
-        return self.filter(run=current_run,cumulative_weight__gte=r).order_by("cumulative_weight").first()
+        return self.filter(run=current_run, cumulative_weight__gte=r).order_by("cumulative_weight").first()
+
 
 def validate_weight(value):
     if np.isnan(value) or value <= 0 or value > 1e200:
         raise ValidationError(
-            _('%(value)s must be positive and not absurdly large'),
-            params={'value': value},
+            _("%(value)s must be positive and not absurdly large"),
+            params={"value": value},
         )
+
 
 class StartPos(Model):
     """
@@ -54,7 +46,15 @@ class StartPos(Model):
         db_table = "startposes_startpos"
 
     id = BigAutoField(primary_key=True)
-    run = ForeignKey(Run, verbose_name=_("run"), on_delete=PROTECT, null=False, blank=False, related_name="%(class)s_games", db_index=True,)
+    run = ForeignKey(
+        Run,
+        verbose_name=_("run"),
+        on_delete=PROTECT,
+        null=False,
+        blank=False,
+        related_name="%(class)s_games",
+        db_index=True,
+    )
     created_at = DateTimeField(_("creation date"), auto_now_add=True, db_index=True)
     data = JSONField(
         _("data"),
@@ -78,8 +78,15 @@ class StartPos(Model):
         db_index=True,
     )
     notes = CharField(
-        _("notes"), max_length=1024, default="", null=False, blank=True, help_text=_("Special notes or info about this startpos."), db_index=False,
+        _("notes"),
+        max_length=1024,
+        default="",
+        null=False,
+        blank=True,
+        help_text=_("Special notes or info about this startpos."),
+        db_index=False,
     )
+
 
 class StartPosCumWeightOnly(Model):
     """
@@ -92,5 +99,9 @@ class StartPosCumWeightOnly(Model):
 
     id = BigAutoField(primary_key=True)
     cumulative_weight = FloatField(
-        _("cumulative_weight"), default=-1, null=False, help_text=_("Cumulative weight, for efficient random selection."), db_index=True,
+        _("cumulative_weight"),
+        default=-1,
+        null=False,
+        help_text=_("Cumulative weight, for efficient random selection."),
+        db_index=True,
     )

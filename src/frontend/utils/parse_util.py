@@ -1,5 +1,6 @@
 from django.http import Http404
 
+
 def parse_int_or_404(x):
     if x:
         try:

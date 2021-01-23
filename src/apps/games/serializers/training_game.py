@@ -1,12 +1,8 @@
 from django.core.exceptions import ValidationError
-from rest_framework.serializers import (
-    HyperlinkedModelSerializer,
-    HiddenField,
-    CurrentUserDefault,
-)
+from rest_framework.serializers import CurrentUserDefault, HiddenField, HyperlinkedModelSerializer
 
-from src.apps.runs.models import Run
 from src.apps.games.models import TrainingGame, validate_game_npzdata
+from src.apps.runs.models import Run
 from src.apps.trainings.serializers import NetworkSerializerForTasks
 from src.apps.users.serializers import LimitedUserSerializer
 
@@ -52,7 +48,7 @@ class TrainingGameCreateSerializer(HyperlinkedModelSerializer):
             "black_network": {"lookup_field": "name"},
         }
 
-    def validate(self,data):
+    def validate(self, data):
         validate_game_npzdata(data["training_data_file"], data["run"])
         if not data["white_network"].training_games_enabled or not data["black_network"].training_games_enabled:
             raise ValidationError("Network is no longer enabled for training games")

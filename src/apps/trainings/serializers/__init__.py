@@ -1,1 +1,1 @@
-from .network import NetworkSerializer, NetworkSerializerForTasks, NetworkSerializerForElo
+from .network import NetworkSerializer, NetworkSerializerForElo, NetworkSerializerForTasks

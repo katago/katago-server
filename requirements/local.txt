@@ -30,4 +30,3 @@ django-extensions==3.0.9  # https://github.com/django-extensions/django-extensio
 django-coverage-plugin==1.8.0  # https://github.com/nedbat/django_coverage_plugin
 pytest-django==4.1.0  # https://github.com/pytest-dev/pytest-django
 django-cleanup==5.1.0 # https://pypi.org/project/django-cleanup/
-

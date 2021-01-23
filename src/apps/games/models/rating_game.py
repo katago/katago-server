@@ -1,9 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.db.models import Manager
 from django.utils.translation import gettext_lazy as _
-from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_delete
-from django.core.files.storage import default_storage
-from django.core.exceptions import ValidationError
 
 from src.apps.games.managers.rating_game_pandas_manager import RatingGamePandasManager
 from src.apps.games.models.abstract_game import AbstractGame

@@ -1,5 +1,6 @@
 from django.db.models import FileField
 
+
 class VariableStorageFileField(FileField):
     """
     Disregard the storage kwarg when creating migrations for this field, so as to make migrations
@@ -9,5 +10,5 @@ class VariableStorageFileField(FileField):
 
     def deconstruct(self):
         name, path, args, kwargs = super(VariableStorageFileField, self).deconstruct()
-        kwargs.pop('storage', None)
+        kwargs.pop("storage", None)
         return name, path, args, kwargs
