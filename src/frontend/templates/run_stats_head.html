@@ -419,30 +419,30 @@ function makeGraph() {
     };
     rerenderDataAfterScaling(0);
 
+    var postProcessXScaleChanging = function() {
+      xAxis.scale(xScale);
+      yScale.domain(computeYDomainFromXDomain(xScale.domain()));
+      unzoomedYDomainMin = yScale.domain()[0];
+      unzoomedYDomainMax = yScale.domain()[1];
+      rerenderDataAfterScaling(0);
+    };
+
     // Enable buttons
     d3.select("#eloGraphTimeButton").on("click", function () {
       setXScaleAsTime();
-      xAxis.scale(xScale);
-      yScale.domain(computeYDomainFromXDomain(xScale.domain()));
-      rerenderDataAfterScaling(0);
+      postProcessXScaleChanging();
     });
     d3.select("#eloGraphDataRowsButton").on("click", function () {
       setXScaleAsDataRows();
-      xAxis.scale(xScale);
-      yScale.domain(computeYDomainFromXDomain(xScale.domain()));
-      rerenderDataAfterScaling(0);
+      postProcessXScaleChanging();
     });
     d3.select("#eloGraphDataRowsLogButton").on("click", function () {
       setXScaleAsDataRowsLog();
-      xAxis.scale(xScale);
-      yScale.domain(computeYDomainFromXDomain(xScale.domain()));
-      rerenderDataAfterScaling(0);
+      postProcessXScaleChanging();
     });
     d3.select("#eloGraphDataRowsLogRecentButton").on("click", function () {
       setXScaleAsDataRowsLogRecent();
-      xAxis.scale(xScale);
-      yScale.domain(computeYDomainFromXDomain(xScale.domain()));
-      rerenderDataAfterScaling(0);
+      postProcessXScaleChanging();
     });
 
     //Add legend
