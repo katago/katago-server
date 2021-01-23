@@ -31,12 +31,12 @@ A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_rando
 {% endblocktrans %}
 
 <p>
-{% if latest_network and latest_network.model_file %}
-{% trans "Latest network" %}: <a href="{{ latest_network.model_download_url }}">{{ latest_network.name }}</a>
+{% if latest_network and latest_network.model_file %}{
+<span class="has-text-weight-medium">% trans "Latest network" %}:</span> <a href="{{ latest_network.model_download_url }}">{{ latest_network.name }}</a>
 {% endif %}
 <p>
 {% if strongest_confident_network and strongest_confident_network.model_file %}
-{% trans "Strongest confidently-rated network" %}: <a href="{{ strongest_confident_network.model_download_url }}">{{ strongest_confident_network.name }}</a>
+<span class="has-text-weight-medium">{% trans "Strongest confidently-rated network" %}:</span> <a href="{{ strongest_confident_network.model_download_url }}">{{ strongest_confident_network.name }}</a>
 {% endif %}
 
 <h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
@@ -52,6 +52,8 @@ Click and drag to zoom. Double-click or click on a button to reset zoom.
 <button id="eloGraphTimeButton" class="button eloGraphButton">By Upload Time</button>
 <button id="eloGraphDataRowsButton" class="button eloGraphButton">By Data Rows (linear)</button>
 <button id="eloGraphDataRowsLogButton" class="button eloGraphButton">By Data Rows (log)</button>
+{% endblocktrans %}
+{% blocktrans %}
 <button id="eloGraphDataRowsLogRecentButton" class="button eloGraphButton">By Data Rows (log, recent)</button>
 {% endblocktrans %}
 </div>
