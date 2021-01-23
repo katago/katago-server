@@ -1,6 +1,5 @@
 import base64
 import copy
-import math
 
 import pytest
 from django.contrib.auth import get_user_model

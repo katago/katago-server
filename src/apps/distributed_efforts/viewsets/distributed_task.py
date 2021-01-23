@@ -5,7 +5,6 @@ from struct import unpack
 
 from django.db import IntegrityError
 from rest_framework import serializers, viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from src.apps.distributed_efforts.models import UserLastVersion

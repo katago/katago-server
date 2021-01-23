@@ -1,5 +1,4 @@
 import logging
-from math import e, log10
 
 import numpy as np
 from django.db.models import Manager

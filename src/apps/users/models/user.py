@@ -1,11 +1,8 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import CharField, UUIDField
-from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 

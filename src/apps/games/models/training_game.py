@@ -5,10 +5,8 @@ from io import BytesIO
 import numpy as np
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.files.storage import default_storage, get_storage_class
-from django.db.models import FileField, IntegerField
-from django.db.models.signals import post_delete, pre_save
-from django.dispatch import receiver
+from django.core.files.storage import get_storage_class
+from django.db.models import IntegerField
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 

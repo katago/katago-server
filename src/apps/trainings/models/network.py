@@ -13,7 +13,6 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
-    FileField,
     FloatField,
     ForeignKey,
     Model,

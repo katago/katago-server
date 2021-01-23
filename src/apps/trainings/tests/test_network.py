@@ -1,14 +1,10 @@
 import base64
-import copy
-import math
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from rest_framework.test import APIClient
 
-from src.apps.games.models import GameCountByNetwork, GameCountByUser, RatingGame, TrainingGame
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network
 

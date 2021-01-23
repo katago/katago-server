@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 
-from src.apps.games.models import GameCountByNetwork, GameCountByUser, RatingGame, TrainingGame
+from src.apps.games.models import RatingGame, TrainingGame
 from src.apps.games.tests.test_game import goodnpzbase64
 from src.apps.runs.models import Run
 from src.apps.trainings.models import Network

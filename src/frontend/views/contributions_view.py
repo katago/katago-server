@@ -5,8 +5,6 @@ from django.views.generic import ListView
 from src.apps.games.models import DayGameCountByUser, GameCountByUser, RecentGameCountByUser
 from src.apps.runs.models import Run
 
-from . import view_utils
-
 
 class ContributionsView(ListView):
     template_name = "pages/contributions.html"

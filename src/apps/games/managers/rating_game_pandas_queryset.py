@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from django.apps import apps
 from django.db.models import Count, F, Q, QuerySet
 

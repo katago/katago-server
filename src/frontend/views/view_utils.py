@@ -1,6 +1,4 @@
-import math
-
-from django.db.models import Count, Q, Sum
+from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 
 from src.apps.games.models import DayGameCountByUser, GameCountByNetwork, GameCountByUser, RecentGameCountByUser

@@ -1,10 +1,8 @@
-import os
 import random
 
 import numpy as np
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from django.db.models import PROTECT, BigAutoField, CharField, DateTimeField, FloatField, ForeignKey, Model, QuerySet
 from django.utils.translation import gettext_lazy as _
 

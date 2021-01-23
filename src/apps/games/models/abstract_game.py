@@ -11,7 +11,6 @@ from django.db.models import (
     CharField,
     DateTimeField,
     DecimalField,
-    FileField,
     ForeignKey,
     IntegerField,
     Model,
