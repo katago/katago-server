@@ -31,8 +31,8 @@ A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_rando
 {% endblocktrans %}
 
 <p>
-{% if latest_network and latest_network.model_file %}{
-<span class="has-text-weight-medium">% trans "Latest network" %}:</span> <a href="{{ latest_network.model_download_url }}">{{ latest_network.name }}</a>
+{% if latest_network and latest_network.model_file %}
+<span class="has-text-weight-medium">{% trans "Latest network" %}:</span> <a href="{{ latest_network.model_download_url }}">{{ latest_network.name }}</a>
 {% endif %}
 <p>
 {% if strongest_confident_network and strongest_confident_network.model_file %}
