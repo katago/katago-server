@@ -75,8 +75,6 @@ class TrainingGameAdmin(admin.ModelAdmin):
         "handicap",
         "board_size_x",
         "board_size_y",
-        "white_network",
-        "komi",
         "submitted_by",
     )
     list_display = (
