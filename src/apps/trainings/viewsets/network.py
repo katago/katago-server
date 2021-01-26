@@ -61,7 +61,7 @@ class NetworkViewSetForElo(viewsets.ReadOnlyModelViewSet):
     API endpoint for getting Elo ratings from models
     """
 
-    queryset = Network.objects.all()
+    queryset = Network.objects.filter(log_gamma_game_count__gte=25).all()
     permission_classes = [ReadOnly]
     serializer_class = NetworkSerializerForElo
     lookup_field = "name"
