@@ -97,6 +97,11 @@ def add_run_stats_context(run, context):
         total_num_training_games=Sum("total_num_training_games"),
         total_num_rating_games=Sum("total_num_rating_games"),
     )
+    day_games_stats = DayGameCountByUser.objects.filter(run=run).aggregate(
+        total_num_training_rows=Sum("total_num_training_rows"),
+        total_num_training_games=Sum("total_num_training_games"),
+        total_num_rating_games=Sum("total_num_rating_games"),
+    )
 
     context["num_recent_contributors_this_run"] = (
         RecentGameCountByUser.objects.filter(run=run)
@@ -116,6 +121,9 @@ def add_run_stats_context(run, context):
     context["num_recent_training_rows_this_run"] = default_zero(recent_games_stats["total_num_training_rows"])
     context["num_recent_training_games_this_run"] = default_zero(recent_games_stats["total_num_training_games"])
     context["num_recent_rating_games_this_run"] = default_zero(recent_games_stats["total_num_rating_games"])
+    context["num_day_training_rows_this_run"] = default_zero(day_games_stats["total_num_training_rows"])
+    context["num_day_training_games_this_run"] = default_zero(day_games_stats["total_num_training_games"])
+    context["num_day_rating_games_this_run"] = default_zero(day_games_stats["total_num_rating_games"])
 
     context["num_networks_this_run_excluding_random"] = Network.objects.filter(run=run, is_random=False).count()
 
