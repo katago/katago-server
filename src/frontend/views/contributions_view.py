@@ -34,7 +34,6 @@ class ContributionsView(ListView):
                 total_num_rating_games=Sum("total_num_rating_games"),
             )
             .order_by("-total_num_training_rows")
-            .all()[:30]
         )
         context["top_day_user_list"] = (
             DayGameCountByUser.objects.all()
@@ -45,7 +44,6 @@ class ContributionsView(ListView):
                 total_num_rating_games=Sum("total_num_rating_games"),
             )
             .order_by("-total_num_training_rows")
-            .all()[:30]
         )
 
         return context
@@ -80,7 +78,6 @@ class ContributionsByRunView(ListView):
                 total_num_rating_games=Sum("total_num_rating_games"),
             )
             .order_by("-total_num_training_rows")
-            .all()[:30]
         )
         context["top_day_user_list"] = (
             DayGameCountByUser.objects.filter(run=self.run)
@@ -91,7 +88,6 @@ class ContributionsByRunView(ListView):
                 total_num_rating_games=Sum("total_num_rating_games"),
             )
             .order_by("-total_num_training_rows")
-            .all()[:30]
         )
 
         context["run"] = self.run
