@@ -59,6 +59,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.admindocs",
+    "django.contrib.humanize",
 ]
 THIRD_PARTY_APPS = [
     "allauth",

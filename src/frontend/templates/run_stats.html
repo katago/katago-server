@@ -1,18 +1,26 @@
 {% load i18n %}
 {% load custom_translation %}
+{% load humanize %}
 
 {% with run_name=run.name %}
 
 <h3 class="is-size-3 mt-3"> {% trans "Data Generation" %} </h3>
 
-{% blocktrans %}
-Across all time, {{ num_total_contributors_this_run }} distinct users have uploaded {{ total_num_training_rows_this_run }} rows of training data, {{ total_num_training_games_this_run }} training games, and {{ total_num_rating_games_this_run }} rating games.
+{% blocktrans with ncontrib=num_total_contributors_this_run ntrainrows=total_num_training_rows_this_run|intcomma ntraingames=total_num_training_games_this_run|intcomma nratgames=total_num_rating_games_this_run|intcomma %}
+Across all time, {{ ncontrib }} distinct users have uploaded {{ ntrainrows }} rows of training data, {{ ntraingames }} training games, and {{ nratgames }} rating games.
 {% endblocktrans %}
 
 {% if num_recent_contributors_this_run > 0 %}
 <p>
-{% blocktrans %}
-In the last week, {{ num_recent_contributors_this_run }} distinct users have uploaded {{ num_recent_training_rows_this_run }} rows of training data, {{ num_recent_training_games_this_run }} new training games, and {{ num_recent_rating_games_this_run }} new rating games.
+{% blocktrans with ncontrib=num_recent_contributors_this_run ntrainrows=num_recent_training_rows_this_run|intcomma ntraingames=num_recent_training_games_this_run|intcomma nratgames=num_recent_rating_games_this_run|intcomma %}
+In the last week, {{ ncontrib }} distinct users have uploaded {{ ntrainrows }} rows of training data, {{ ntraingames }} new training games, and {{ nratgames }} new rating games.
+{% endblocktrans %}
+{% endif %}
+
+{% if num_day_contributors_this_run > 0 %}
+<p>
+{% blocktrans with ncontrib=num_day_contributors_this_run ntrainrows=num_day_training_rows_this_run|intcomma ntraingames=num_day_training_games_this_run|intcomma nratgames=num_day_rating_games_this_run|intcomma %}
+In the last 24h, {{ ncontrib }} distinct users have uploaded {{ ntrainrows }} rows of training data, {{ ntraingames }} new training games, and {{ nratgames }} new rating games.
 {% endblocktrans %}
 {% endif %}
 
@@ -41,8 +49,8 @@ A total of <a href="{{ networks_url }}">{{ num_networks_this_run_excluding_rando
 
 <h5 class="is-size-5 mt-3"> {% trans "Approximate Elo Ratings Graph" %} </h3>
 
-{% blocktrans %}
-Graph is based on about {{ total_num_rating_games_this_run }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets, but otherwise are fresh and unbiased and involve a variety of nets to avoid rock-paper-scissors. Vertical bars indicate approximately a 95% confidence interval.
+{% blocktrans with num_rating_games=total_num_rating_games_this_run|intcomma %}
+Graph is based on about {{ num_rating_games }} rating games using mid to high hundreds of playouts. Ratings might still be mildly inflated due to only playing other KataGo nets, but otherwise are fresh and unbiased and involve a variety of nets to avoid rock-paper-scissors. Vertical bars indicate approximately a 95% confidence interval.
 <p class="mt-2">
 Click and drag to zoom. Double-click or click on a button to reset zoom.
 {% endblocktrans %}
