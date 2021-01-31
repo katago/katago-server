@@ -245,6 +245,14 @@ class AbstractGame(Model):
         db_index=True,
         unique=True,
     )
+    disabled = BooleanField(
+        _("disabled"),
+        default=False,
+        db_index=True,
+        help_text=_(
+            "Game should not be used for training or rating? (Note: setting this field alone doesn't affect training, must also update shuffle excludes)"
+        ),
+    )
 
     @property
     def result_text(self):

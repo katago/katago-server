@@ -111,6 +111,7 @@ class TrainingGameAdmin(admin.ModelAdmin):
                 "fields": (
                     "submitted_by",
                     "extra_metadata",
+                    "disabled",
                 )
             },
         ),
