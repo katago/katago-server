@@ -94,6 +94,7 @@ window.addEventListener("load", function() {
 <li> <strong>{% trans "Game Length (moves)" %}:</strong> {{ game.game_length }} </li>
 <li> <strong>{% trans "Extra Metadata" %}:</strong> {{ game.extra_metadata }} </li>
 <li> <strong>{% trans "Game Outcome" %}:</strong> {{ game.result_text }} </li>
+<li> <strong>{% trans "Disabled" %}:</strong> {{ game.disabled }} </li>
 </ul>
 </div>
 {% endblock content %}

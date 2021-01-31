@@ -89,6 +89,7 @@ class RatingGameListSerializer(HyperlinkedModelSerializer):
             "black_network",
             "sgf_file",
             "kg_game_uid",
+            "disabled",
         ]
         extra_kwargs = {
             "run": {"lookup_field": "name"},

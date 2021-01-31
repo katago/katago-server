@@ -92,6 +92,7 @@ class TrainingGameListSerializer(HyperlinkedModelSerializer):
             "training_data_file",
             "num_training_rows",
             "kg_game_uid",
+            "disabled",
         ]
         extra_kwargs = {
             "run": {"lookup_field": "name"},
