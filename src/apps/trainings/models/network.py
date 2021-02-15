@@ -215,23 +215,27 @@ class Network(Model):
     )
 
     def __str__(self):
-        return f"{self.name} ({self.elo}±{2 * self.elo_uncertainty})"
+        return f"{self.name} ({self.elo:.{self.elo_precision}f}±{2 * self.elo_uncertainty:.{self.elo_precision}f})"
 
     @property
     def size(self):
         return f"{self.network_size}"
 
     @property
+    def elo_precision(self):
+        return 1
+
+    @property
     def elo(self):
-        return round(self.log_gamma * 400 * log10(e), ndigits=1)
+        return self.log_gamma * 400 * log10(e)
 
     @property
     def elo_uncertainty(self):
-        return round(self.log_gamma_uncertainty * 400 * log10(e), ndigits=1)
+        return self.log_gamma_uncertainty * 400 * log10(e)
 
     @property
     def rating(self):
-        return f"{self.elo} ± {2 * self.elo_uncertainty}"
+        return f"{self.elo:.{self.elo_precision}f} ± {2 * self.elo_uncertainty:.{self.elo_precision}f}"
 
     @property
     def model_download_url(self):
