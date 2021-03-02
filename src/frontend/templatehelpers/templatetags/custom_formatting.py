@@ -37,3 +37,9 @@ def game_winner_class(game, network):
     if game.winner == "W" and game.black_network.name == network.name:
         return "loserResultStyle"
     return "drawResultStyle"
+
+@register.filter()
+def network_row_style(network, strongest_confident_network):
+    if network.name == strongest_confident_network.name:
+        return "strongestNetworkRowStyle"
+    return "networkRowStyle"
