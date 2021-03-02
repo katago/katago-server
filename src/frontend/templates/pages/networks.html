@@ -55,7 +55,7 @@ Elo ratings are approximate and are *not* necessarily comparable to the Elos fro
     <th> {% trans "Raw TF Weights" %} </th>
   </tr>
   {% for network in network_list %}
-  <tr>
+  <tr class="{{ network|network_row_style:strongest_confident_network }}">
     <td>
       {{ network.name }}
       {% if network.notes %}
