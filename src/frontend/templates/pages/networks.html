@@ -42,7 +42,7 @@ Elo ratings are approximate and are *not* necessarily comparable to the Elos fro
 {% endif %}
 <p>
 {% if strongest_confident_network and strongest_confident_network.model_file %}
-<span class="has-text-weight-medium">{% trans "Strongest confidently-rated network" %}:</span> <a href="{{ strongest_confident_network.model_download_url }}">{{ strongest_confident_network.name }}</a>
+<span class="strongestNetworkStyle"><span class="has-text-weight-medium">{% trans "Strongest confidently-rated network" %}:</span> <a href="{{ strongest_confident_network.model_download_url }}">{{ strongest_confident_network.name }}</a></span>
 {% endif %}
 
 <table class="table mt-3">
