@@ -31,7 +31,7 @@
 {% if run %}
 <h2 class="is-size-2 mt-4"> {% blocktrans with run_name=run.name %} Stats for {{run_name}} {% endblocktrans %} </h2>
 {% blocktrans with run_name=run.name run_created_at=run.created_at|isotimestr %}
-The current ongoing run is named {{run_name}} and began on {{ run_created_at }}.
+This run is named {{run_name}} and began on {{ run_created_at }}.
 {% endblocktrans %}
 {% include 'run_stats.html' %}
 {% endif %}

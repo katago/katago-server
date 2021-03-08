@@ -100,3 +100,8 @@ CELERY_FLOWER_USER=katago_server_user
 # NETWORK_USE_GOOGLE_CLOUD_STORAGE=False
 # SGF_USE_GOOGLE_CLOUD_STORAGE=False
 # NPZ_USE_GOOGLE_CLOUD_STORAGE=False
+
+# Can be used to make downloads go through a proxy/mirror
+# NETWORK_USE_PROXY_DOWNLOAD: "False"
+# NETWORK_PROXY_DOWNLOAD_URL_BASE: "https://media.example.com/"
+
