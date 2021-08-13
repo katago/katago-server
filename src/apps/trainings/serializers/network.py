@@ -4,6 +4,38 @@ from rest_framework.serializers import HyperlinkedModelSerializer
 
 from src.apps.trainings.models import Network
 
+class NetworkFileField(serializers.FileField):
+    def get_attribute(self, instance):
+        # Pass the entire object instance, not just the field
+        return instance
+
+    def to_representation(self, obj):
+        if not obj:
+            return None
+        url = obj.model_download_url
+        if not url:
+            return None
+        request = self.context.get("request", None)
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
+
+class NetworkZipFileField(serializers.FileField):
+    def get_attribute(self, instance):
+        # Pass the entire object instance, not just the field
+        return instance
+
+    def to_representation(self, obj):
+        if not obj:
+            return None
+        url = obj.model_zip_download_url
+        if not url:
+            return None
+        request = self.context.get("request", None)
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
+
 
 class NetworkSerializer(HyperlinkedModelSerializer):
     """
@@ -41,6 +73,9 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "run": {"lookup_field": "name"},
             "parent_network": {"lookup_field": "name"},
         }
+
+    model_file = NetworkFileField()
+    model_zip_file = NetworkZipFileField()
 
     def validate(self, data):
         # Allow blank file only if random
