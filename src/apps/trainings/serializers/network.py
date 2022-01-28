@@ -67,6 +67,7 @@ class NetworkSerializer(HyperlinkedModelSerializer):
             "log_gamma_lower_confidence",
             "log_gamma_upper_confidence",
             "log_gamma_game_count",
+            "log_gamma_offset",
         ]
         extra_kwargs = {
             "url": {"lookup_field": "name"},
@@ -99,6 +100,8 @@ class NetworkSerializer(HyperlinkedModelSerializer):
                 data["log_gamma_lower_confidence"] = data["log_gamma"] - 2 * data["log_gamma_uncertainty"]
             if "log_gamma_upper_confidence" not in data:
                 data["log_gamma_upper_confidence"] = data["log_gamma"] + 2 * data["log_gamma_uncertainty"]
+        if "log_gamma_offset" not in data:
+            data["log_gamma_offset"] = 0.0
 
         return super().create(data)
 

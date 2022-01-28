@@ -18,6 +18,7 @@ class NetworkAdmin(admin.ModelAdmin):
         "rating",
         "training_games_enabled",
         "rating_games_enabled",
+        "log_gamma_offset",
     )
     list_filter = (
         "run",
@@ -25,6 +26,7 @@ class NetworkAdmin(admin.ModelAdmin):
         "network_size",
         "training_games_enabled",
         "rating_games_enabled",
+        "log_gamma_offset",
     )
     readonly_fields = (
         "id",
@@ -54,6 +56,7 @@ class NetworkAdmin(admin.ModelAdmin):
                         "log_gamma",
                         "log_gamma_uncertainty",
                         "log_gamma_game_count",
+                        "log_gamma_offset",
                     ),
                     ("log_gamma_lower_confidence", "log_gamma_upper_confidence"),
                 )

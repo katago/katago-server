@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import numpy as np
 import scipy.stats
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 from django.utils import timezone
 
 from src.apps.runs.models import Run
@@ -95,4 +95,4 @@ class NetworkQuerySet(QuerySet):
         not_too_uncertain_networks = filtered.filter(
             log_gamma_uncertainty__lte=(max_uncertainty_elo / (400.0 * math.log10(math.e)))
         )
-        return not_too_uncertain_networks.order_by("-log_gamma_lower_confidence").first()
+        return not_too_uncertain_networks.order_by(-F("log_gamma_lower_confidence") - F("log_gamma_offset")).first()

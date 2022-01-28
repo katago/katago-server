@@ -213,6 +213,12 @@ class Network(Model):
         db_index=True,
         help_text=_("Number of real games used to compute log_gamma for this network."),
     )
+    log_gamma_offset = FloatField(
+        _("log gamma offset"),
+        default=0,
+        help_text=_("Offset factor to add to log_gamma when determining best network."),
+        db_index=True,
+    )
 
     def __str__(self):
         return f"{self.name} ({self.elo:.{self.elo_precision}f}±{2 * self.elo_uncertainty:.{self.elo_precision}f})"
