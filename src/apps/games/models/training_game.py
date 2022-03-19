@@ -134,8 +134,10 @@ def validate_game_npzdata(training_data_file, run):
         or np.max(arrs["globalTargetsNC"][:, 19]) > 5000.0
         or np.min(arrs["globalTargetsNC"][:, 20:22]) < -5000.0
         or np.max(arrs["globalTargetsNC"][:, 20:22]) > 5000.0
-        or np.min(arrs["globalTargetsNC"][:, 23:35]) < 0.0
-        or np.max(arrs["globalTargetsNC"][:, 23:35]) > 2.0
+        or np.min(arrs["globalTargetsNC"][:, 23:30]) < 0.0
+        or np.max(arrs["globalTargetsNC"][:, 23:30]) > 2.0
+        or np.min(arrs["globalTargetsNC"][:, 33:35]) < 0.0
+        or np.max(arrs["globalTargetsNC"][:, 33:35]) > 2.0
         or np.min(arrs["globalTargetsNC"][:, 36:41]) < 0.0
         or np.max(arrs["globalTargetsNC"][:, 36:41]) > 1.0
         or np.min(arrs["globalTargetsNC"][:, 36:41]) < 0.0
