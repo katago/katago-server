@@ -87,7 +87,7 @@ class NetworkQuerySet(QuerySet):
 
     # Arbitrary reasonable cap on the uncertainty we will tolerate when trying to report a strongest network
     def select_strongest_confident(
-        self, run: Run, for_training_games=True, for_rating_games=False, max_uncertainty_elo=100
+        self, run: Run, for_training_games=False, for_rating_games=False, max_uncertainty_elo=100
     ):
         filtered = self.select_networks_for_run(
             run=run, for_training_games=for_training_games, for_rating_games=for_rating_games
